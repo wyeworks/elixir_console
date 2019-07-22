@@ -1,6 +1,6 @@
 <section class="phx-hero">
-  <h1><%= gettext "Welcome to %{name}!", name: "Phoenix" %></h1>
-  <p>A productive web framework that<br/>does not compromise speed or maintainability.</p>
+  <h1>My Phrenzy Entry</h1>
+  <p><%= link "This clock", to: Routes.live_path(@conn, LiveViewDemoWeb.ClockLive) %> is a basic live view in action.</p>
 </section>
 
 <section class="row">
@@ -8,13 +8,16 @@
     <h2>Resources</h2>
     <ul>
       <li>
-        <a href="https://hexdocs.pm/phoenix/overview.html">Guides &amp; Docs</a>
+        <a href="https://github.com/phoenixframework/phoenix_live_view">Phoenix LiveView README</a>
       </li>
       <li>
-        <a href="https://github.com/phoenixframework/phoenix">Source</a>
+        <a href="https://hexdocs.pm/phoenix/overview.html">Phoenix Guides &amp; Docs</a>
       </li>
       <li>
-        <a href="https://github.com/phoenixframework/phoenix/blob/v1.4/CHANGELOG.md">v1.4 Changelog</a>
+        <a href="https://github.com/phoenixframework/phoenix">Phoenix Source</a>
+      </li>
+      <li>
+        <a href="https://github.com/phoenixframework/phoenix/blob/v1.4/CHANGELOG.md">Phoenix v1.4 Changelog</a>
       </li>
     </ul>
   </article>
