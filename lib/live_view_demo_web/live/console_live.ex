@@ -17,6 +17,11 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   end
 
   def handle_event("execute", %{"command" => command}, socket) do
-    {:noreply, assign(socket, command: command, result: command)}
+    {:noreply, assign(socket, command: command, result: execute_command(command))}
+  end
+
+  defp execute_command(command) do
+    {result, _} = Code.eval_string(command)
+    inspect(result)
   end
 end
