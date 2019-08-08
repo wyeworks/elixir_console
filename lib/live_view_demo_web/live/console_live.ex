@@ -1,6 +1,8 @@
 defmodule LiveViewDemoWeb.ConsoleLive do
   use Phoenix.LiveView
 
+  @console_buffer 5
+
   defmodule Output do
     @enforce_keys [:command]
     defstruct [:command, :result, :error]
@@ -10,7 +12,6 @@ defmodule LiveViewDemoWeb.ConsoleLive do
     ~L"""
     <div>
       <form phx-submit="execute">
-        <input type="text" name="command"/>
         <pre>
           <%= for output <- @output do %>
             <strong><%= print_prompt() %></strong><%= output.command %>
@@ -18,6 +19,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
             <%= if output.error do %><span style="background-color: #edcacd"><%= output.error %></span><% end %>
           <% end %>
         </pre>
+        <input type="text" name="command"/>
       </form>
     </div>
     """
@@ -30,8 +32,13 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   def handle_event("execute", %{"command" => command}, socket) do
     case execute_command(command, socket.assigns.bindings) do
       {:ok, result, bindings} ->
-        {:noreply, append_output(socket, :ok, command, result) |> assign(bindings: bindings)}
-      {:error, error} -> {:noreply, append_output(socket, :error, command, error)}
+        {:noreply,
+         socket
+         |> append_output(:ok, command, result)
+         |> assign(bindings: bindings)}
+
+      {:error, error} ->
+        {:noreply, append_output(socket, :error, command, error)}
     end
   end
 
@@ -44,19 +51,14 @@ defmodule LiveViewDemoWeb.ConsoleLive do
       {:error, inspect(error)}
   end
 
-  defp append_output(socket, :ok, command, result) do
-    new_output = [
-      %Output{command: command, result: result} | socket.assigns.output
-    ]
+  defp append_output(socket, status, command, result_or_error) do
+    new_output = socket.assigns.output ++ [build_output(status, command, result_or_error)]
+    new_output = Enum.take(new_output, -@console_buffer)
     assign(socket, output: new_output)
   end
 
-  defp append_output(socket, :error, command, error) do
-    new_output = [
-      %Output{command: command, error: error} | socket.assigns.output
-    ]
-    assign(socket, output: new_output)
-  end
+  defp build_output(:ok, command, result), do: %Output{command: command, result: result}
+  defp build_output(:error, command, error), do: %Output{command: command, error: error}
 
   defp print_prompt, do: ">> "
 end
