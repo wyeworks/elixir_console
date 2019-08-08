@@ -22,6 +22,11 @@ defmodule LiveViewDemoWeb.ConsoleLive do
         <input type="text" name="command"/>
       </form>
     </div>
+    <div>
+      <%= for {key, value} <- @bindings do %>
+        <p><%= key %>: <code><%= inspect(value) %></code></p>
+      <% end %>
+    </div>
     """
   end
 
