@@ -24,14 +24,4 @@ defmodule LiveViewDemoWeb.ChannelCase do
       @endpoint LiveViewDemoWeb.Endpoint
     end
   end
-
-  setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(LiveViewDemo.Repo)
-
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(LiveViewDemo.Repo, {:shared, self()})
-    end
-
-    :ok
-  end
 end
