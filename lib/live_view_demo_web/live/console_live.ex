@@ -19,8 +19,13 @@ defmodule LiveViewDemoWeb.ConsoleLive do
             <%= if output.error do %><span style="background-color: #edcacd"><%= output.error %></span><% end %>
           <% end %>
         </pre>
-        <input type="text" name="command"/>
+        <input type="text" name="command" id="commandInput" phx-keydown="suggest"/>
       </form>
+    </div>
+    <div style="display: flex; flex-wrap: wrap">
+      <%= for suggestion <- @suggestions do %>
+        <div style="margin-right: 10px"><%= suggestion %></div>
+      <% end %>
     </div>
     <div>
       <%= for {key, value} <- @bindings do %>
@@ -31,19 +36,42 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   end
 
   def mount(_session, socket) do
-    {:ok, assign(socket, output: [], bindings: [])}
+    {:ok, assign(socket, output: [], bindings: [], history: [], suggestions: [])}
+  end
+
+  def handle_event("suggest", %{"keyCode" => 9, "value" => value}, socket) do
+    suggestions = socket.assigns.history |> Enum.filter(&(String.starts_with?(&1, value)))
+
+    {:noreply, socket |> assign(suggestions: suggestions)}
+  end
+
+  def handle_event("suggest", _key, socket) do
+    {:noreply, socket}
   end
 
   def handle_event("execute", %{"command" => command}, socket) do
+    history =
+      if socket.assigns.history == [] do
+        [command]
+      else
+        [command | socket.assigns.history]
+      end
+
     case execute_command(command, socket.assigns.bindings) do
       {:ok, result, bindings} ->
         {:noreply,
          socket
          |> append_output(:ok, command, result)
-         |> assign(bindings: bindings)}
+         |> assign(bindings: bindings)
+         |> assign(history: history)
+         |> assign(suggestions: [])}
 
       {:error, error} ->
-        {:noreply, append_output(socket, :error, command, error)}
+        {:noreply,
+         socket
+         |> append_output(:error, command, error)
+         |> assign(history: history)
+         |> assign(suggestions: [])}
     end
   end
 

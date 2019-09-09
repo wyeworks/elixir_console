@@ -20,3 +20,12 @@ import LiveSocket from "phoenix_live_view"
 
 let liveSocket = new LiveSocket("/live")
 liveSocket.connect()
+
+document.addEventListener("DOMContentLoaded", function(event) {
+  let input = document.getElementById("commandInput");
+  input.addEventListener("keydown", function(e) {
+    if (e.keyCode === 9) {
+      e.preventDefault();
+    }
+  }, true)
+})
