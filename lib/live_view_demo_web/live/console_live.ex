@@ -64,7 +64,6 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   end
 
   def handle_event("suggest", %{"keyCode" => 9, "value" => value}, socket) do
-    IO.inspect("a")
     suggestions = socket.assigns.history |> Enum.filter(&(String.starts_with?(&1, value)))
 
     {:noreply, socket |> assign(suggestions: suggestions)}
