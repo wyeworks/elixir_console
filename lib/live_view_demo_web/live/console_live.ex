@@ -24,19 +24,34 @@ defmodule LiveViewDemoWeb.ConsoleLive do
             <% end %>
           </div>
           <div class="text-gray-300 font-medium flex bg-teal-700 p-2">
-            <%= for suggestion <- @suggestions do %>
-              <div style="margin-right: 10px"><%= suggestion %></div>
-            <% end %>
             <%= print_prompt() %>
-            <input autocomplete="off" type="text" name="command" class="ml-2 bg-transparent flex-1 outline-none"/>
+            <input
+              type="text"
+              id="commandInput"
+              class="ml-2 bg-transparent flex-1 outline-none"
+              autocomplete="off"
+              name="command"
+              phx-keydown="suggest"
+            />
           </div>
         </form>
       </div>
-      <div class="w-full sm:w-32 md:w-64 h-32 sm:h-full bg-teal-800 p-2 text-gray-300 overflow-scroll">
+      <div class="w-full sm:w-32 md:w-64 h-32 sm:h-full bg-teal-800 p-2 text-gray-300 overflow-scroll flex flex-col">
         <h2 class="font-medium">Current Variables</h2>
         <ul>
           <%= for {key, value} <- @bindings do %>
             <li><%= key %>: <code class="text-teal-300"><%= inspect(value) %></code></li>
+          <% end %>
+        </ul>
+        <div class="flex-1"></div>
+        <%= if @suggestions != [] do %>
+          <h2 class="font-medium">Suggestions:</h2>
+        <% else %>
+          <p>[TAB]: suggestions</p>
+        <% end %>
+        <ul>
+          <%= for suggestion <- @suggestions do %>
+            <li><%= suggestion %></li>
           <% end %>
         </ul>
       </div>
@@ -49,6 +64,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   end
 
   def handle_event("suggest", %{"keyCode" => 9, "value" => value}, socket) do
+    IO.inspect("a")
     suggestions = socket.assigns.history |> Enum.filter(&(String.starts_with?(&1, value)))
 
     {:noreply, socket |> assign(suggestions: suggestions)}
