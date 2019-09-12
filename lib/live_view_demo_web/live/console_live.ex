@@ -16,7 +16,16 @@ defmodule LiveViewDemoWeb.ConsoleLive do
           <div class="flex-1"></div>
           <div class="p-2">
             <%= for output <- @output do %>
-              <div class="text-gray-300 font-medium"><%= print_prompt() %><%= output.command %></div>
+              <div class="text-gray-300 font-medium"><%= print_prompt() %>
+                <%= for part <- splitted_command(output.command) do %>
+                  <%= case part do
+                    {part, docs} ->
+                      render_command_inline_help(assigns, part, docs)
+                    part ->
+                      part
+                  end %>
+                <% end %>
+              </div>
               <div class="text-teal-300">
                 <%= if output.result do output.result end %>
                 <%= if output.error do %><span class="text-pink-400"><%= output.error %></span><% end %>
@@ -49,7 +58,11 @@ defmodule LiveViewDemoWeb.ConsoleLive do
         <%= if @suggestions != [] do %>
           <h2 class="font-medium">Suggestions:</h2>
         <% else %>
-          <p>[TAB]: suggestions</p>
+          <%= if @show_contextual_info do %>
+            <%= Phoenix.HTML.raw @show_contextual_info %>
+          <% else %>
+            <p>[TAB]: suggestions</p>
+          <% end %>
         <% end %>
         <ul>
           <%= for suggestion <- @suggestions do %>
@@ -58,6 +71,20 @@ defmodule LiveViewDemoWeb.ConsoleLive do
         </ul>
       </div>
     </div>
+    """
+  end
+
+  defp splitted_command(command) do
+    ContextualHelp.compute(command)
+  end
+
+  defp render_command_inline_help(assigns, part, docs) do
+    ~L"""
+      <span
+        phx-click="show_contextual_info"
+        phx-value-doc="<%= docs %>"
+        class="text-green-400 cursor-pointer"
+      ><%= part %></span>
     """
   end
 
@@ -70,7 +97,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
        history: [],
        history_counter: 0,
        suggestions: [],
-       input_value: ""
+       input_value: "",
+       show_contextual_info: []
      )}
   end
 
@@ -154,6 +182,10 @@ defmodule LiveViewDemoWeb.ConsoleLive do
          |> assign(suggestions: [])
          |> assign(input_value: "")}
     end
+  end
+
+  def handle_event("show_contextual_info", %{"doc" => doc}, socket) do
+    {:noreply, socket |> assign(show_contextual_info: doc)}
   end
 
   defp execute_command(command, bindings) do
