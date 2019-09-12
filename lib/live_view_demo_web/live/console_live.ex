@@ -1,7 +1,7 @@
 defmodule LiveViewDemoWeb.ConsoleLive do
   use Phoenix.LiveView
 
-  @console_buffer 5
+  @console_buffer 100
 
   defmodule Output do
     @enforce_keys [:command]
@@ -10,27 +10,51 @@ defmodule LiveViewDemoWeb.ConsoleLive do
 
   def render(assigns) do
     ~L"""
-    <div>
-      <form phx-submit="execute">
-        <pre>
-          <%= for output <- @output do %>
-            <strong><%= print_prompt() %></strong><%= output.command %>
-            <%= if output.result do output.result end %>
-            <%= if output.error do %><span style="background-color: #edcacd"><%= output.error %></span><% end %>
+    <div class="flex h-full flex-col sm:flex-row">
+      <div class="flex-1 sm:h-full overflow-scroll">
+        <form phx-submit="execute" class="h-full flex flex-col">
+          <div class="flex-1"></div>
+          <div class="p-2">
+            <%= for output <- @output do %>
+              <div class="text-gray-300 font-medium"><%= print_prompt() %><%= output.command %></div>
+              <div class="text-teal-300">
+                <%= if output.result do output.result end %>
+                <%= if output.error do %><span class="text-pink-400"><%= output.error %></span><% end %>
+              </div>
+            <% end %>
+          </div>
+          <div class="text-gray-300 font-medium flex bg-teal-700 p-2">
+            <%= print_prompt() %>
+            <input
+              type="text"
+              id="commandInput"
+              class="ml-2 bg-transparent flex-1 outline-none"
+              autocomplete="off"
+              name="command"
+              phx-keydown="suggest"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="w-full sm:w-32 md:w-64 h-32 sm:h-full bg-teal-800 p-2 text-gray-300 overflow-scroll flex flex-col">
+        <h2 class="font-medium">Current Variables</h2>
+        <ul>
+          <%= for {key, value} <- @bindings do %>
+            <li><%= key %>: <code class="text-teal-300"><%= inspect(value) %></code></li>
           <% end %>
-        </pre>
-        <input type="text" name="command" id="commandInput" phx-keydown="suggest"/>
-      </form>
-    </div>
-    <div style="display: flex; flex-wrap: wrap">
-      <%= for suggestion <- @suggestions do %>
-        <div style="margin-right: 10px"><%= suggestion %></div>
-      <% end %>
-    </div>
-    <div>
-      <%= for {key, value} <- @bindings do %>
-        <p><%= key %>: <code><%= inspect(value) %></code></p>
-      <% end %>
+        </ul>
+        <div class="flex-1"></div>
+        <%= if @suggestions != [] do %>
+          <h2 class="font-medium">Suggestions:</h2>
+        <% else %>
+          <p>[TAB]: suggestions</p>
+        <% end %>
+        <ul>
+          <%= for suggestion <- @suggestions do %>
+            <li><%= suggestion %></li>
+          <% end %>
+        </ul>
+      </div>
     </div>
     """
   end
@@ -93,5 +117,5 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   defp build_output(:ok, command, result), do: %Output{command: command, result: result}
   defp build_output(:error, command, error), do: %Output{command: command, error: error}
 
-  defp print_prompt, do: ">> "
+  defp print_prompt, do: "> "
 end
