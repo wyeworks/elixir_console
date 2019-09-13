@@ -26,9 +26,9 @@ defmodule ContextualHelp do
 
     Enum.reduce(list, %{}, fn function, acc ->
       case function do
-        {{:function, func_name, _func_ary}, _, _header, %{"en" => doc}, _} ->
-          {:ok, html_doc, _} = Earmark.as_html(doc)
-          Map.put(acc, "Enum.#{func_name}", html_doc)
+        {{:function, func_name, func_ary}, _, _header, %{"en" => docs}, _} ->
+          {:ok, html_doc, _} = Earmark.as_html(docs)
+          Map.put(acc, "Enum.#{func_name}", %{header: "Enum.#{func_name}/#{func_ary}", docs: html_doc})
         _ ->
           acc
       end

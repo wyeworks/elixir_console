@@ -19,8 +19,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
               <div class="text-gray-300 font-medium"><%= print_prompt() %>
                 <%= for part <- splitted_command(output.command) do %>
                   <%= case part do
-                    {part, docs} ->
-                      render_command_inline_help(assigns, part, docs)
+                    {part, help_metadata} ->
+                      render_command_inline_help(assigns, part, help_metadata)
                     part ->
                       part
                   end %>
@@ -59,7 +59,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
           <h2 class="font-medium">Suggestions:</h2>
         <% else %>
           <%= if @show_contextual_info do %>
-            <span class="text-xs"><%= Phoenix.HTML.raw @show_contextual_info %></span>
+            <span class="mb-8 font-bold text-green-400"><%= @show_contextual_info[:header] %></span>
+            <span class="text-xs text-green-400"><%= Phoenix.HTML.raw @show_contextual_info[:doc] %></span>
           <% else %>
             <p>[TAB]: suggestions</p>
           <% end %>
@@ -78,10 +79,11 @@ defmodule LiveViewDemoWeb.ConsoleLive do
     ContextualHelp.compute(command)
   end
 
-  defp render_command_inline_help(assigns, part, docs) do
+  defp render_command_inline_help(assigns, part, %{header: header, docs: docs}) do
     ~L"""
       <span
         phx-click="show_contextual_info"
+        phx-value-header="<%= header %>"
         phx-value-doc="<%= docs %>"
         class="text-green-400 cursor-pointer"
       ><%= part %></span>
@@ -98,7 +100,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
        history_counter: 0,
        suggestions: [],
        input_value: "",
-       show_contextual_info: []
+       show_contextual_info: nil
      )}
   end
 
@@ -172,7 +174,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
          |> assign(bindings: bindings)
          |> assign(history: history)
          |> assign(suggestions: [])
-         |> assign(input_value: "")}
+         |> assign(input_value: "")
+         |> assign(show_contextual_info: nil)}
 
       {:error, error} ->
         {:noreply,
@@ -180,14 +183,15 @@ defmodule LiveViewDemoWeb.ConsoleLive do
          |> append_output(:error, command, error)
          |> assign(history: history)
          |> assign(suggestions: [])
-         |> assign(input_value: "")}
+         |> assign(input_value: "")
+         |> assign(show_contextual_info: nil)}
     end
   end
 
-  def handle_event("show_contextual_info", %{"doc" => doc}, socket) do
+  def handle_event("show_contextual_info", %{"header" => header, "doc" => doc}, socket) do
     {:noreply,
      socket
-     |> assign(show_contextual_info: doc)
+     |> assign(show_contextual_info: %{header: header, doc: doc})
      |> assign(suggestions: [])}
   end
 
