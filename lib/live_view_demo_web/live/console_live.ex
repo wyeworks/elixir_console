@@ -47,7 +47,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
           </div>
         </form>
       </div>
-      <div class="w-full sm:w-32 md:w-64 h-32 sm:h-full bg-teal-800 p-2 text-gray-300 overflow-scroll flex flex-col">
+      <div class="w-full sm:w-32 md:w-1/4 h-32 sm:h-full bg-teal-800 p-2 text-gray-300 overflow-scroll flex flex-col">
         <h2 class="font-medium">Current Variables</h2>
         <ul>
           <%= for {key, value} <- @bindings do %>
@@ -59,7 +59,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
           <h2 class="font-medium">Suggestions:</h2>
         <% else %>
           <%= if @show_contextual_info do %>
-            <%= Phoenix.HTML.raw @show_contextual_info %>
+            <span class="text-xs"><%= Phoenix.HTML.raw @show_contextual_info %></span>
           <% else %>
             <p>[TAB]: suggestions</p>
           <% end %>
@@ -185,7 +185,10 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   end
 
   def handle_event("show_contextual_info", %{"doc" => doc}, socket) do
-    {:noreply, socket |> assign(show_contextual_info: doc)}
+    {:noreply,
+     socket
+     |> assign(show_contextual_info: doc)
+     |> assign(suggestions: [])}
   end
 
   defp execute_command(command, bindings) do
