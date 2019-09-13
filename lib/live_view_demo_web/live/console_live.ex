@@ -85,7 +85,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
         phx-click="show_contextual_info"
         phx-value-header="<%= header %>"
         phx-value-doc="<%= docs %>"
-        class="text-green-400 cursor-pointer"
+        class="text-green-400 cursor-pointer underline"
       ><%= part %></span>
     """
   end
