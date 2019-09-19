@@ -60,17 +60,66 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   end
 
   def mount(_session, socket) do
-    {:ok, assign(socket, output: [], bindings: [], history: [], suggestions: [])}
+    {:ok,
+     assign(
+       socket,
+       output: [],
+       bindings: [],
+       history: [],
+       history_counter: 0,
+       suggestions: []
+     )}
   end
 
+  # TAB KEY
   def handle_event("suggest", %{"keyCode" => 9, "value" => value}, socket) do
-    suggestions = socket.assigns.history |> Enum.filter(&(String.starts_with?(&1, value)))
+    suggestions = socket.assigns.history |> Enum.filter(&String.starts_with?(&1, value))
 
     {:noreply, socket |> assign(suggestions: suggestions)}
   end
 
+  # KEY UP
+  def handle_event("suggest", %{"keyCode" => 38}, socket) do
+    counter = socket.assigns.history_counter
+    history = socket.assigns.history
+
+    {suggestion, new_counter} =
+      cond do
+        history == [] ->
+          {[], 0}
+
+        counter < length(history) ->
+          {[Enum.at(history, counter)], counter + 1}
+
+        counter >= length(history) ->
+          {[List.last(history)], counter}
+      end
+
+    {:noreply, socket |> assign(suggestions: suggestion, history_counter: new_counter)}
+  end
+
+  # KEY DOWN
+  def handle_event("suggest", %{"keyCode" => 40}, socket) do
+    counter = socket.assigns.history_counter
+    history = socket.assigns.history
+
+    {suggestion, new_counter} =
+      cond do
+        history == [] ->
+          {[], 0}
+
+        counter > 0 ->
+          {[Enum.at(history, counter - 1)], counter - 1}
+
+        counter <= 0 ->
+          {[List.first(history)], 0}
+      end
+
+    {:noreply, socket |> assign(suggestions: suggestion, history_counter: new_counter)}
+  end
+
   def handle_event("suggest", _key, socket) do
-    {:noreply, socket}
+    {:noreply, socket |> assign(history_counter: 0)}
   end
 
   def handle_event("execute", %{"command" => command}, socket) do
