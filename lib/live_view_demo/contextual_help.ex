@@ -11,7 +11,7 @@ defmodule ContextualHelp do
         {:ok, {_, _, params} } <- Code.string_to_quoted(part),
         arity <- Enum.count(params),
         ["", func_name_part, remaining] <- Regex.split(@func_name_regex, part, include_captures: true),
-        doc when not is_nil(docs) <- docs[%{func_name: func_name, func_ary: arity}] do
+        doc when not is_nil(doc) <- docs[%{func_name: func_name, func_ary: arity}] do
 
           acc ++ [
             {func_name_part, doc},
