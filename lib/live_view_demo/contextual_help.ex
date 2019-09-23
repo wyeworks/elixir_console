@@ -17,6 +17,10 @@ defmodule ContextualHelp do
     Enum.reduce(params, acc, fn node, acc -> find_functions(node, acc) end)
   end
 
+  def find_functions({_, _, list}, acc) when is_list(list) do
+    Enum.reduce(list, acc, fn node, acc -> find_functions(node, acc) end)
+  end
+
   def find_functions(_, acc), do: acc
 
   def add_documentation(command, [%{module: module, func_name: func_name, func_ary: func_ary} | rest], docs) do
