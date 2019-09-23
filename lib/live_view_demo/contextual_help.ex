@@ -1,44 +1,33 @@
 defmodule ContextualHelp do
-  @func_name_regex ~r{^(?<func_name>[[:alnum:]]+\.[[:alnum:]_?]+)}
 
   def compute(command) do
     # TODO Enum is harcoded
     docs = docs(Enum)
 
-    Regex.split(regex(docs), command, include_captures: true)
-    |> Enum.reduce([], fn part, acc ->
-      with [[func_name]] <- Regex.scan(@func_name_regex, part, capture: ["func_name"]),
-        {:ok, {_, _, params} } <- Code.string_to_quoted(part),
-        arity <- Enum.count(params),
-        ["", func_name_part, remaining] <- Regex.split(@func_name_regex, part, include_captures: true),
-        doc when not is_nil(doc) <- docs[%{func_name: func_name, func_ary: arity}] do
-
-          acc ++ [
-            {func_name_part, doc},
-            remaining
-          ]
-        else
-          _ ->
-            acc ++ [part]
-      end
-    end)
+    {:ok, expr} = Code.string_to_quoted(command)
+    functions = find_functions(expr, [])
+    add_documentation(command, functions, docs)
   end
 
-  def regex(docs) do
-    {:ok, regex} = docs
-      |> Map.keys
-      |> Enum.map(fn func_meta ->
-        # TODO consider 0 params
-        # TODO ^^ we should consider using quoted_from_string in order to cover all cases
-        args_matcher = for _ <- 1..func_meta[:func_ary]-1, do: ".*"
-        args = Enum.join(args_matcher, ", ")
+  def find_functions({{:., _, [{_, _, [:Enum]}, func_name]}, _, params}, acc) do
+    acc = acc ++ [%{func_name: func_name, func_ary: Enum.count(params)}]
+    Enum.reduce(params, acc, fn node, acc -> find_functions(node, acc) end)
+  end
 
-        "#{func_meta[:func_name]}\\(#{args}\\)|#{func_meta[:func_name]} #{args}"
-      end)
-      |> Enum.join("|")
-      |> Regex.compile
+  def find_functions(_, acc), do: acc
 
-    regex
+  def add_documentation(command, [%{func_name: func_name, func_ary: func_ary} | rest], docs) do
+    regex = ~r/Enum.#{Regex.escape(Atom.to_string(func_name))}/
+    [before, _, remaining_command] = Regex.split(regex, command, include_captures: true, parts: 2)
+
+    case docs[%{func_name: "Enum.#{func_name}", func_ary: func_ary}] do
+      nil -> [before, "Enum.#{func_name}"] ++ add_documentation(remaining_command, rest, docs)
+      doc -> [before, {"Enum.#{func_name}", doc}] ++ add_documentation(remaining_command, rest, docs)
+    end
+  end
+
+  def add_documentation(command, [], _) do
+    [command]
   end
 
   def docs(module) do
