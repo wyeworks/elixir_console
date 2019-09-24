@@ -72,6 +72,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
       case part do
         {part, help_metadata} ->
           render_command_inline_help(part, help_metadata)
+
         part ->
           part
       end
