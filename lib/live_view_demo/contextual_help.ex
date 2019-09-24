@@ -1,4 +1,4 @@
-defmodule ContextualHelp do
+defmodule LiveViewDemo.ContextualHelp do
   @modules [
     Access,
     Enum,

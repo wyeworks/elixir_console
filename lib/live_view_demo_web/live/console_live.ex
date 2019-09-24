@@ -205,7 +205,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   end
 
   defp splitted_command(command) do
-    ContextualHelp.compute(command)
+    LiveViewDemo.ContextualHelp.compute(command)
   end
 
   defp render_command_inline_help(part, %{header: header, docs: docs}) do
