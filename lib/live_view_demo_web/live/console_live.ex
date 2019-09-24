@@ -88,10 +88,10 @@ defmodule LiveViewDemoWeb.ConsoleLive do
         history == [] ->
           {[], 0}
 
-        counter < length(history) ->
-          {[Enum.at(history, counter)], counter + 1}
+        counter + 1 < length(history) ->
+          {[Enum.at(history, counter + 1)], counter + 1}
 
-        counter >= length(history) ->
+        counter + 1 >= length(history) ->
           {[List.last(history)], counter}
       end
 
@@ -119,7 +119,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   end
 
   def handle_event("suggest", _key, socket) do
-    {:noreply, socket |> assign(history_counter: 0)}
+    {:noreply, socket |> assign(history_counter: -1)}
   end
 
   def handle_event("execute", %{"command" => command}, socket) do
