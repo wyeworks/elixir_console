@@ -1,5 +1,6 @@
 defmodule LiveViewDemoWeb.ConsoleLive do
   use Phoenix.LiveView
+  import Phoenix.HTML, only: [sigil_e: 2]
 
   @console_buffer 100
 
@@ -16,16 +17,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
           <div class="flex-1"></div>
           <div class="p-2">
             <%= for output <- @output do %>
-              <div class="text-gray-300 font-medium"><%= print_prompt() %>
-                <%= for part <- splitted_command(output.command) do %>
-                  <%= case part do
-                    {part, help_metadata} ->
-                      render_command_inline_help(assigns, part, help_metadata)
-                    part ->
-                      part
-                  end %>
-                <% end %>
-              </div>
+              <div class="text-gray-300 font-medium"><%= print_prompt() %><%= format_command(output.command) %></div>
               <div class="text-teal-300">
                 <%= if output.result do output.result end %>
                 <%= if output.error do %><span class="text-pink-400"><%= output.error %></span><% end %>
@@ -75,19 +67,28 @@ defmodule LiveViewDemoWeb.ConsoleLive do
     """
   end
 
+  defp format_command(command) do
+    for part <- splitted_command(command) do
+      case part do
+        {part, help_metadata} ->
+          render_command_inline_help(part, help_metadata)
+        part ->
+          part
+      end
+    end
+  end
+
   defp splitted_command(command) do
     ContextualHelp.compute(command)
   end
 
-  defp render_command_inline_help(assigns, part, %{header: header, docs: docs}) do
-    ~L"""
-      <span
-        phx-click="show_contextual_info"
-        phx-value-header="<%= header %>"
-        phx-value-doc="<%= docs %>"
-        class="text-green-400 cursor-pointer underline"
-      ><%= part %></span>
-    """
+  defp render_command_inline_help(part, %{header: header, docs: docs}) do
+    ~e{<span
+      phx-click="show_contextual_info"
+      phx-value-header="<%= header %>"
+      phx-value-doc="<%= docs %>"
+      class="text-green-400 cursor-pointer underline"
+    ><%= part %></span>}
   end
 
   def mount(_session, socket) do
