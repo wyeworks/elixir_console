@@ -39,7 +39,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
           </div>
         </form>
       </div>
-      <div class="w-full sm:w-32 md:w-1/4 h-32 sm:h-full bg-teal-800 p-2 text-gray-300 overflow-scroll flex flex-col">
+      <div class="w-full sm:w-32 md:w-1/3 h-32 sm:h-full bg-teal-800 p-2 text-gray-300 overflow-scroll flex flex-col">
         <h2 class="font-medium">Current Variables</h2>
         <ul>
           <%= for {key, value} <- @bindings do %>
