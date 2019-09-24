@@ -32,6 +32,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
               autocomplete="off"
               name="command"
               phx-keydown="suggest"
+              phx-hook="CommandInput"
+              data-input_value="<%= @input_value %>"
             />
           </div>
         </form>
@@ -67,7 +69,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
        bindings: [],
        history: [],
        history_counter: 0,
-       suggestions: []
+       suggestions: [],
+       input_value: ""
      )}
   end
 
@@ -75,7 +78,10 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   def handle_event("suggest", %{"keyCode" => 9, "value" => value}, socket) do
     suggestions = socket.assigns.history |> Enum.filter(&String.starts_with?(&1, value))
 
-    {:noreply, socket |> assign(suggestions: suggestions)}
+    case suggestions do
+      [suggestion] -> {:noreply, socket |> assign(input_value: suggestion, suggestions: [])}
+      suggestions -> {:noreply, socket |> assign(suggestions: suggestions, input_value: "")}
+    end
   end
 
   # KEY UP
@@ -83,7 +89,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
     counter = socket.assigns.history_counter
     history = socket.assigns.history
 
-    {suggestion, new_counter} =
+    {input_value, new_counter} =
       cond do
         history == [] ->
           {[], 0}
@@ -95,7 +101,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
           {[List.last(history)], counter}
       end
 
-    {:noreply, socket |> assign(suggestions: suggestion, history_counter: new_counter)}
+    {:noreply, socket |> assign(input_value: input_value, history_counter: new_counter)}
   end
 
   # KEY DOWN
@@ -103,7 +109,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
     counter = socket.assigns.history_counter
     history = socket.assigns.history
 
-    {suggestion, new_counter} =
+    {input_value, new_counter} =
       cond do
         history == [] ->
           {[], 0}
@@ -115,7 +121,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
           {[List.first(history)], 0}
       end
 
-    {:noreply, socket |> assign(suggestions: suggestion, history_counter: new_counter)}
+    {:noreply, socket |> assign(input_value: input_value, history_counter: new_counter)}
   end
 
   def handle_event("suggest", _key, socket) do
@@ -137,14 +143,16 @@ defmodule LiveViewDemoWeb.ConsoleLive do
          |> append_output(:ok, command, result)
          |> assign(bindings: bindings)
          |> assign(history: history)
-         |> assign(suggestions: [])}
+         |> assign(suggestions: [])
+         |> assign(input_value: "")}
 
       {:error, error} ->
         {:noreply,
          socket
          |> append_output(:error, command, error)
          |> assign(history: history)
-         |> assign(suggestions: [])}
+         |> assign(suggestions: [])
+         |> assign(input_value: "")}
     end
   end
 
