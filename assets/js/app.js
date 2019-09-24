@@ -16,9 +16,20 @@ import "phoenix_html"
 // Local files can be imported directly using relative paths, for example:
 // import socket from "./socket"
 
+import {Socket} from "phoenix"
 import LiveSocket from "phoenix_live_view"
 
-let liveSocket = new LiveSocket("/live")
+let Hooks = {}
+Hooks.CommandInput = {
+  updated() {
+    let newValue = this.el.getAttribute("data-input_value")
+    if (newValue !== "") {
+      this.el.value = newValue;
+    }
+  }
+}
+
+let liveSocket = new LiveSocket("/live", Socket, {hooks: Hooks})
 liveSocket.connect()
 
 document.addEventListener("DOMContentLoaded", function(event) {
