@@ -40,18 +40,18 @@ defmodule ContextualHelp do
     add_documentation(command, functions, docs)
   end
 
-  def find_functions({{:., _, [{_, _, [module]}, func_name]}, _, params}, acc) do
+  defp find_functions({{:., _, [{_, _, [module]}, func_name]}, _, params}, acc) do
     acc = acc ++ [%{module: module, func_name: func_name, func_ary: Enum.count(params)}]
     Enum.reduce(params, acc, fn node, acc -> find_functions(node, acc) end)
   end
 
-  def find_functions({_, _, list}, acc) when is_list(list) do
+  defp find_functions({_, _, list}, acc) when is_list(list) do
     Enum.reduce(list, acc, fn node, acc -> find_functions(node, acc) end)
   end
 
-  def find_functions(_, acc), do: acc
+  defp find_functions(_, acc), do: acc
 
-  def add_documentation(
+  defp add_documentation(
         command,
         [%{module: module, func_name: func_name, func_ary: func_ary} | rest],
         docs
@@ -69,11 +69,11 @@ defmodule ContextualHelp do
     end
   end
 
-  def add_documentation(command, [], _) do
+  defp add_documentation(command, [], _) do
     [command]
   end
 
-  def retrive_docs([module | remaining_modules]) do
+  defp retrive_docs([module | remaining_modules]) do
     {:docs_v1, _, :elixir, _, _, _, list} = Code.fetch_docs(module)
 
     docs =
@@ -96,5 +96,5 @@ defmodule ContextualHelp do
     Map.merge(docs, retrive_docs(remaining_modules))
   end
 
-  def retrive_docs([]), do: %{}
+  defp retrive_docs([]), do: %{}
 end

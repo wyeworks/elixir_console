@@ -67,31 +67,6 @@ defmodule LiveViewDemoWeb.ConsoleLive do
     """
   end
 
-  defp format_command(command) do
-    for part <- splitted_command(command) do
-      case part do
-        {part, help_metadata} ->
-          render_command_inline_help(part, help_metadata)
-
-        part ->
-          part
-      end
-    end
-  end
-
-  defp splitted_command(command) do
-    ContextualHelp.compute(command)
-  end
-
-  defp render_command_inline_help(part, %{header: header, docs: docs}) do
-    ~e{<span
-      phx-click="show_contextual_info"
-      phx-value-header="<%= header %>"
-      phx-value-doc="<%= docs %>"
-      class="text-green-400 cursor-pointer underline"
-    ><%= part %></span>}
-  end
-
   def mount(_session, socket) do
     {:ok,
      assign(
@@ -216,4 +191,29 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   defp build_output(:error, command, error), do: %Output{command: command, error: error}
 
   defp print_prompt, do: "> "
+
+  defp format_command(command) do
+    for part <- splitted_command(command) do
+      case part do
+        {part, help_metadata} ->
+          render_command_inline_help(part, help_metadata)
+
+        part ->
+          part
+      end
+    end
+  end
+
+  defp splitted_command(command) do
+    ContextualHelp.compute(command)
+  end
+
+  defp render_command_inline_help(part, %{header: header, docs: docs}) do
+    ~e{<span
+      phx-click="show_contextual_info"
+      phx-value-header="<%= header %>"
+      phx-value-doc="<%= docs %>"
+      class="text-green-400 cursor-pointer underline"
+    ><%= part %></span>}
+  end
 end
