@@ -2,9 +2,14 @@ defmodule LiveViewDemo.ContextualHelp do
   alias LiveViewDemo.Documentation
 
   def compute(command) do
-    {:ok, expr} = Code.string_to_quoted(command)
-    functions = find_functions(expr, [])
-    add_documentation(command, functions)
+    case Code.string_to_quoted(command) do
+      {:ok, expr} ->
+        functions = find_functions(expr, [])
+        add_documentation(command, functions)
+
+      _ ->
+        [command]
+    end
   end
 
   defp find_functions({{:., _, [{_, _, [module]}, func_name]}, _, params}, acc) do
