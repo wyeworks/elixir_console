@@ -83,11 +83,20 @@ defmodule LiveViewDemoWeb.ConsoleLive do
 
   # TAB KEY
   def handle_event("suggest", %{"keyCode" => 9, "value" => value}, socket) do
-    suggestions = socket.assigns.history |> Enum.filter(&String.starts_with?(&1, value))
+    last_word = String.split(value) |> List.last() || ""
+
+    suggestions =
+      socket.assigns.bindings
+      |> Enum.map(fn {name, _} -> Atom.to_string(name) end)
+      |> Enum.filter(&String.starts_with?(&1, last_word))
 
     case suggestions do
-      [suggestion] -> {:noreply, socket |> assign(input_value: suggestion, suggestions: [])}
-      suggestions -> {:noreply, socket |> assign(suggestions: suggestions, input_value: "")}
+      [suggestion] ->
+        new_input = Regex.replace(~r/\.*#{last_word}$/, value, suggestion)
+        {:noreply, socket |> assign(input_value: new_input, suggestions: [])}
+
+      suggestions ->
+        {:noreply, socket |> assign(suggestions: suggestions, input_value: "")}
     end
   end
 
