@@ -1,6 +1,11 @@
 defmodule LiveViewDemo.Documentation do
   use GenServer
 
+  defmodule Key do
+    @enforce_keys [:func_name, :arity]
+    defstruct [:func_name, :arity]
+  end
+
   @modules [
     Access,
     Enum,
@@ -60,7 +65,7 @@ defmodule LiveViewDemo.Documentation do
             {:ok, html_doc, _} = Earmark.as_html(docs)
             [module_name] = Module.split(module)
 
-            Map.put(acc, %{func_name: "#{module_name}.#{func_name}", func_ary: func_ary}, %{
+            Map.put(acc, %Key{func_name: "#{module_name}.#{func_name}", arity: func_ary}, %{
               header: "#{module_name}.#{func_name}/#{func_ary}",
               docs: html_doc
             })

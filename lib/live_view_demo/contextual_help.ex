@@ -1,4 +1,5 @@
 defmodule LiveViewDemo.ContextualHelp do
+  alias LiveViewDemo.Documentation
 
   def compute(command) do
     {:ok, expr} = Code.string_to_quoted(command)
@@ -17,26 +18,27 @@ defmodule LiveViewDemo.ContextualHelp do
 
   defp find_functions(_, acc), do: acc
 
+  defp add_documentation(command, []), do: [command]
+
   defp add_documentation(
-        command,
-        [%{module: module, func_name: func_name, func_ary: func_ary} | rest]
-      ) do
-    regex = ~r/#{module}.#{Regex.escape(Atom.to_string(func_name))}/
-    [before, _, remaining_command] = Regex.split(regex, command, include_captures: true, parts: 2)
+         command,
+         [%{module: module, func_name: func_name, func_ary: func_ary} | rest]
+       ) do
+    func_fullname = "#{module}.#{func_name}"
+    regex = ~r/#{Regex.escape(func_fullname)}/
 
-    docs = LiveViewDemo.Documentation.get_doc(%{func_name: "#{module}.#{func_name}", func_ary: func_ary})
+    [part_before, _, remaining_command] =
+      Regex.split(regex, command, include_captures: true, parts: 2)
 
-    case docs do
-      nil ->
-        [before, "#{module}.#{func_name}"] ++ add_documentation(remaining_command, rest)
+    parts_to_add =
+      case Documentation.get_doc(%Documentation.Key{func_name: func_fullname, arity: func_ary}) do
+        nil ->
+          [part_before, func_fullname]
 
-      doc ->
-        [before, {"#{module}.#{func_name}", doc}] ++
-          add_documentation(remaining_command, rest)
-    end
-  end
+        doc ->
+          [part_before, {func_fullname, doc}]
+      end
 
-  defp add_documentation(command, []) do
-    [command]
+    parts_to_add ++ add_documentation(remaining_command, rest)
   end
 end
