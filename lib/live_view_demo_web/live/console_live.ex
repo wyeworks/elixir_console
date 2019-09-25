@@ -1,5 +1,6 @@
 defmodule LiveViewDemoWeb.ConsoleLive do
   use Phoenix.LiveView
+  import Phoenix.HTML, only: [sigil_e: 2]
 
   @console_buffer 100
 
@@ -16,7 +17,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
           <div class="flex-1"></div>
           <div class="p-2">
             <%= for output <- @output do %>
-              <div class="text-gray-300 font-medium"><%= print_prompt() %><%= output.command %></div>
+              <div class="text-gray-300 font-medium"><%= print_prompt() %><%= format_command(output.command) %></div>
               <div class="text-teal-300">
                 <%= if output.result do output.result end %>
                 <%= if output.error do %><span class="text-pink-400"><%= output.error %></span><% end %>
@@ -38,7 +39,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
           </div>
         </form>
       </div>
-      <div class="w-full sm:w-32 md:w-64 h-32 sm:h-full bg-teal-800 p-2 text-gray-300 overflow-scroll flex flex-col">
+      <div class="w-full sm:w-32 md:w-1/3 h-32 sm:h-full bg-teal-800 p-2 text-gray-300 overflow-scroll flex flex-col">
         <h2 class="font-medium">Current Variables</h2>
         <ul>
           <%= for {key, value} <- @bindings do %>
@@ -49,7 +50,12 @@ defmodule LiveViewDemoWeb.ConsoleLive do
         <%= if @suggestions != [] do %>
           <h2 class="font-medium">Suggestions:</h2>
         <% else %>
-          <p>[TAB]: suggestions</p>
+          <%= if @show_contextual_info do %>
+            <span class="mb-8 font-bold text-green-400"><%= @show_contextual_info[:header] %></span>
+            <span class="text-xs text-green-400"><%= Phoenix.HTML.raw @show_contextual_info[:doc] %></span>
+          <% else %>
+            <p>[TAB]: suggestions</p>
+          <% end %>
         <% end %>
         <ul>
           <%= for suggestion <- @suggestions do %>
@@ -70,7 +76,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
        history: [],
        history_counter: 0,
        suggestions: [],
-       input_value: ""
+       input_value: "",
+       show_contextual_info: nil
      )}
   end
 
@@ -144,7 +151,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
          |> assign(bindings: bindings)
          |> assign(history: history)
          |> assign(suggestions: [])
-         |> assign(input_value: "")}
+         |> assign(input_value: "")
+         |> assign(show_contextual_info: nil)}
 
       {:error, error} ->
         {:noreply,
@@ -152,8 +160,16 @@ defmodule LiveViewDemoWeb.ConsoleLive do
          |> append_output(:error, command, error)
          |> assign(history: history)
          |> assign(suggestions: [])
-         |> assign(input_value: "")}
+         |> assign(input_value: "")
+         |> assign(show_contextual_info: nil)}
     end
+  end
+
+  def handle_event("show_contextual_info", %{"header" => header, "doc" => doc}, socket) do
+    {:noreply,
+     socket
+     |> assign(show_contextual_info: %{header: header, doc: doc})
+     |> assign(suggestions: [])}
   end
 
   defp execute_command(command, bindings) do
@@ -175,4 +191,29 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   defp build_output(:error, command, error), do: %Output{command: command, error: error}
 
   defp print_prompt, do: "> "
+
+  defp format_command(command) do
+    for part <- splitted_command(command) do
+      case part do
+        {part, help_metadata} ->
+          render_command_inline_help(part, help_metadata)
+
+        part ->
+          part
+      end
+    end
+  end
+
+  defp splitted_command(command) do
+    LiveViewDemo.ContextualHelp.compute(command)
+  end
+
+  defp render_command_inline_help(part, %{header: header, docs: docs}) do
+    ~e{<span
+      phx-click="show_contextual_info"
+      phx-value-header="<%= header %>"
+      phx-value-doc="<%= docs %>"
+      class="text-green-400 cursor-pointer underline"
+    ><%= part %></span>}
+  end
 end
