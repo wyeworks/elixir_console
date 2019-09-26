@@ -2,6 +2,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   use Phoenix.LiveView
   import Phoenix.HTML, only: [sigil_e: 2]
 
+  alias LiveViewDemo.Documentation
+
   @console_buffer 100
 
   defmodule Output do
@@ -85,10 +87,10 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   def handle_event("suggest", %{"keyCode" => 9, "value" => value}, socket) do
     last_word = String.split(value) |> List.last() || ""
 
-    suggestions =
-      socket.assigns.bindings
-      |> Enum.map(fn {name, _} -> Atom.to_string(name) end)
-      |> Enum.filter(&String.starts_with?(&1, last_word))
+    bindings_names = Enum.map(socket.assigns.bindings, fn {name, _} -> Atom.to_string(name) end)
+    all_names = bindings_names ++ Documentation.get_functions_names()
+
+    suggestions = Enum.filter(all_names, &String.starts_with?(&1, last_word))
 
     case suggestions do
       [suggestion] ->
@@ -96,7 +98,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
         {:noreply, socket |> assign(input_value: new_input, suggestions: [])}
 
       suggestions ->
-        {:noreply, socket |> assign(suggestions: suggestions, input_value: "")}
+        {:noreply, socket |> assign(suggestions: Enum.take(suggestions, 10), input_value: "")}
     end
   end
 
