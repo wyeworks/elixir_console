@@ -95,7 +95,7 @@ defmodule LiveViewDemo.Documentation do
   defp find_with_greater_arity(%Key{func_name: func_name, arity: func_ary}, docs) do
     {_, doc} =
       Enum.filter(docs, fn {key, _} -> key.func_name == func_name && key.arity > func_ary end)
-      |> Enum.sort(&(&1.func_ary < &2.func_ary))
+      |> Enum.sort(fn {k1, _}, {k2, _} -> k1.arity < k2.arity end)
       |> List.first()
 
     doc
