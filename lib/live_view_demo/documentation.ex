@@ -73,12 +73,13 @@ defmodule LiveViewDemo.Documentation do
     docs =
       Enum.reduce(list, %{}, fn function, acc ->
         case function do
-          {{:function, func_name, func_ary}, _, _header, %{"en" => docs}, _} ->
+          {{:function, func_name, func_ary}, _, header, %{"en" => docs}, _} ->
             {:ok, html_doc, _} = Earmark.as_html(docs)
             [module_name] = Module.split(module)
 
             Map.put(acc, %Key{func_name: "#{module_name}.#{func_name}", arity: func_ary}, %{
-              header: "#{module_name}.#{func_name}/#{func_ary}",
+              func_name: "#{module_name}.#{func_name}/#{func_ary}",
+              header: header,
               docs: html_doc
             })
 

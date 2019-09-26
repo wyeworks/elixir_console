@@ -53,7 +53,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
           <h2 class="font-medium">Suggestions:</h2>
         <% else %>
           <%= if @show_contextual_info do %>
-            <span class="mb-8 font-bold text-green-400"><%= @show_contextual_info[:header] %></span>
+            <span class="mb-8 font-bold text-green-400"><%= @show_contextual_info[:func_name] %></span>
+            <span class="text-xs mb-4 font-bold text-green-400"><%= @show_contextual_info[:header] %></span>
             <span class="text-xs text-green-400"><%= Phoenix.HTML.raw @show_contextual_info[:doc] %></span>
           <% else %>
             <p>[TAB]: suggestions</p>
@@ -176,10 +177,10 @@ defmodule LiveViewDemoWeb.ConsoleLive do
     end
   end
 
-  def handle_event("show_contextual_info", %{"header" => header, "doc" => doc}, socket) do
+  def handle_event("show_contextual_info", %{"func_name" => func_name, "header" => header, "doc" => doc}, socket) do
     {:noreply,
      socket
-     |> assign(show_contextual_info: %{header: header, doc: doc})
+     |> assign(show_contextual_info: %{func_name: func_name, header: header, doc: doc})
      |> assign(suggestions: [])}
   end
 
@@ -219,9 +220,10 @@ defmodule LiveViewDemoWeb.ConsoleLive do
     LiveViewDemo.ContextualHelp.compute(command)
   end
 
-  defp render_command_inline_help(part, %{header: header, docs: docs}) do
+  defp render_command_inline_help(part, %{func_name: func_name, header: header, docs: docs}) do
     ~e{<span
       phx-click="show_contextual_info"
+      phx-value-func_name="<%= func_name %>"
       phx-value-header="<%= header %>"
       phx-value-doc="<%= docs %>"
       class="text-green-400 cursor-pointer underline"
