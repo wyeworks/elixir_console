@@ -52,10 +52,12 @@ defmodule LiveViewDemoWeb.ConsoleLive do
         <%= if @suggestions != [] do %>
           <h2 class="font-medium">Suggestions:</h2>
         <% else %>
-          <%= if @show_contextual_info do %>
-            <span class="mb-8 font-bold text-green-400"><%= @show_contextual_info[:func_name] %></span>
-            <span class="text-xs mb-4 font-bold text-green-400"><%= @show_contextual_info[:header] %></span>
-            <span class="text-xs text-green-400"><%= Phoenix.HTML.raw @show_contextual_info[:doc] %></span>
+          <%= if @contextual_help do %>
+            <span class="mb-8 font-bold text-green-400">
+              <a href="<%= @contextual_help[:link] %>" target="_blank"><%= @contextual_help[:func_name] %></a>
+            </span>
+            <span class="text-xs mb-4 font-bold text-green-400"><%= @contextual_help[:header] %></span>
+            <span class="text-xs text-green-400"><%= Phoenix.HTML.raw @contextual_help[:doc] %></span>
           <% else %>
             <p>[TAB]: suggestions</p>
           <% end %>
@@ -80,7 +82,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
        history_counter: 0,
        suggestions: [],
        input_value: "",
-       show_contextual_info: nil
+       contextual_help: nil
      )}
   end
 
@@ -164,7 +166,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
          |> assign(history: history)
          |> assign(suggestions: [])
          |> assign(input_value: "")
-         |> assign(show_contextual_info: nil)}
+         |> assign(contextual_help: nil)}
 
       {:error, error} ->
         {:noreply,
@@ -173,14 +175,14 @@ defmodule LiveViewDemoWeb.ConsoleLive do
          |> assign(history: history)
          |> assign(suggestions: [])
          |> assign(input_value: "")
-         |> assign(show_contextual_info: nil)}
+         |> assign(contextual_help: nil)}
     end
   end
 
-  def handle_event("show_contextual_info", %{"func_name" => func_name, "header" => header, "doc" => doc}, socket) do
+  def handle_event("show_contextual_info", %{"func_name" => func_name, "header" => header, "doc" => doc, "link" => link}, socket) do
     {:noreply,
      socket
-     |> assign(show_contextual_info: %{func_name: func_name, header: header, doc: doc})
+     |> assign(contextual_help: %{func_name: func_name, header: header, doc: doc, link: link})
      |> assign(suggestions: [])}
   end
 
@@ -220,12 +222,13 @@ defmodule LiveViewDemoWeb.ConsoleLive do
     LiveViewDemo.ContextualHelp.compute(command)
   end
 
-  defp render_command_inline_help(part, %{func_name: func_name, header: header, docs: docs}) do
+  defp render_command_inline_help(part, %{func_name: func_name, header: header, docs: docs, link: link}) do
     ~e{<span
       phx-click="show_contextual_info"
       phx-value-func_name="<%= func_name %>"
       phx-value-header="<%= header %>"
       phx-value-doc="<%= docs %>"
+      phx-value-link="<%= link %>"
       class="text-green-400 cursor-pointer underline"
     ><%= part %></span>}
   end

@@ -80,7 +80,8 @@ defmodule LiveViewDemo.Documentation do
             Map.put(acc, %Key{func_name: "#{module_name}.#{func_name}", arity: func_ary}, %{
               func_name: "#{module_name}.#{func_name}/#{func_ary}",
               header: header,
-              docs: html_doc
+              docs: html_doc,
+              link: "https://hexdocs.pm/elixir/#{module_name}.html##{func_name}/#{func_ary}"
             })
 
           _ ->
