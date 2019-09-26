@@ -50,9 +50,7 @@ defmodule LiveViewDemo.Documentation do
 
   @impl true
   def handle_call({:get, key}, _from, docs) do
-    # TODO fallback to function with less arity than required to cover invocations
-    # when default params are omitted or first param is omitted because of piped operations
-    {:reply, docs[key], docs}
+    {:reply, docs[key] || find_with_greater_arity(key, docs), docs}
   end
 
   @impl true
@@ -93,4 +91,13 @@ defmodule LiveViewDemo.Documentation do
   end
 
   defp retrive_docs([]), do: %{}
+
+  defp find_with_greater_arity(%Key{func_name: func_name, arity: func_ary}, docs) do
+    {_, doc} =
+      Enum.filter(docs, fn {key, _} -> key.func_name == func_name && key.arity > func_ary end)
+      |> Enum.sort(&(&1.func_ary < &2.func_ary))
+      |> List.first()
+
+    doc
+  end
 end
