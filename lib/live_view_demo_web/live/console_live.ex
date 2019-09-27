@@ -4,11 +4,9 @@ defmodule LiveViewDemoWeb.ConsoleLive do
 
   alias LiveViewDemo.Documentation
 
-  @console_buffer 100
-
   defmodule Output do
     @enforce_keys [:command]
-    defstruct [:command, :result, :error]
+    defstruct [:command, :result, :error, :id]
   end
 
   def render(assigns) do
@@ -17,10 +15,10 @@ defmodule LiveViewDemoWeb.ConsoleLive do
       <div class="flex-1 sm:h-full overflow-scroll">
         <form phx-submit="execute" class="h-full flex flex-col">
           <div class="flex-1"></div>
-          <div class="p-2">
+          <div class="p-2" id="commandOutput" phx-update="append">
             <%= for output <- @output do %>
-              <div class="text-gray-300 font-medium"><%= print_prompt() %><%= format_command(output.command) %></div>
-              <div class="text-teal-300">
+              <div id="command<%= output.id %>" class="text-gray-300 font-medium"><%= print_prompt() %><%= format_command(output.command) %></div>
+              <div id="output<%= output.id %>" class="text-teal-300">
                 <%= if output.result do output.result end %>
                 <%= if output.error do %><span class="text-pink-400"><%= output.error %></span><% end %>
               </div>
@@ -85,7 +83,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
        history_counter: 0,
        suggestions: [],
        input_value: "",
-       contextual_help: nil
+       contextual_help: nil,
+       command_id: 0
      )}
   end
 
@@ -199,13 +198,13 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   end
 
   defp append_output(socket, status, command, result_or_error) do
-    new_output = socket.assigns.output ++ [build_output(status, command, result_or_error)]
-    new_output = Enum.take(new_output, -@console_buffer)
-    assign(socket, output: new_output)
+    socket
+    |> assign(output: [build_output(status, command, result_or_error, socket.assigns.command_id)])
+    |> assign(command_id: socket.assigns.command_id + 1)
   end
 
-  defp build_output(:ok, command, result), do: %Output{command: command, result: result}
-  defp build_output(:error, command, error), do: %Output{command: command, error: error}
+  defp build_output(:ok, command, result, id), do: %Output{command: command, result: result, id: id}
+  defp build_output(:error, command, error, id), do: %Output{command: command, error: error, id: id}
 
   defp print_prompt, do: "> "
 
