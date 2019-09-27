@@ -59,7 +59,10 @@ defmodule LiveViewDemoWeb.ConsoleLive do
             <span class="text-xs mb-4 font-bold text-green-400"><%= @contextual_help[:header] %></span>
             <span class="text-xs text-green-400"><%= Phoenix.HTML.raw @contextual_help[:doc] %></span>
           <% else %>
-            <p>[TAB]: suggestions</p>
+            <h2 class="underline mb-3">INSTRUCTIONS</h2>
+            <p>[UP] [DOWN]: Navigate through commands history</p>
+            <p>[TAB]: Autocomplete/Suggestions for variable or function names</p>
+            <p>Click on Elixir functions to see their related documentation</p>
           <% end %>
         <% end %>
         <ul>
