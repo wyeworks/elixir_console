@@ -5,7 +5,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   alias LiveViewDemo.Documentation
 
   defmodule Output do
-    @enforce_keys [:command]
+    @enforce_keys [:command, :id]
     defstruct [:command, :result, :error, :id]
   end
 
