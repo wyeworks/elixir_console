@@ -189,12 +189,12 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   end
 
   defp execute_command(command, bindings) do
-    {result, bindings} = Code.eval_string(command, bindings)
-    {:ok, inspect(result), bindings}
-  catch
-    kind, error ->
-      error = Exception.normalize(kind, error)
-      {:error, inspect(error)}
+    case LiveViewDemo.Sandbox.execute(command, bindings) do
+      {:success, {result, bindings}} ->
+        {:ok, inspect(result), bindings}
+      {:error, error_string} ->
+        {:error, error_string}
+    end
   end
 
   defp append_output(socket, status, command, result_or_error) do
