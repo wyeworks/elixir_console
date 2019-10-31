@@ -2,7 +2,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   use Phoenix.LiveView
   import Phoenix.HTML, only: [sigil_e: 2]
 
-  alias LiveViewDemo.Documentation
+  alias LiveViewDemo.{ContextualHelp, Documentation, Sandbox}
 
   defmodule Output do
     @enforce_keys [:command, :id]
@@ -181,7 +181,11 @@ defmodule LiveViewDemoWeb.ConsoleLive do
     end
   end
 
-  def handle_event("show_contextual_info", %{"func_name" => func_name, "header" => header, "doc" => doc, "link" => link}, socket) do
+  def handle_event(
+        "show_contextual_info",
+        %{"func_name" => func_name, "header" => header, "doc" => doc, "link" => link},
+        socket
+      ) do
     {:noreply,
      socket
      |> assign(contextual_help: %{func_name: func_name, header: header, doc: doc, link: link})
@@ -189,9 +193,10 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   end
 
   defp execute_command(command, bindings) do
-    case LiveViewDemo.Sandbox.execute(command, bindings) do
+    case Sandbox.execute(command, bindings) do
       {:success, {result, bindings}} ->
         {:ok, inspect(result), bindings}
+
       {:error, error_string} ->
         {:error, error_string}
     end
@@ -203,8 +208,11 @@ defmodule LiveViewDemoWeb.ConsoleLive do
     |> assign(command_id: socket.assigns.command_id + 1)
   end
 
-  defp build_output(:ok, command, result, id), do: %Output{command: command, result: result, id: id}
-  defp build_output(:error, command, error, id), do: %Output{command: command, error: error, id: id}
+  defp build_output(:ok, command, result, id),
+    do: %Output{command: command, result: result, id: id}
+
+  defp build_output(:error, command, error, id),
+    do: %Output{command: command, error: error, id: id}
 
   defp print_prompt, do: "> "
 
@@ -221,10 +229,15 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   end
 
   defp splitted_command(command) do
-    LiveViewDemo.ContextualHelp.compute(command)
+    ContextualHelp.compute(command)
   end
 
-  defp render_command_inline_help(part, %{func_name: func_name, header: header, docs: docs, link: link}) do
+  defp render_command_inline_help(part, %{
+         func_name: func_name,
+         header: header,
+         docs: docs,
+         link: link
+       }) do
     ~e{<span
       phx-click="show_contextual_info"
       phx-value-func_name="<%= func_name %>"
