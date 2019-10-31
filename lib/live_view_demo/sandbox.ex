@@ -1,13 +1,13 @@
 defmodule LiveViewDemo.Sandbox do
   require Logger
 
-  # 30 kb
+  # Limit to 30 kb the memory usage per command
   @max_memory_usage 1024 * 30
 
   def execute(command, bindings) do
     task = Task.async(fn -> execute_code(command, bindings) end)
 
-    case check_memory_and_result(task) do
+    case check_task_status(task) do
       {:ok, {:success, result}} ->
         {:success, result}
 
@@ -22,21 +22,21 @@ defmodule LiveViewDemo.Sandbox do
     end
   end
 
-  defp check_memory_and_result(task, attempts \\ 100)
+  defp check_task_status(task, ticks \\ 100)
 
-  defp check_memory_and_result(task, 0) do
+  defp check_task_status(task, 0) do
     Task.shutdown(task)
     :timeout
   end
 
-  defp check_memory_and_result(task, attempts) do
+  defp check_task_status(task, ticks) do
     case Task.yield(task, 50) do
       {:ok, result} ->
         {:ok, result}
 
       nil ->
         if allowed_memory_usage?(task) do
-          check_memory_and_result(task, attempts - 1)
+          check_task_status(task, ticks - 1)
         else
           Task.shutdown(task)
           :memory_abuse
