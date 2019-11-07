@@ -42,7 +42,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
       <div class="w-full sm:w-32 md:w-1/3 h-32 sm:h-full bg-teal-800 p-2 text-gray-300 overflow-scroll flex flex-col">
         <h2 class="font-medium">Current Variables</h2>
         <ul>
-          <%= for {key, value} <- @bindings do %>
+          <%= for {key, value} <- @sandbox.bindings do %>
             <li><%= key %>: <code class="text-teal-300"><%= inspect(value) %></code></li>
           <% end %>
         </ul>
@@ -78,7 +78,6 @@ defmodule LiveViewDemoWeb.ConsoleLive do
      assign(
        socket,
        output: [],
-       bindings: [],
        history: [],
        history_counter: 0,
        suggestions: [],
@@ -93,7 +92,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
   def handle_event("suggest", %{"keyCode" => 9, "value" => value}, socket) do
     last_word = String.split(value) |> List.last() || ""
 
-    bindings_names = Enum.map(socket.assigns.bindings, fn {name, _} -> Atom.to_string(name) end)
+    bindings = socket.assigns.sandbox.bindings
+    bindings_names = Enum.map(bindings, fn {name, _} -> Atom.to_string(name) end)
     all_names = bindings_names ++ Documentation.get_functions_names()
 
     suggestions = Enum.filter(all_names, &String.starts_with?(&1, last_word))
@@ -160,12 +160,12 @@ defmodule LiveViewDemoWeb.ConsoleLive do
         [command | socket.assigns.history]
       end
 
-    case execute_command(command, socket.assigns.bindings, socket.assigns.sandbox) do
-      {:ok, result, bindings} ->
+    case execute_command(command, socket.assigns.sandbox) do
+      {:ok, result, sandbox} ->
         {:noreply,
          socket
          |> append_output(:ok, command, result)
-         |> assign(bindings: bindings)
+         |> assign(sandbox: sandbox)
          |> assign(history: history)
          |> assign(suggestions: [])
          |> assign(input_value: "")
@@ -193,12 +193,10 @@ defmodule LiveViewDemoWeb.ConsoleLive do
      |> assign(suggestions: [])}
   end
 
-  defp execute_command(command, bindings, sandbox) do
-    sandbox = %{ sandbox | bindings: bindings }
-
+  defp execute_command(command, sandbox) do
     case Sandbox.execute(command, sandbox) do
-      {:success, {result, bindings}} ->
-        {:ok, inspect(result), bindings}
+      {:success, {result, sandbox}} ->
+        {:ok, inspect(result), sandbox}
 
       {:error, error_string} ->
         {:error, error_string}

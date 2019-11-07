@@ -39,8 +39,8 @@ defmodule LiveViewDemo.Sandbox do
            check_every: check_every,
            max_memory_kb: max_memory_kb
          ) do
-      {:ok, {:success, result}} ->
-        {:success, result}
+      {:ok, {:success, {result, bindings}}} ->
+        {:success, {result, %{sandbox | bindings: bindings}}}
 
       {:ok, {:error, result}} ->
         {:error, result}
@@ -62,7 +62,6 @@ defmodule LiveViewDemo.Sandbox do
          pid,
          [ticks: ticks, check_every: check_every, max_memory_kb: max_memory_kb] = opts
        ) do
-
     receive do
       {:result, result} ->
         {:ok, result}
