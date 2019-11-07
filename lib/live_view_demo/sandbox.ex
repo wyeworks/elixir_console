@@ -2,6 +2,8 @@ defmodule LiveViewDemo.Sandbox do
   require Logger
 
   @max_memory_kb_default 30
+  @timeout_ms_default 5000
+  @check_every_ms_default 20
 
   @enforce_keys [:pid, :bindings]
   defstruct [:pid, :bindings]
@@ -25,8 +27,8 @@ defmodule LiveViewDemo.Sandbox do
   def execute(command, sandbox, opts \\ []) do
     send(sandbox.pid, {:command, command, sandbox.bindings})
 
-    timeout = Keyword.get(opts, :timeout, 5000)
-    check_every = Keyword.get(opts, :check_every, 20)
+    timeout = Keyword.get(opts, :timeout, @timeout_ms_default)
+    check_every = Keyword.get(opts, :check_every, @check_every_ms_default)
     ticks = floor(timeout / check_every)
 
     # Convert from kb to bytes (* 1024)
