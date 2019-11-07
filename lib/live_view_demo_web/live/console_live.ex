@@ -84,7 +84,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
        suggestions: [],
        input_value: "",
        contextual_help: nil,
-       command_id: 0
+       command_id: 0,
+       sandbox: Sandbox.init()
      )}
   end
 
@@ -159,7 +160,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
         [command | socket.assigns.history]
       end
 
-    case execute_command(command, socket.assigns.bindings) do
+    case execute_command(command, socket.assigns.bindings, socket.assigns.sandbox) do
       {:ok, result, bindings} ->
         {:noreply,
          socket
@@ -192,8 +193,10 @@ defmodule LiveViewDemoWeb.ConsoleLive do
      |> assign(suggestions: [])}
   end
 
-  defp execute_command(command, bindings) do
-    case Sandbox.execute(command, bindings) do
+  defp execute_command(command, bindings, sandbox) do
+    sandbox = %{ sandbox | bindings: bindings }
+
+    case Sandbox.execute(command, sandbox) do
       {:success, {result, bindings}} ->
         {:ok, inspect(result), bindings}
 

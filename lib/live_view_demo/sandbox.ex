@@ -3,8 +3,27 @@ defmodule LiveViewDemo.Sandbox do
 
   @max_memory_kb_default 30
 
-  def execute(command, bindings, opts \\ []) do
-    task = Task.async(fn -> execute_code(command, bindings) end)
+  @enforce_keys [:pid, :bindings]
+  defstruct [:pid, :bindings]
+
+  def init() do
+    loop = fn loop_func, parent_pid ->
+      receive do
+        {:command, command, bindings} ->
+          result = execute_code(command, bindings)
+          send(parent_pid, {:result, result})
+
+          loop_func.(loop_func, parent_pid)
+      end
+    end
+
+    parent_pid = self()
+    pid = spawn_link(fn -> loop.(loop, parent_pid) end)
+    %__MODULE__{pid: pid, bindings: []}
+  end
+
+  def execute(command, sandbox, opts \\ []) do
+    send(sandbox.pid, {:command, command, sandbox.bindings})
 
     timeout = Keyword.get(opts, :timeout, 5000)
     check_every = Keyword.get(opts, :check_every, 20)
@@ -13,7 +32,7 @@ defmodule LiveViewDemo.Sandbox do
     # Convert from kb to bytes (* 1024)
     max_memory_kb = Keyword.get(opts, :max_memory_kb, @max_memory_kb_default) * 1024
 
-    case check_task_status(task,
+    case check_execution_status(sandbox.pid,
            ticks: ticks,
            check_every: check_every,
            max_memory_kb: max_memory_kb
@@ -32,31 +51,32 @@ defmodule LiveViewDemo.Sandbox do
     end
   end
 
-  defp check_task_status(task, [{:ticks, 0} | _]) do
-    Task.shutdown(task)
+  defp check_execution_status(pid, [{:ticks, 0} | _]) do
+    Process.exit(pid, :normal)
     :timeout
   end
 
-  defp check_task_status(
-         task,
+  defp check_execution_status(
+         pid,
          [ticks: ticks, check_every: check_every, max_memory_kb: max_memory_kb] = opts
        ) do
-    case Task.yield(task, check_every) do
-      {:ok, result} ->
-        {:ok, result}
 
-      nil ->
-        if allowed_memory_usage?(task, max_memory_kb) do
-          check_task_status(task, Keyword.put(opts, :ticks, ticks - 1))
+    receive do
+      {:result, result} ->
+        {:ok, result}
+    after
+      check_every ->
+        if allowed_memory_usage?(pid, max_memory_kb) do
+          check_execution_status(pid, Keyword.put(opts, :ticks, ticks - 1))
         else
-          Task.shutdown(task)
+          Process.exit(pid, :normal)
           :memory_abuse
         end
     end
   end
 
-  defp allowed_memory_usage?(task, memory_limit) do
-    {:memory, memory} = Process.info(task.pid, :memory)
+  defp allowed_memory_usage?(pid, memory_limit) do
+    {:memory, memory} = Process.info(pid, :memory)
     memory <= memory_limit
   end
 
