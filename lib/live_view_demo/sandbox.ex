@@ -1,13 +1,23 @@
 defmodule LiveViewDemo.Sandbox do
   require Logger
 
-  # Limit to 30 kb the memory usage per command
-  @max_memory_usage 1024 * 30
+  @max_memory_kb_default 30
 
-  def execute(command, bindings) do
+  def execute(command, bindings, opts \\ []) do
     task = Task.async(fn -> execute_code(command, bindings) end)
 
-    case check_task_status(task) do
+    timeout = Keyword.get(opts, :timeout, 5000)
+    check_every = Keyword.get(opts, :check_every, 20)
+    ticks = floor(timeout / check_every)
+
+    # Convert from kb to bytes (* 1024)
+    max_memory_kb = Keyword.get(opts, :max_memory_kb, @max_memory_kb_default) * 1024
+
+    case check_task_status(task,
+           ticks: ticks,
+           check_every: check_every,
+           max_memory_kb: max_memory_kb
+         ) do
       {:ok, {:success, result}} ->
         {:success, result}
 
@@ -22,21 +32,22 @@ defmodule LiveViewDemo.Sandbox do
     end
   end
 
-  defp check_task_status(task, ticks \\ 100)
-
-  defp check_task_status(task, 0) do
+  defp check_task_status(task, [{:ticks, 0} | _]) do
     Task.shutdown(task)
     :timeout
   end
 
-  defp check_task_status(task, ticks) do
-    case Task.yield(task, 50) do
+  defp check_task_status(
+         task,
+         [ticks: ticks, check_every: check_every, max_memory_kb: max_memory_kb] = opts
+       ) do
+    case Task.yield(task, check_every) do
       {:ok, result} ->
         {:ok, result}
 
       nil ->
-        if allowed_memory_usage?(task) do
-          check_task_status(task, ticks - 1)
+        if allowed_memory_usage?(task, max_memory_kb) do
+          check_task_status(task, Keyword.put(opts, :ticks, ticks - 1))
         else
           Task.shutdown(task)
           :memory_abuse
@@ -44,9 +55,9 @@ defmodule LiveViewDemo.Sandbox do
     end
   end
 
-  defp allowed_memory_usage?(task) do
+  defp allowed_memory_usage?(task, memory_limit) do
     {:memory, memory} = Process.info(task.pid, :memory)
-    memory <= @max_memory_usage
+    memory <= memory_limit
   end
 
   defp execute_code(command, bindings) do

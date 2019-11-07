@@ -23,8 +23,13 @@ defmodule LiveViewDemo.SandboxTest do
              {:error, "The command used more memory than allowed"}
   end
 
+  test "reports excesive memory usage with custom memory limit" do
+    assert Sandbox.execute("for i <- 1..30_000, do: i", [a: "foo"], max_memory_kb: 10) ==
+             {:error, "The command used more memory than allowed"}
+  end
+
   test "reports excesive time spent on the execution" do
-    assert Sandbox.execute(":timer.sleep(6000)", a: "foo") ==
+    assert Sandbox.execute(":timer.sleep(100)", [a: "foo"], timeout: 50) ==
              {:error, "The command was cancelled due to timeout"}
   end
 end
