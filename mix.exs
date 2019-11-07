@@ -42,7 +42,8 @@ defmodule LiveViewDemo.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:calendar, "~> 0.17.6"},
-      {:earmark, "~> 1.4.0"}
+      {:earmark, "~> 1.4.0"},
+      {:dialyxir, "~> 0.5.1", only: :dev},
     ]
   end
 
