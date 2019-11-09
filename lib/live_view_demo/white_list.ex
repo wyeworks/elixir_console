@@ -13,6 +13,7 @@ defmodule LiveViewDemo.WhiteList do
     result
     |> Enum.filter(&match?({:error, _}, &1))
     |> Enum.map(fn {:error, module} -> module end)
+    |> Enum.dedup()
     |> case do
       [] ->
         {:ok, command}

@@ -18,7 +18,7 @@ defmodule LiveViewDemo.WhiteListTest do
     end
 
     test "returns :error when mixing valid and invalid modules" do
-      command = ~s{Enum.map(["file1", "file2"], &File.exists?("/some/path", &1))}
+      command = ~s{Enum.map(["file1", "file2"], &File.exists?(File.cwd(), &1))}
       expected_result = {:error, "Invalid modules: [:File]"}
 
       assert WhiteList.validate(command) == expected_result
