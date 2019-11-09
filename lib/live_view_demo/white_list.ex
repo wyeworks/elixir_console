@@ -10,15 +10,20 @@ defmodule LiveViewDemo.WhiteList do
       Code.string_to_quoted!(command)
       |> Macro.prewalk([], &valid?(&1, &2))
 
-    if Enum.member?(result, :error) do
-      {:error, "Module not available"}
-    else
-      {:ok, command}
+    result
+    |> Enum.filter(&match?({:error, _}, &1))
+    |> Enum.map(fn {:error, module} -> module end)
+    |> case do
+      [] ->
+        {:ok, command}
+
+      invalid_modules ->
+        {:error, "Invalid modules: #{inspect(invalid_modules)}"}
     end
   end
 
   defp valid?({:__aliases__, _, [module]} = elem, acc) when module not in @valid_modules do
-    {elem, [:error | acc]}
+    {elem, [{:error, module} | acc]}
   end
 
   defp valid?(elem, acc), do: {elem, [:ok | acc]}

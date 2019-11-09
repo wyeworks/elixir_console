@@ -12,14 +12,14 @@ defmodule LiveViewDemo.WhiteListTest do
 
     test "returns :error when using an invalid module" do
       command = "File.cwd()"
-      expected_result = {:error, "Module not available"}
+      expected_result = {:error, "Invalid modules: [:File]"}
 
       assert WhiteList.validate(command) == expected_result
     end
 
     test "returns :error when mixing valid and invalid modules" do
       command = ~s{Enum.map(["file1", "file2"], &File.exists?("/some/path", &1))}
-      expected_result = {:error, "Module not available"}
+      expected_result = {:error, "Invalid modules: [:File]"}
 
       assert WhiteList.validate(command) == expected_result
     end
