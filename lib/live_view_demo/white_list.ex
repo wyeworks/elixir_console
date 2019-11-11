@@ -6,8 +6,9 @@ defmodule LiveViewDemo.WhiteList do
   @valid_modules [:List, :Enum]
 
   def validate(command) do
-    {_, result} =
-      Code.string_to_quoted!(command)
+    {_ast, result} =
+      command
+      |> Code.string_to_quoted!()
       |> Macro.prewalk([], &valid?(&1, &2))
 
     result
