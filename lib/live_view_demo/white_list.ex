@@ -1,6 +1,6 @@
 defmodule LiveViewDemo.WhiteList do
   @moduledoc """
-  Analize the ast to filter out non white-listed modules and kernel functions
+  Analyze the ast to filter out non white-listed modules and kernel functions
   """
 
   @valid_modules [:List, :Enum]
