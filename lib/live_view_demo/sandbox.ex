@@ -37,7 +37,14 @@ defmodule LiveViewDemo.Sandbox do
     end
 
     parent_pid = self()
-    pid = spawn_link(fn -> loop.(loop, parent_pid) end)
+
+    pid =
+      spawn(fn ->
+        # Add some metadata to those process to identify them, allowing to further
+        # analysis
+        Process.put(:sandbox_owner, parent_pid)
+        loop.(loop, parent_pid)
+      end)
 
     %__MODULE__{pid: pid, bindings: []}
   end
@@ -67,7 +74,8 @@ defmodule LiveViewDemo.Sandbox do
   usage is measured (expressed in Kb). The default is 20.
   """
   @typep execution_result() :: {binary(), sandbox()}
-  @spec execute(binary(), sandbox(), keyword()) :: {:success, execution_result()} | {:error, binary()}
+  @spec execute(binary(), sandbox(), keyword()) ::
+          {:success, execution_result()} | {:error, binary()}
   def execute(command, sandbox, opts \\ []) do
     send(sandbox.pid, {:command, command, sandbox.bindings})
 
@@ -86,18 +94,22 @@ defmodule LiveViewDemo.Sandbox do
         {:success, {result, %{sandbox | bindings: bindings}}}
 
       {:ok, {:error, result}} ->
-        {:error, result}
+        {:error, {result, sandbox}}
 
       :timeout ->
-        {:error, "The command was cancelled due to timeout"}
+        {:error, {"The command was cancelled due to timeout", restore(sandbox)}}
 
       :memory_abuse ->
-        {:error, "The command used more memory than allowed"}
+        {:error, {"The command used more memory than allowed", restore(sandbox)}}
     end
   end
 
+  defp restore(sandbox) do
+    %{sandbox | pid: init().pid}
+  end
+
   defp check_execution_status(pid, [{:ticks, 0} | _]) do
-    Process.exit(pid, :normal)
+    Process.exit(pid, :kill)
     :timeout
   end
 
@@ -113,7 +125,7 @@ defmodule LiveViewDemo.Sandbox do
         if allowed_memory_usage?(pid, max_memory_kb) do
           check_execution_status(pid, Keyword.put(opts, :ticks, ticks - 1))
         else
-          Process.exit(pid, :normal)
+          Process.exit(pid, :kill)
           :memory_abuse
         end
     end

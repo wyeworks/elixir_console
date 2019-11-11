@@ -32,18 +32,30 @@ defmodule LiveViewDemo.SandboxTest do
     assert Sandbox.execute("1 + 2", sandbox) == {:success, {3, expected_sandbox}}
   end
 
-  test "reports excesive memory usage", %{sandbox: sandbox} do
-    assert Sandbox.execute("for i <- 1..70_000, do: i", sandbox) ==
-             {:error, "The command used more memory than allowed"}
+  test "reports excessive memory usage", %{sandbox: sandbox} do
+    assert {:error, {"The command used more memory than allowed", _}} =
+             Sandbox.execute("for i <- 1..70_000, do: i", sandbox)
   end
 
-  test "reports excesive memory usage with custom memory limit", %{sandbox: sandbox} do
-    assert Sandbox.execute("for i <- 1..30_000, do: i", sandbox, max_memory_kb: 10) ==
-             {:error, "The command used more memory than allowed"}
+  test "reports excessive memory usage with custom memory limit", %{sandbox: sandbox} do
+    assert {:error, {"The command used more memory than allowed", _}} =
+             Sandbox.execute("for i <- 1..30_000, do: i", sandbox, max_memory_kb: 10)
   end
 
-  test "reports excesive time spent on the execution", %{sandbox: sandbox} do
-    assert Sandbox.execute(":timer.sleep(100)", sandbox, timeout: 50) ==
-             {:error, "The command was cancelled due to timeout"}
+  test "reports excessive time spent on the execution", %{sandbox: sandbox} do
+    assert {:error, {"The command was cancelled due to timeout", _}} =
+             Sandbox.execute(":timer.sleep(100)", sandbox, timeout: 50)
+  end
+
+  test "allow to run more commands after excessive memory usage error", %{sandbox: sandbox} do
+    {:error, {_, sandbox}} = Sandbox.execute("for i <- 1..70_000, do: i", sandbox)
+
+    assert {:success, {3, _}} = Sandbox.execute("1 + 2", sandbox)
+  end
+
+  test "allow to run more commands after timeout error", %{sandbox: sandbox} do
+    {:error, {_, sandbox}} = Sandbox.execute(":timer.sleep(100)", sandbox, timeout: 50)
+
+    assert {:success, {3, _}} = Sandbox.execute("1 + 2", sandbox)
   end
 end

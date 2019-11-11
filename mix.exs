@@ -44,6 +44,7 @@ defmodule LiveViewDemo.MixProject do
       {:calendar, "~> 0.17.6"},
       {:earmark, "~> 1.4.0"},
       {:dialyxir, "~> 0.5.1", only: :dev},
+      {:floki, "~> 0.23.0", only: :test}
     ]
   end
 

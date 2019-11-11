@@ -171,10 +171,11 @@ defmodule LiveViewDemoWeb.ConsoleLive do
          |> assign(input_value: "")
          |> assign(contextual_help: nil)}
 
-      {:error, error} ->
+      {:error, error, sandbox} ->
         {:noreply,
          socket
          |> append_output(:error, command, error)
+         |> assign(sandbox: sandbox)
          |> assign(history: history)
          |> assign(suggestions: [])
          |> assign(input_value: "")
@@ -198,8 +199,8 @@ defmodule LiveViewDemoWeb.ConsoleLive do
       {:success, {result, sandbox}} ->
         {:ok, inspect(result), sandbox}
 
-      {:error, error_string} ->
-        {:error, error_string}
+      {:error, {error_string, sandbox}} ->
+        {:error, error_string, sandbox}
     end
   end
 
