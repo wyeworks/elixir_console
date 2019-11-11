@@ -1,52 +1,139 @@
 defmodule LiveViewDemo.Sandbox do
+  @moduledoc """
+  Provides a sandbox where Elixir code from untrusted sources can be executed
+  """
+
+  @type sandbox() :: %__MODULE__{}
+
   require Logger
 
-  # Limit to 30 kb the memory usage per command
-  @max_memory_usage 1024 * 30
+  @max_memory_kb_default 30
+  @timeout_ms_default 5000
+  @check_every_ms_default 20
+  @bytes_in_kb 1024
 
-  def execute(command, bindings) do
-    task = Task.async(fn -> execute_code(command, bindings) end)
+  @enforce_keys [:pid, :bindings]
+  defstruct [:pid, :bindings]
 
-    case check_task_status(task) do
-      {:ok, {:success, result}} ->
-        {:success, result}
+  @doc """
+  Initialize and returns a process where Elixir code will run in "sandbox mode".
+  This is useful if we want to provide the chance to more than one individual
+  command, where the user can assume it is always working the same process (as
+  it happens when someone runs different commands in iex).
+
+  Returns a Sandbox struct including the dedicated process and an empty list of
+  bindings.
+  """
+  @spec init() :: sandbox()
+  def init() do
+    loop = fn loop_func, parent_pid ->
+      receive do
+        {:command, command, bindings} ->
+          result = execute_code(command, bindings)
+          send(parent_pid, {:result, result})
+
+          loop_func.(loop_func, parent_pid)
+      end
+    end
+
+    parent_pid = self()
+
+    pid =
+      spawn(fn ->
+        # Add some metadata to those process to identify them, allowing to further
+        # analysis
+        Process.put(:sandbox_owner, parent_pid)
+        loop.(loop, parent_pid)
+      end)
+
+    %__MODULE__{pid: pid, bindings: []}
+  end
+
+  @doc """
+  Executes a command (Elixir code in a string) in the process given by the
+  Sandbox struct provided.
+
+  Returns the result of the execution and a Sandbox struct with the changes in
+  the bindings, if the command succeeded. In case of errors, it returns an
+  `{:error, error_message}` tuple where the second element is a string with an
+  explanation.
+
+  If the execution takes more time than the specified timeout, an error is
+  returned. In addition, if the execution uses more memory than the allowed
+  amount, it is interrupted and an error is returned.
+
+  You can use the following options in the `opts` argument:
+
+  `timeout`: Time limit to run the command (in milliseconds). The default is
+  5000.
+
+  `max_memory_kb`: Memory usage limit (expressed in Kb). The default is
+  30.
+
+  `check_every`: Determine the time elapsed between checks where memory
+  usage is measured (expressed in Kb). The default is 20.
+  """
+  @typep execution_result() :: {binary(), sandbox()}
+  @spec execute(binary(), sandbox(), keyword()) ::
+          {:success, execution_result()} | {:error, binary()}
+  def execute(command, sandbox, opts \\ []) do
+    send(sandbox.pid, {:command, command, sandbox.bindings})
+
+    timeout = Keyword.get(opts, :timeout, @timeout_ms_default)
+    check_every = Keyword.get(opts, :check_every, @check_every_ms_default)
+    ticks = floor(timeout / check_every)
+
+    max_memory_kb = Keyword.get(opts, :max_memory_kb, @max_memory_kb_default) * @bytes_in_kb
+
+    case check_execution_status(sandbox.pid,
+           ticks: ticks,
+           check_every: check_every,
+           max_memory_kb: max_memory_kb
+         ) do
+      {:ok, {:success, {result, bindings}}} ->
+        {:success, {result, %{sandbox | bindings: bindings}}}
 
       {:ok, {:error, result}} ->
-        {:error, result}
+        {:error, {result, sandbox}}
 
       :timeout ->
-        {:error, "The command was cancelled due to timeout"}
+        {:error, {"The command was cancelled due to timeout", restore(sandbox)}}
 
       :memory_abuse ->
-        {:error, "The command used more memory than allowed"}
+        {:error, {"The command used more memory than allowed", restore(sandbox)}}
     end
   end
 
-  defp check_task_status(task, ticks \\ 100)
+  defp restore(sandbox) do
+    %{sandbox | pid: init().pid}
+  end
 
-  defp check_task_status(task, 0) do
-    Task.shutdown(task)
+  defp check_execution_status(pid, [{:ticks, 0} | _]) do
+    Process.exit(pid, :kill)
     :timeout
   end
 
-  defp check_task_status(task, ticks) do
-    case Task.yield(task, 50) do
-      {:ok, result} ->
+  defp check_execution_status(
+         pid,
+         [ticks: ticks, check_every: check_every, max_memory_kb: max_memory_kb] = opts
+       ) do
+    receive do
+      {:result, result} ->
         {:ok, result}
-
-      nil ->
-        if allowed_memory_usage?(task) do
-          check_task_status(task, ticks - 1)
+    after
+      check_every ->
+        if allowed_memory_usage?(pid, max_memory_kb) do
+          check_execution_status(pid, Keyword.put(opts, :ticks, ticks - 1))
         else
-          Task.shutdown(task)
+          Process.exit(pid, :kill)
           :memory_abuse
         end
     end
   end
 
-  defp allowed_memory_usage?(task) do
-    {:memory, memory} = Process.info(task.pid, :memory)
-    memory <= @max_memory_usage
+  defp allowed_memory_usage?(pid, memory_limit) do
+    {:memory, memory} = Process.info(pid, :memory)
+    memory <= memory_limit
   end
 
   defp execute_code(command, bindings) do
