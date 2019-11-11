@@ -28,7 +28,8 @@ defmodule LiveViewDemoWeb.ConsoleLiveTest do
       {:ok, view, _html} = live(conn, "/")
       html = render_submit(view, "execute", %{"command" => "3 / 0"})
 
-      assert html =~ "%ArithmeticError{message: &quot;bad argument in arithmetic expression&quot;}"
+      assert html =~
+               "%ArithmeticError{message: &quot;bad argument in arithmetic expression&quot;}"
     end
 
     test "memory abuse is informed", %{conn: conn} do
@@ -36,6 +37,14 @@ defmodule LiveViewDemoWeb.ConsoleLiveTest do
       html = render_submit(view, "execute", %{"command" => "for i <- 1..70_000, do: i"})
 
       assert html =~ "The command used more memory than allowed"
+    end
+
+    test "unknown module and functions error is displayed", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/")
+      html = render_submit(view, "execute", %{"command" => "Enum.foo(3)"})
+
+      assert html =~
+               "%UndefinedFunctionError{arity: 1, function: :foo, message: nil, module: Enum, reason: nil}"
     end
   end
 
