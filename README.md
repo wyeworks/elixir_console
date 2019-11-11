@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/wyeworks/elixir_console.svg?branch=master)](https://travis-ci.org/wyeworks/elixir_console)
+
+---
+
 # (App Name Here)
 
 This is my entry in [Phoenix Phrenzy](https://phoenixphrenzy.com), showing off what [Phoenix](https://phoenixframework.org/) and [LiveView](https://github.com/phoenixframework/phoenix_live_view) can do.
