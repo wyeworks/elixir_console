@@ -39,35 +39,42 @@ defmodule LiveViewDemoWeb.ConsoleLive do
           </div>
         </form>
       </div>
-      <div class="w-full sm:w-32 md:w-1/3 h-32 sm:h-full bg-teal-800 p-2 text-gray-300 overflow-scroll flex flex-col">
-        <h2 class="font-medium">Current Variables</h2>
-        <ul>
-          <%= for {key, value} <- @sandbox.bindings do %>
-            <li><%= key %>: <code class="text-teal-300"><%= inspect(value) %></code></li>
-          <% end %>
-        </ul>
-        <div class="flex-1"></div>
-        <%= if @suggestions != [] do %>
-          <h2 class="font-medium">Suggestions:</h2>
-        <% else %>
-          <%= if @contextual_help do %>
-            <span class="mb-8 font-bold text-green-400">
-              <a href="<%= @contextual_help[:link] %>" target="_blank"><%= @contextual_help[:func_name] %></a>
-            </span>
-            <span class="text-xs mb-4 font-bold text-green-400"><%= @contextual_help[:header] %></span>
-            <span class="text-xs text-green-400"><%= Phoenix.HTML.raw @contextual_help[:doc] %></span>
+      <div class="w-full sm:w-32 md:w-1/3 h-32 sm:h-full bg-teal-800 text-gray-300 overflow-scroll flex flex-col">
+        <div class="bg-teal-700 p-2">
+          <h2 class="font-medium">Current Variables</h2>
+          <ul>
+            <%= if length(@sandbox.bindings) > 0 do %>
+              <%= for {key, value} <- @sandbox.bindings do %>
+                <li><%= key %>: <code class="text-teal-300"><%= inspect(value) %></code></li>
+              <% end %>
+            <% else %>
+            <code class="text-teal-300">None</code>
+            <% end %>
+          </ul>
+        </div>
+        <div class="flex-1 flex flex-col justify-end p-2">
+          <%= if @suggestions != [] do %>
+            <h2 class="font-medium">Suggestions:</h2>
           <% else %>
-            <h2 class="underline mb-3">INSTRUCTIONS</h2>
-            <p>[UP] [DOWN]: Navigate through commands history</p>
-            <p>[TAB]: Autocomplete/Suggestions for variable or function names</p>
-            <p>Click on Elixir functions to see their related documentation</p>
+            <%= if @contextual_help do %>
+              <span class="mb-8 font-bold text-green-400">
+                <a href="<%= @contextual_help[:link] %>" target="_blank"><%= @contextual_help[:func_name] %></a>
+              </span>
+              <span class="text-xs mb-4 font-bold text-green-400"><%= @contextual_help[:header] %></span>
+              <span class="text-xs text-green-400"><%= Phoenix.HTML.raw @contextual_help[:doc] %></span>
+            <% else %>
+              <h2 class="underline mb-3">INSTRUCTIONS</h2>
+              <p>[UP] [DOWN]: Navigate through commands history</p>
+              <p>[TAB]: Autocomplete/Suggestions for variable or function names</p>
+              <p>Click on Elixir functions to see their related documentation</p>
+            <% end %>
           <% end %>
-        <% end %>
-        <ul>
-          <%= for suggestion <- @suggestions do %>
-            <li><%= suggestion %></li>
-          <% end %>
-        </ul>
+          <ul>
+            <%= for suggestion <- @suggestions do %>
+              <li><%= suggestion %></li>
+            <% end %>
+          </ul>
+        </div>
       </div>
     </div>
     """
