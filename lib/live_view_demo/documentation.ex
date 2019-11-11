@@ -45,7 +45,7 @@ defmodule LiveViewDemo.Documentation do
 
   @impl true
   def init(_) do
-    {:ok, retrive_docs(@modules)}
+    {:ok, retrieve_docs(@modules)}
   end
 
   @impl true
@@ -67,7 +67,7 @@ defmodule LiveViewDemo.Documentation do
 
   def get_functions_names(), do: GenServer.call(__MODULE__, :get_functions_names)
 
-  defp retrive_docs([module | remaining_modules]) do
+  defp retrieve_docs([module | remaining_modules]) do
     {:docs_v1, _, :elixir, _, _, _, list} = Code.fetch_docs(module)
 
     docs =
@@ -89,10 +89,10 @@ defmodule LiveViewDemo.Documentation do
         end
       end)
 
-    Map.merge(docs, retrive_docs(remaining_modules))
+    Map.merge(docs, retrieve_docs(remaining_modules))
   end
 
-  defp retrive_docs([]), do: %{}
+  defp retrieve_docs([]), do: %{}
 
   defp find_with_greater_arity(%Key{func_name: func_name, arity: func_ary}, docs) do
     with {_, doc} <-
