@@ -38,4 +38,12 @@ defmodule LiveViewDemoWeb.ConsoleLiveTest do
 
     assert html =~ "The command used more memory than allowed"
   end
+
+  test "send a command with invalid modules", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/")
+
+    html = render_submit(view, "execute", %{"command" => "File.exists?(Code.get_docs())"})
+
+    assert html =~ "Invalid modules: [:Code, :File]"
+  end
 end
