@@ -1,6 +1,6 @@
-defmodule LiveViewDemo.WhiteListTest do
+defmodule LiveViewDemo.Sandbox.WhiteListTest do
   use ExUnit.Case
-  alias LiveViewDemo.WhiteList
+  alias LiveViewDemo.Sandbox.WhiteList
 
   describe "validate/2" do
     test "returns :ok when the command is valid" do

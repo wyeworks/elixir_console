@@ -1,4 +1,4 @@
-defmodule LiveViewDemo.WhiteList do
+defmodule LiveViewDemo.Sandbox.WhiteList do
   @moduledoc """
   Analyze the ast to filter out non white-listed modules and kernel functions
   """

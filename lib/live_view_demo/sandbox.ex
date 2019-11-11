@@ -6,7 +6,7 @@ defmodule LiveViewDemo.Sandbox do
   @type sandbox() :: %__MODULE__{}
 
   require Logger
-  alias LiveViewDemo.WhiteList
+  alias LiveViewDemo.Sandbox.WhiteList
 
   @max_memory_kb_default 30
   @timeout_ms_default 5000
