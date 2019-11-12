@@ -4,8 +4,7 @@ defmodule LiveViewDemo.Sandbox.WhiteListTest do
 
   describe "validate/2" do
     test "returns :ok when the command is valid" do
-      assert {:ok, "List.first([1,2,3])"} ==
-               WhiteList.validate("List.first([1,2,3])")
+      assert :ok == WhiteList.validate("List.first([1,2,3])")
     end
 
     test "returns :error when using an invalid module" do

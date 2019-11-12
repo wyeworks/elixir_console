@@ -47,13 +47,18 @@ defmodule LiveViewDemo.SandboxTest do
              Sandbox.execute(":timer.sleep(100)", sandbox, timeout: 50)
   end
 
-  test "allow to run more commands after excessive memory usage error", %{sandbox: sandbox} do
+  test "refuses to run code defining modules", %{sandbox: sandbox} do
+    assert {:error, {"Defining new modules is not allowed. Do not use `defmodule`.", _}} =
+             Sandbox.execute("defmodule Test, do: nil", sandbox)
+  end
+
+  test "allows to run more commands after excessive memory usage error", %{sandbox: sandbox} do
     {:error, {_, sandbox}} = Sandbox.execute("for i <- 1..70_000, do: i", sandbox)
 
     assert {:success, {3, _}} = Sandbox.execute("1 + 2", sandbox)
   end
 
-  test "allow to run more commands after timeout error", %{sandbox: sandbox} do
+  test "allows to run more commands after timeout error", %{sandbox: sandbox} do
     {:error, {_, sandbox}} = Sandbox.execute(":timer.sleep(100)", sandbox, timeout: 50)
 
     assert {:success, {3, _}} = Sandbox.execute("1 + 2", sandbox)

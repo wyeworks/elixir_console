@@ -17,7 +17,7 @@ defmodule LiveViewDemo.Sandbox.WhiteList do
     |> Enum.dedup()
     |> case do
       [] ->
-        {:ok, command}
+        :ok
 
       invalid_modules ->
         {:error, "Invalid modules: #{inspect(invalid_modules)}"}
