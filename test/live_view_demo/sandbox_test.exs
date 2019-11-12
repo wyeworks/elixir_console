@@ -39,12 +39,12 @@ defmodule LiveViewDemo.SandboxTest do
 
   test "reports excessive memory usage with custom memory limit", %{sandbox: sandbox} do
     assert {:error, {"The command used more memory than allowed", _}} =
-             Sandbox.execute("for i <- 1..30_000, do: i", sandbox, max_memory_kb: 10)
+             Sandbox.execute("for i <- 1..100_000_000, do: i", sandbox, max_memory_kb: 10)
   end
 
   test "reports excessive time spent on the execution", %{sandbox: sandbox} do
     assert {:error, {"The command was cancelled due to timeout", _}} =
-             Sandbox.execute(":timer.sleep(100)", sandbox, timeout: 50)
+             Sandbox.execute("Enum.each(1..100_000_000, &(&1))", sandbox, timeout: 50)
   end
 
   test "refuses to run unsafe code", %{sandbox: sandbox} do
