@@ -6,4 +6,5 @@ otp_release:
 before_script:
  - mix deps.get
 script:
+  - mix format --check-formatted
   - mix test
