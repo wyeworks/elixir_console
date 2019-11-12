@@ -3,6 +3,10 @@ defmodule LiveViewDemo.Sandbox.NoDefineModules do
   Check if a command from untrusted source does not define new modules
   """
 
+  alias LiveViewDemo.Sandbox.CommandValidator
+  @behaviour CommandValidator
+
+  @impl CommandValidator
   def validate(ast) do
     {_ast, result} = Macro.prewalk(ast, [], &valid?(&1, &2))
 

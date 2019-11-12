@@ -3,8 +3,12 @@ defmodule LiveViewDemo.Sandbox.AllowedElixirModules do
   Analyze the AST to filter out non white-listed modules and kernel functions
   """
 
+  alias LiveViewDemo.Sandbox.CommandValidator
+  @behaviour CommandValidator
+
   @valid_modules [:List, :Enum]
 
+  @impl CommandValidator
   def validate(ast) do
     {_ast, result} = Macro.prewalk(ast, [], &valid?(&1, &2))
 
