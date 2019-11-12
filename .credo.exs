@@ -1,3 +1,4 @@
+# credo:disable-for-this-file
 %{
   #
   # You can have as many configs as you like in the `configs:` field.
@@ -97,7 +98,8 @@
         #
         ## Refactoring Opportunities
         #
-        {Credo.Check.Refactor.DoubleBooleanNegation, false}, # That's a feature!
+        # That's a feature!
+        {Credo.Check.Refactor.DoubleBooleanNegation, false},
         {Credo.Check.Refactor.CondStatements},
         {Credo.Check.Refactor.CyclomaticComplexity},
         {Credo.Check.Refactor.FunctionArity},
