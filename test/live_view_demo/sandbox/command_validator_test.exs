@@ -18,6 +18,11 @@ defmodule LiveViewDemo.Sandbox.CommandValidatorTest do
       assert {:error, "Invalid modules: [:File]"} == CommandValidator.safe_command?(command)
     end
 
+    test "returns :error when using an Erlang module" do
+      assert {:error, "It is not allowed to invoke non-Elixir modules: [:lists]"} ==
+               CommandValidator.safe_command?(":lists.last([5])")
+    end
+
     test "returns :error when using defmodule" do
       assert {:error, "Defining new modules is not allowed. Do not use `defmodule`."} ==
                CommandValidator.safe_command?("defmodule Test, do: nil")

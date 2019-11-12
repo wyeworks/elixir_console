@@ -1,4 +1,4 @@
-defmodule LiveViewDemo.Sandbox.NoDefineModules do
+defmodule LiveViewDemo.Sandbox.DefmodulesAbsence do
   @moduledoc """
   Check if a command from untrusted source does not define new modules
   """
