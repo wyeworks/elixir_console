@@ -26,24 +26,24 @@ defmodule LiveViewDemo.Sandbox do
   """
   @spec init() :: sandbox()
   def init() do
-    loop = fn loop_func, parent_pid ->
+    loop = fn loop_func ->
       receive do
-        {:command, command, bindings} ->
+        {:command, command, bindings, parent_pid} ->
           result = execute_code(command, bindings)
           send(parent_pid, {:result, result})
 
-          loop_func.(loop_func, parent_pid)
+          loop_func.(loop_func)
       end
     end
 
-    parent_pid = self()
+    creator_pid = self()
 
     pid =
       spawn(fn ->
         # Add some metadata to those process to identify them, allowing to further
         # analysis
-        Process.put(:sandbox_owner, parent_pid)
-        loop.(loop, parent_pid)
+        Process.put(:sandbox_owner, creator_pid)
+        loop.(loop)
       end)
 
     %__MODULE__{pid: pid, bindings: []}
@@ -77,7 +77,12 @@ defmodule LiveViewDemo.Sandbox do
   @spec execute(binary(), sandbox(), keyword()) ::
           {:success, execution_result()} | {:error, binary()}
   def execute(command, sandbox, opts \\ []) do
-    send(sandbox.pid, {:command, command, sandbox.bindings})
+    task = Task.async(fn -> do_execute(command, sandbox, opts) end)
+    Task.await(task, :infinity)
+  end
+
+  defp do_execute(command, sandbox, opts) do
+    send(sandbox.pid, {:command, command, sandbox.bindings, self()})
 
     timeout = Keyword.get(opts, :timeout, @timeout_ms_default)
     check_every = Keyword.get(opts, :check_every, @check_every_ms_default)
