@@ -58,7 +58,8 @@ defmodule LiveViewDemo.Sandbox.SafeKernelFunctions do
 
       unsafe_functions ->
         {:error,
-         "It is allowed to invoke only safe Kernel functions: #{inspect(unsafe_functions)}"}
+         "It is allowed to invoke only safe Kernel functions. " <>
+           "Not allowed functions attempted: #{inspect(unsafe_functions)}"}
     end
   end
 

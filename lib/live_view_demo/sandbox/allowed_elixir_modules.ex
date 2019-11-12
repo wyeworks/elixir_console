@@ -21,7 +21,9 @@ defmodule LiveViewDemo.Sandbox.AllowedElixirModules do
         :ok
 
       invalid_modules ->
-        {:error, "Invalid modules: #{inspect(invalid_modules)}"}
+        {:error,
+         "It is not allowed to use some Elixir modules. " <>
+           "Not allowed modules attempted: #{inspect(invalid_modules)}"}
     end
   end
 

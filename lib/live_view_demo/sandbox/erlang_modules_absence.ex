@@ -19,7 +19,9 @@ defmodule LiveViewDemo.Sandbox.ErlangModulesAbsence do
         :ok
 
       invalid_modules ->
-        {:error, "It is not allowed to invoke non-Elixir modules: #{inspect(invalid_modules)}"}
+        {:error,
+         "It is not allowed to invoke non-Elixir modules. " <>
+           "Not allowed modules attempted: #{inspect(invalid_modules)}"}
     end
   end
 

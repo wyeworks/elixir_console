@@ -8,23 +8,32 @@ defmodule LiveViewDemo.Sandbox.CommandValidatorTest do
     end
 
     test "returns :error when using an invalid module" do
-      assert {:error, "Invalid modules: [:File]"} ==
+      assert {:error,
+              "It is not allowed to use some Elixir modules. " <>
+                "Not allowed modules attempted: [:File]"} ==
                CommandValidator.safe_command?("File.cwd()")
     end
 
     test "returns :error when mixing valid and invalid modules" do
       command = ~s{Enum.map(["file1", "file2"], &File.exists?(File.cwd(), &1))}
 
-      assert {:error, "Invalid modules: [:File]"} == CommandValidator.safe_command?(command)
+      assert {:error,
+              "It is not allowed to use some Elixir modules. " <>
+                "Not allowed modules attempted: [:File]"} ==
+               CommandValidator.safe_command?(command)
     end
 
     test "returns :error when using an invalid Kernel function" do
-      assert {:error, "It is allowed to invoke only safe Kernel functions: [:apply]"} ==
+      assert {:error,
+              "It is allowed to invoke only safe Kernel functions. " <>
+                "Not allowed functions attempted: [:apply]"} ==
                CommandValidator.safe_command?("apply(Enum, :count, [[]])")
     end
 
     test "returns :error when using an Erlang module" do
-      assert {:error, "It is not allowed to invoke non-Elixir modules: [:lists]"} ==
+      assert {:error,
+              "It is not allowed to invoke non-Elixir modules. " <>
+                "Not allowed modules attempted: [:lists]"} ==
                CommandValidator.safe_command?(":lists.last([5])")
     end
   end

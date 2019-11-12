@@ -44,6 +44,8 @@ defmodule LiveViewDemoWeb.ConsoleLiveTest do
 
     html = render_submit(view, "execute", %{"command" => "File.exists?(Code.get_docs())"})
 
-    assert html =~ "Invalid modules: [:Code, :File]"
+    assert html =~
+             "It is not allowed to use some Elixir modules. " <>
+               "Not allowed modules attempted: [:Code, :File]"
   end
 end

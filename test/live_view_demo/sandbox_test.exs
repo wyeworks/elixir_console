@@ -48,7 +48,10 @@ defmodule LiveViewDemo.SandboxTest do
   end
 
   test "refuses to run unsafe code", %{sandbox: sandbox} do
-    assert {:error, {"Invalid modules: [:File]", _}} = Sandbox.execute("File.cwd()", sandbox)
+    assert {:error,
+            {"It is not allowed to use some Elixir modules. " <>
+               "Not allowed modules attempted: [:File]",
+             _}} = Sandbox.execute("File.cwd()", sandbox)
   end
 
   test "allows to run more commands after excessive memory usage error", %{sandbox: sandbox} do
