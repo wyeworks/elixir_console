@@ -47,9 +47,8 @@ defmodule LiveViewDemo.SandboxTest do
              Sandbox.execute(":timer.sleep(100)", sandbox, timeout: 50)
   end
 
-  test "refuses to run code defining modules", %{sandbox: sandbox} do
-    assert {:error, {"Defining new modules is not allowed. Do not use `defmodule`.", _}} =
-             Sandbox.execute("defmodule Test, do: nil", sandbox)
+  test "refuses to run unsafe code", %{sandbox: sandbox} do
+    assert {:error, {"Invalid modules: [:File]", _}} = Sandbox.execute("File.cwd()", sandbox)
   end
 
   test "allows to run more commands after excessive memory usage error", %{sandbox: sandbox} do

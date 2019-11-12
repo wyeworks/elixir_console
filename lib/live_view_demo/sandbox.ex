@@ -6,7 +6,7 @@ defmodule LiveViewDemo.Sandbox do
   @type sandbox() :: %__MODULE__{}
 
   require Logger
-  alias LiveViewDemo.Sandbox.{NoDefineModules, WhiteList}
+  alias LiveViewDemo.Sandbox.CommandValidator
 
   @max_memory_kb_default 30
   @timeout_ms_default 5000
@@ -143,7 +143,7 @@ defmodule LiveViewDemo.Sandbox do
   end
 
   defp execute_code(command, bindings) do
-    with :ok <- safe_command?(command),
+    with :ok <- CommandValidator.safe_command?(command),
          {result, bindings} <- Code.eval_string(command, bindings) do
       {:success, {result, bindings}}
     else
@@ -153,16 +153,5 @@ defmodule LiveViewDemo.Sandbox do
     kind, error ->
       error = Exception.normalize(kind, error)
       {:error, inspect(error)}
-  end
-
-  defp safe_command?(command) do
-    alias WhiteList, as: AllowedElixirModules
-
-    with :ok <- NoDefineModules.validate(command),
-         :ok <- AllowedElixirModules.validate(command) do
-      :ok
-    else
-      error -> error
-    end
   end
 end

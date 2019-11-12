@@ -3,11 +3,8 @@ defmodule LiveViewDemo.Sandbox.NoDefineModules do
   Check if a command from untrusted source does not define new modules
   """
 
-  def validate(command) do
-    {_ast, result} =
-      command
-      |> Code.string_to_quoted!()
-      |> Macro.prewalk([], &valid?(&1, &2))
+  def validate(ast) do
+    {_ast, result} = Macro.prewalk(ast, [], &valid?(&1, &2))
 
     if result do
       :ok

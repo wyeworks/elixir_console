@@ -1,15 +1,12 @@
-defmodule LiveViewDemo.Sandbox.WhiteList do
+defmodule LiveViewDemo.Sandbox.AllowedElixirModules do
   @moduledoc """
-  Analyze the ast to filter out non white-listed modules and kernel functions
+  Analyze the AST to filter out non white-listed modules and kernel functions
   """
 
   @valid_modules [:List, :Enum]
 
-  def validate(command) do
-    {_ast, result} =
-      command
-      |> Code.string_to_quoted!()
-      |> Macro.prewalk([], &valid?(&1, &2))
+  def validate(ast) do
+    {_ast, result} = Macro.prewalk(ast, [], &valid?(&1, &2))
 
     result
     |> Enum.filter(&match?({:error, _}, &1))
