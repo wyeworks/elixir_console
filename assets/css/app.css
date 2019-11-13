@@ -14,3 +14,7 @@ body {
   font-family: 'Fira Mono', monospace;
 }
 
+/* extend tailwind since we're not using a custom config TODO we probably should */
+.max-h-1\/3 {
+  max-height: 33%;
+}
