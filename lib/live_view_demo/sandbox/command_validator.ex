@@ -14,11 +14,11 @@ defmodule LiveViewDemo.Sandbox.CommandValidator do
   @ast_validator_modules [SafeKernelFunctions, AllowedElixirModules, ErlangModulesAbsence]
 
   def safe_command?(command) do
+    # Safe atoms transformations
     {command, words_dict} = normalize_atoms(command)
-
     ast = Code.string_to_quoted!(command)
-
     {ast, _} = normalize_ast(ast, words_dict)
+    IO.inspect ast
 
     Enum.reduce_while(@ast_validator_modules, nil, fn module, _acc ->
       case apply(module, :validate, [ast]) do
@@ -36,18 +36,29 @@ defmodule LiveViewDemo.Sandbox.CommandValidator do
       ~w
     )
 
-    words = Regex.scan(~r/[a-zA-Z~][a-zA-Z_\-\?]*/s, command) |> List.flatten()
+    parts = Regex.split(~r/[a-zA-Z~][a-zA-Z_\-\?]*/s, command, include_captures: true)
 
-    words_dict =
-      (words -- known_words)
+    {normalized_parts, words_dict} =
+      parts
       |> Enum.with_index(1)
-      |> Enum.reduce(%{}, fn {word, index}, acc ->
-        Map.put(acc, "sandbox#{index}", word)
+      |> Enum.reduce({[], %{}}, fn {part, index}, {parts_acc, dict_acc} ->
+        cond do
+          part in known_words ->
+            {[part | parts_acc], dict_acc}
+          part =~ ~r/[A-Z][a-zA-Z_\-\?]*/s ->
+            dict_acc = Map.put(dict_acc, "Sandbox#{index}", part)
+            {["Sandbox#{index}" | parts_acc], dict_acc}
+          part =~ ~r/[a-zA-Z~][a-zA-Z_\-\?]*/s ->
+            dict_acc = Map.put(dict_acc, "sandbox#{index}", part)
+            {["sandbox#{index}" | parts_acc], dict_acc}
+          true ->
+            {[part | parts_acc], dict_acc}
+        end
       end)
 
-    normalized_command = Enum.reduce(words_dict, command, fn {safe_word, original_word}, acc ->
-      String.replace(acc, original_word, safe_word)
-    end)
+    normalized_command = normalized_parts |> Enum.reverse() |> Enum.join()
+
+    IO.inspect normalized_command
 
     {normalized_command, words_dict}
   end
@@ -61,6 +72,18 @@ defmodule LiveViewDemo.Sandbox.CommandValidator do
       String.replace(acc, safe_word, original_word)
     end)
     {restored_string, []}
+  end
+
+  # Special case to deal with charlist
+  defp restore_strings(elem, _, words_dict) when is_list(elem) do
+    if :io_lib.char_list(elem) do
+      restored_string = Enum.reduce(words_dict, to_string(elem), fn {safe_word, original_word}, acc ->
+        String.replace(acc, safe_word, original_word)
+      end)
+      {to_charlist(restored_string) , []}
+    else
+      {elem, []}
+    end
   end
 
   defp restore_strings(elem, _, _), do: {elem, []}
