@@ -58,10 +58,10 @@ defmodule LiveViewDemoWeb.ConsoleLive do
           <% else %>
             <%= if @contextual_help do %>
               <span class="mb-8 font-bold text-green-400">
-                <a href="<%= @contextual_help[:link] %>" target="_blank"><%= @contextual_help[:func_name] %></a>
+                <a href="<%= @contextual_help[:link] %>" target="_blank" class="underline"><%= @contextual_help[:func_name] %></a>
               </span>
-              <span class="text-xs mb-4 font-bold text-green-400"><%= @contextual_help[:header] %></span>
-              <span class="text-xs text-green-400"><%= Phoenix.HTML.raw @contextual_help[:doc] %></span>
+              <span class="text-xs mb-4 font-bold text-gray-400"><%= @contextual_help[:header] %></span>
+              <span class="contextual-help-doc text-xs text-gray-400"><%= Phoenix.HTML.raw @contextual_help[:doc] %></span>
             <% else %>
               <h2 class="underline mb-3">INSTRUCTIONS</h2>
               <p>[UP] [DOWN]: Navigate through commands history</p>
