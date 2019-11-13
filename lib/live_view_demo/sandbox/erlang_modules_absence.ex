@@ -25,6 +25,8 @@ defmodule LiveViewDemo.Sandbox.ErlangModulesAbsence do
     end
   end
 
+  defp valid?({:., _, [Kernel, _]} = elem, acc), do: {elem, acc}
+
   defp valid?({:., _, [erlang_module, _]} = elem, acc) when is_atom(erlang_module) do
     {elem, [{:error, erlang_module} | acc]}
   end

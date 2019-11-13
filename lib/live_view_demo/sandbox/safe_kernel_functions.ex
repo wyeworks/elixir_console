@@ -63,6 +63,14 @@ defmodule LiveViewDemo.Sandbox.SafeKernelFunctions do
     end
   end
 
+  defp valid?({:., _, [{:__aliases__, _, [:Kernel]}, function]} = elem, acc) when function in @kernel_functions_blacklist do
+    {elem, [{:error, function} | acc]}
+  end
+
+  defp valid?({:., _, [Kernel, function]} = elem, acc) when function in @kernel_functions_blacklist do
+    {elem, [{:error, function} | acc]}
+  end
+
   defp valid?({function, _, _} = elem, acc) when function in @kernel_functions_blacklist do
     {elem, [{:error, function} | acc]}
   end

@@ -30,9 +30,11 @@ defmodule LiveViewDemo.Sandbox.CommandValidator do
 
   def normalize_atoms(command) do
     known_words = ~w(
+      Kernel
       Enum
       count
       concat
+      spawn
       ~w
     )
 

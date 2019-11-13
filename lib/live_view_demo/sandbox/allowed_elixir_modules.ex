@@ -6,7 +6,7 @@ defmodule LiveViewDemo.Sandbox.AllowedElixirModules do
   alias LiveViewDemo.Sandbox.CommandValidator
   @behaviour CommandValidator
 
-  @valid_modules [:List, :Enum]
+  @valid_modules [:List, :Enum, :Kernel]
 
   @impl CommandValidator
   def validate(ast) do
