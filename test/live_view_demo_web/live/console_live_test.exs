@@ -2,41 +2,50 @@ defmodule LiveViewDemoWeb.ConsoleLiveTest do
   use LiveViewDemoWeb.ConnCase
   import Phoenix.LiveViewTest
 
-  test "connected mount", %{conn: conn} do
-    {:ok, _view, html} = live(conn, "/")
+  describe "sending valid commands" do
+    def render_with_valid_command(%{conn: conn}) do
+      {:ok, view, _html} = live(conn, "/")
+      [html: render_submit(view, "execute", %{"command" => "a = 1 + 2"})]
+    end
 
-    assert html =~ "<h1>Online Elixir Console</h1>"
+    setup :render_with_valid_command
+
+    test "command is visible in the console history", %{html: html} do
+      assert html =~ "&gt; a = 1 + 2"
+    end
+
+    test "command result is displayed", %{html: html} do
+      assert html =~ ~r/<div id="output.".*3.*<\/div>/s
+    end
+
+    test "binding value is displayed in the Current Variables section", %{html: html} do
+      assert html =~ ~r/<h2.*Current Variables<\/h2><ul><li>a: <code.*3<\/code>/s
+    end
   end
 
-  test "send a valid command", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
+  describe "sending invalid commands" do
+    test "runtime error is informed", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/")
+      html = render_submit(view, "execute", %{"command" => "3 / 0"})
 
-    html = render_submit(view, "execute", %{"command" => "a = 1 + 2"})
+      assert html =~
+               "%ArithmeticError{message: &quot;bad argument in arithmetic expression&quot;}"
+    end
 
-    # Command is visible in the console history
-    assert html =~ "&gt; a = 1 + 2"
+    test "memory abuse is informed", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/")
+      html = render_submit(view, "execute", %{"command" => "for i <- 1..70_000, do: i"})
 
-    # Command result is displayed
-    assert html =~ ~r/<div id="output.".*3.*<\/div>/s
+      assert html =~ "The command used more memory than allowed"
+    end
 
-    # Binding value is displayed in the Current Variables section
-    assert html =~ ~r/<h2.*Current Variables<\/h2><ul><li>a: <code.*3<\/code>/s
-  end
+    test "unknown module and functions error is displayed", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/")
+      html = render_submit(view, "execute", %{"command" => "Enum.foo(3)"})
 
-  test "send a command that causes an exception", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
-
-    html = render_submit(view, "execute", %{"command" => "3 / 0"})
-
-    assert html =~ "%ArithmeticError{message: &quot;bad argument in arithmetic expression&quot;}"
-  end
-
-  test "send a command that abuses memory", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
-
-    html = render_submit(view, "execute", %{"command" => "for i <- 1..70_000, do: i"})
-
-    assert html =~ "The command used more memory than allowed"
+      assert html =~
+               "%UndefinedFunctionError{arity: 1, function: :foo, message: nil, module: Enum, reason: nil}"
+    end
   end
 
   test "send a command with invalid modules", %{conn: conn} do

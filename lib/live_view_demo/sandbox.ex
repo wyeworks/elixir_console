@@ -143,15 +143,16 @@ defmodule LiveViewDemo.Sandbox do
   end
 
   defp execute_code(command, bindings) do
-    with :ok <- CommandValidator.safe_command?(command),
-         {result, bindings} <- Code.eval_string(command, bindings) do
-      {:success, {result, bindings}}
-    else
-      error -> error
+    try do
+      with :ok <- CommandValidator.safe_command?(command),
+           {result, bindings} <- Code.eval_string(command, bindings) do
+        {:success, {result, bindings}}
+      else
+        error -> error
+      end
+    rescue
+      exception ->
+        {:error, inspect(exception)}
     end
-  catch
-    kind, error ->
-      error = Exception.normalize(kind, error)
-      {:error, inspect(error)}
   end
 end
