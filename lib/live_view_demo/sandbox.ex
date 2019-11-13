@@ -6,7 +6,7 @@ defmodule LiveViewDemo.Sandbox do
   @type sandbox() :: %__MODULE__{}
 
   require Logger
-  alias LiveViewDemo.Sandbox.CommandValidator
+  alias LiveViewDemo.Sandbox.{CommandSanitizer, CommandValidator}
 
   @max_memory_kb_default 30
   @timeout_ms_default 5000
@@ -142,10 +142,11 @@ defmodule LiveViewDemo.Sandbox do
     memory <= memory_limit
   end
 
-  defp execute_code(command, bindings) do
+  def execute_code(command, bindings) do
     try do
-      with :ok <- CommandValidator.safe_command?(command),
-           {result, bindings} <- Code.eval_string(command, bindings) do
+      with %{ast: ast} <- CommandSanitizer.sanitize(command),
+           :ok <- CommandValidator.safe_command?(ast),
+           {result, bindings} <- Code.eval_quoted(ast, bindings) do
         {:success, {result, bindings}}
       else
         error -> error
