@@ -19,6 +19,37 @@ defmodule LiveViewDemo.Sandbox.CommandSanitizer do
     end)
   end
 
+  def sanitize_bindings(bindings, words_dict) do
+    bindings
+      |> Enum.with_index(1)
+      |> Enum.reduce({[], words_dict}, fn {{key, value}, index}, {acc, dict_acc} ->
+        if key in Map.values(dict_acc) do
+          # This part is repeated code
+          sandboxed_word =
+            dict_acc
+            |> Enum.find(fn {_key, val} -> val == key end)
+            |> elem(0)
+
+            {
+              [{String.to_atom(sandboxed_word), value} | acc],
+              dict_acc
+            }
+        else
+          dict_acc = Map.put(dict_acc, "sandboxbinding#{index}", key)
+          {
+            [{:"sandboxbinding#{index}", value} | acc],
+            dict_acc
+          }
+        end
+      end)
+  end
+
+  def restore_bindings(bindings, words_dict) do
+    Enum.reduce(bindings, [], fn {key, value}, acc ->
+      [{words_dict[to_string(key)], value} | acc]
+    end)
+  end
+
   defp normalize_atoms(command) do
     known_words = ~w(
       Kernel

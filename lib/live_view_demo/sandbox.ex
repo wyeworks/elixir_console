@@ -145,6 +145,7 @@ defmodule LiveViewDemo.Sandbox do
   def execute_code(command, bindings) do
     case CommandSanitizer.sanitize(command) do
       %{ast: ast, words_dict: words_dict} ->
+        {bindings, words_dict} = CommandSanitizer.sanitize_bindings(bindings, words_dict)
         execute_ast(%{ast: ast, words_dict: words_dict}, bindings)
       {:error, error} ->
         {:error, error}
@@ -155,7 +156,7 @@ defmodule LiveViewDemo.Sandbox do
     try do
       with :ok <- CommandValidator.safe_command?(ast),
            {result, bindings} <- Code.eval_quoted(ast, bindings) do
-        {:success, {result, bindings}}
+        {:success, {result, CommandSanitizer.restore_bindings(bindings, words_dict)}}
       else
         {:error, error} ->
           {:error, CommandSanitizer.restore(error, words_dict)}

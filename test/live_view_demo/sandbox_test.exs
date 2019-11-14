@@ -13,21 +13,21 @@ defmodule LiveViewDemo.SandboxTest do
   end
 
   test "adds a new binding", %{sandbox: sandbox} do
-    expected_sandbox = %Sandbox{sandbox | bindings: [a: 3]}
+    expected_sandbox = %Sandbox{sandbox | bindings: [{"a", 3}]}
 
     assert Sandbox.execute("a = 1 + 2", sandbox) == {:success, {3, expected_sandbox}}
   end
 
   test "updates an existing binding", %{sandbox: sandbox} do
-    sandbox = %Sandbox{sandbox | bindings: [a: "foo"]}
-    expected_sandbox = %Sandbox{sandbox | bindings: [a: 3]}
+    sandbox = %Sandbox{sandbox | bindings: [{"a", "foo"}]}
+    expected_sandbox = %Sandbox{sandbox | bindings: [{"a", 3}]}
 
     assert Sandbox.execute("a = 1 + 2", sandbox) == {:success, {3, expected_sandbox}}
   end
 
   test "keeps existing bindings", %{sandbox: sandbox} do
-    sandbox = %Sandbox{sandbox | bindings: [a: "foo"]}
-    expected_sandbox = %Sandbox{sandbox | bindings: [a: "foo"]}
+    sandbox = %Sandbox{sandbox | bindings: [{"a", "foo"}]}
+    expected_sandbox = %Sandbox{sandbox | bindings: [{"a", "foo"}]}
 
     assert Sandbox.execute("1 + 2", sandbox) == {:success, {3, expected_sandbox}}
   end
