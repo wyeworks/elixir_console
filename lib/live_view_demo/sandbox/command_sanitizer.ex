@@ -46,7 +46,12 @@ defmodule LiveViewDemo.Sandbox.CommandSanitizer do
 
   def restore_bindings(bindings, words_dict) do
     Enum.reduce(bindings, [], fn {key, value}, acc ->
-      [{words_dict[to_string(key)], value} | acc]
+      [
+        {
+          words_dict[to_string(key)],
+          restore_binding_value(value, words_dict)
+        }
+      | acc]
     end)
   end
 
@@ -132,4 +137,13 @@ defmodule LiveViewDemo.Sandbox.CommandSanitizer do
   end
 
   defp restore_strings(elem, _, _), do: {elem, []}
+
+  defp restore_binding_value(ast, words_dict) do
+    Macro.prewalk(ast, fn
+      atom when is_atom(atom)->
+        words_dict[to_string(atom)]
+      elem ->
+        elem
+    end)
+  end
 end
