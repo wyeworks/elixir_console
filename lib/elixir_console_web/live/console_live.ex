@@ -156,7 +156,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
   end
 
   def handle_event("suggest", _key, socket) do
-    {:noreply, socket |> assign(history_counter: -1)}
+    {:noreply, socket |> assign(history_counter: -1, input_value: "")}
   end
 
   def handle_event("execute", %{"command" => command}, socket) do
