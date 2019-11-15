@@ -56,4 +56,23 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
                  "Not allowed modules attempted: [:Code, :File]"
     end
   end
+
+  describe "autocomplete" do
+    test "show suggestions if more than one", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/")
+      html = render_keydown(view, "suggest", %{"keyCode" => 9, "value" => "Enum.co"})
+
+      assert html =~ ~r/Suggestions\:.*Enum\.concat.*Enum\.count/
+    end
+
+    test "autocomplete and do not show suggestions if only one", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/")
+      html = render_keydown(view, "suggest", %{"keyCode" => 9, "value" => "Enum.conc"})
+
+      assert html =~ ~r/\<input .* data-input_value\="Enum.concat"/
+
+      refute html =~ ~r/Suggestions\:.*Enum\.concat/
+      assert html =~ "INSTRUCTIONS"
+    end
+  end
 end
