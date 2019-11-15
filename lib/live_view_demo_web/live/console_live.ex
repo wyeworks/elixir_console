@@ -40,7 +40,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
         </form>
       </div>
       <div class="w-full sm:w-32 md:w-1/3 h-32 sm:h-full bg-teal-800 text-gray-300 overflow-scroll flex flex-col">
-        <div class="bg-teal-700 p-2 overflow-y-scroll max-height-1/3">
+        <div class="bg-teal-700 p-2 overflow-y-scroll max-h-1/3">
           <h2 class="font-medium">Current Variables</h2>
           <ul>
             <%= if length(@sandbox.bindings) > 0 do %>
@@ -48,7 +48,7 @@ defmodule LiveViewDemoWeb.ConsoleLive do
                 <li class="truncate"><%= key %>: <code class="text-teal-300"><%= inspect(value) %></code></li>
               <% end %>
             <% else %>
-            <code class="text-teal-300">None</code>
+              <code class="text-teal-300">None</code>
             <% end %>
           </ul>
         </div>
