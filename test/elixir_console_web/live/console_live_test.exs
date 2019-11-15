@@ -46,15 +46,14 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
       assert html =~
                "%UndefinedFunctionError{arity: 1, function: :foo, message: nil, module: Enum, reason: nil}"
     end
-  end
 
-  test "send a command with invalid modules", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
+    test "send a command with invalid modules", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/")
+      html = render_submit(view, "execute", %{"command" => "File.exists?(Code.get_docs())"})
 
-    html = render_submit(view, "execute", %{"command" => "File.exists?(Code.get_docs())"})
-
-    assert html =~
-             "It is not allowed to use some Elixir modules. " <>
-               "Not allowed modules attempted: [:Code, :File]"
+      assert html =~
+               "It is not allowed to use some Elixir modules. " <>
+                 "Not allowed modules attempted: [:Code, :File]"
+    end
   end
 end
