@@ -103,7 +103,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
     bindings_names = Enum.map(bindings, fn {name, _} -> Atom.to_string(name) end)
     all_names = bindings_names ++ Documentation.get_functions_names()
 
-    suggestions = Enum.filter(all_names, &String.starts_with?(&1, last_word))
+    suggestions = Enum.filter(all_names, &String.starts_with?(&1, last_word)) |> Enum.sort()
 
     case suggestions do
       [suggestion] ->
