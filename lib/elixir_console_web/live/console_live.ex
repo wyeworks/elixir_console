@@ -103,14 +103,13 @@ defmodule ElixirConsoleWeb.ConsoleLive do
     case Autocomplete.get_suggestions(value, caret_position, bindings) do
       [suggestion] ->
         {:noreply,
-         socket
-         |> assign(
+         assign(socket,
            suggestions: [],
            input_value: Autocomplete.autocompleted_input(value, caret_position, suggestion)
          )}
 
       suggestions ->
-        {:noreply, socket |> assign(suggestions: suggestions, input_value: "")}
+        {:noreply, assign(socket, suggestions: suggestions, input_value: "")}
     end
   end
 
@@ -131,7 +130,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
           {[List.last(history)], counter}
       end
 
-    {:noreply, socket |> assign(input_value: input_value, history_counter: new_counter)}
+    {:noreply, assign(socket, input_value: input_value, history_counter: new_counter)}
   end
 
   # KEY DOWN
@@ -151,15 +150,15 @@ defmodule ElixirConsoleWeb.ConsoleLive do
           {[List.first(history)], 0}
       end
 
-    {:noreply, socket |> assign(input_value: input_value, history_counter: new_counter)}
+    {:noreply, assign(socket, input_value: input_value, history_counter: new_counter)}
   end
 
   def handle_event("suggest", _key, socket) do
-    {:noreply, socket |> assign(history_counter: -1, input_value: "")}
+    {:noreply, assign(socket, history_counter: -1, input_value: "")}
   end
 
   def handle_event("caret-position", %{"position" => position}, socket) do
-    {:noreply, socket |> assign(caret_position: position)}
+    {:noreply, assign(socket, caret_position: position)}
   end
 
   def handle_event("execute", %{"command" => command}, socket) do
