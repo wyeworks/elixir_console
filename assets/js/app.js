@@ -21,6 +21,19 @@ import LiveSocket from "phoenix_live_view"
 
 let Hooks = {}
 Hooks.CommandInput = {
+  mounted() {
+    const pushEvent = this.pushEvent;
+    const input = document.getElementById("commandInput");
+    const sendCursorPosition = e => {
+      if (input.selectionStart === input.selectionEnd) {
+        this.pushEvent("caret-position", { position: input.selectionEnd });
+      }
+    };
+
+    ["keyup", "click", "focus"].forEach(event => {
+      input.addEventListener(event, sendCursorPosition, true);
+    })
+  },
   updated() {
     let newValue = this.el.getAttribute("data-input_value")
     if (newValue !== "") {

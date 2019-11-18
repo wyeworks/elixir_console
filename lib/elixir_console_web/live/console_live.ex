@@ -89,6 +89,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
        history_counter: 0,
        suggestions: [],
        input_value: "",
+       caret_position: 0,
        contextual_help: nil,
        command_id: 0,
        sandbox: Sandbox.init()
@@ -97,7 +98,14 @@ defmodule ElixirConsoleWeb.ConsoleLive do
 
   # TAB KEY
   def handle_event("suggest", %{"keyCode" => 9, "value" => value}, socket) do
-    last_word = String.split(value) |> List.last() || ""
+    value_until_caret = String.slice(value, 0, socket.assigns.caret_position)
+
+    last_word =
+      value_until_caret
+      |> String.split()
+      |> List.last()
+
+    last_word = last_word || ""
 
     bindings = socket.assigns.sandbox.bindings
     bindings_names = Enum.map(bindings, fn {name, _} -> Atom.to_string(name) end)
@@ -107,7 +115,11 @@ defmodule ElixirConsoleWeb.ConsoleLive do
 
     case suggestions do
       [suggestion] ->
-        new_input = Regex.replace(~r/\.*#{last_word}$/, value, suggestion)
+        value_from_caret = String.slice(value, socket.assigns.caret_position, 10_000)
+
+        new_input =
+          Regex.replace(~r/\.*#{last_word}$/, value_until_caret, suggestion) <> value_from_caret
+
         {:noreply, socket |> assign(input_value: new_input, suggestions: [])}
 
       suggestions ->
@@ -157,6 +169,10 @@ defmodule ElixirConsoleWeb.ConsoleLive do
 
   def handle_event("suggest", _key, socket) do
     {:noreply, socket |> assign(history_counter: -1, input_value: "")}
+  end
+
+  def handle_event("caret-position", %{"position" => position}, socket) do
+    {:noreply, socket |> assign(caret_position: position)}
   end
 
   def handle_event("execute", %{"command" => command}, socket) do
