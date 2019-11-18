@@ -5,6 +5,8 @@ defmodule ElixirConsole.Autocomplete do
 
   alias ElixirConsole.Documentation
 
+  @max_command_length 10_000
+
   @doc """
   Get a list of suggestions with all the possible words that could fit in the
   command that is being typed by the user.
@@ -40,6 +42,7 @@ defmodule ElixirConsole.Autocomplete do
   end
 
   defp split_command_for_autocomplete(value, caret_position) do
-    {String.slice(value, 0, caret_position), String.slice(value, caret_position, 10_000)}
+    {String.slice(value, 0, caret_position),
+     String.slice(value, caret_position, @max_command_length)}
   end
 end
