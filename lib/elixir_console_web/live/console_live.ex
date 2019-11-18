@@ -2,7 +2,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
   use Phoenix.LiveView
   import Phoenix.HTML, only: [sigil_e: 2]
 
-  alias ElixirConsole.{ContextualHelp, Documentation, Sandbox}
+  alias ElixirConsole.{Autocomplete, ContextualHelp, Sandbox}
 
   defmodule Output do
     @enforce_keys [:command, :id]
@@ -98,32 +98,19 @@ defmodule ElixirConsoleWeb.ConsoleLive do
 
   # TAB KEY
   def handle_event("suggest", %{"keyCode" => 9, "value" => value}, socket) do
-    value_until_caret = String.slice(value, 0, socket.assigns.caret_position)
+    %{caret_position: caret_position, sandbox: %{bindings: bindings}} = socket.assigns
 
-    last_word =
-      value_until_caret
-      |> String.split()
-      |> List.last()
-
-    last_word = last_word || ""
-
-    bindings = socket.assigns.sandbox.bindings
-    bindings_names = Enum.map(bindings, fn {name, _} -> Atom.to_string(name) end)
-    all_names = bindings_names ++ Documentation.get_functions_names()
-
-    suggestions = Enum.filter(all_names, &String.starts_with?(&1, last_word)) |> Enum.sort()
-
-    case suggestions do
+    case Autocomplete.get_suggestions(value, caret_position, bindings) do
       [suggestion] ->
-        value_from_caret = String.slice(value, socket.assigns.caret_position, 10_000)
-
-        new_input =
-          Regex.replace(~r/\.*#{last_word}$/, value_until_caret, suggestion) <> value_from_caret
-
-        {:noreply, socket |> assign(input_value: new_input, suggestions: [])}
+        {:noreply,
+         socket
+         |> assign(
+           suggestions: [],
+           input_value: Autocomplete.autocompleted_input(value, caret_position, suggestion)
+         )}
 
       suggestions ->
-        {:noreply, socket |> assign(suggestions: Enum.take(suggestions, 10), input_value: "")}
+        {:noreply, socket |> assign(suggestions: suggestions, input_value: "")}
     end
   end
 
