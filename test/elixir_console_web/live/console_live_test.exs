@@ -46,15 +46,33 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
       assert html =~
                "%UndefinedFunctionError{arity: 1, function: :foo, message: nil, module: Enum, reason: nil}"
     end
+
+    test "send a command with invalid modules", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/")
+      html = render_submit(view, "execute", %{"command" => "File.exists?(Code.get_docs())"})
+
+      assert html =~
+               "It is not allowed to use some Elixir modules. " <>
+                 "Not allowed modules attempted: [:Code, :File]"
+    end
   end
 
-  test "send a command with invalid modules", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
+  describe "autocomplete" do
+    test "show suggestions if more than one", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/")
+      html = render_keydown(view, "suggest", %{"keyCode" => 9, "value" => "Enum.co"})
 
-    html = render_submit(view, "execute", %{"command" => "File.exists?(Code.get_docs())"})
+      assert html =~ ~r/Suggestions\:.*Enum\.concat.*Enum\.count/
+    end
 
-    assert html =~
-             "It is not allowed to use some Elixir modules. " <>
-               "Not allowed modules attempted: [:Code, :File]"
+    test "autocomplete and do not show suggestions if only one", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/")
+      html = render_keydown(view, "suggest", %{"keyCode" => 9, "value" => "Enum.conc"})
+
+      assert html =~ ~r/\<input .* data-input_value\="Enum.concat"/
+
+      refute html =~ ~r/Suggestions\:.*Enum\.concat/
+      assert html =~ "INSTRUCTIONS"
+    end
   end
 end
