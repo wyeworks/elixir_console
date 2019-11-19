@@ -1,5 +1,5 @@
 defmodule ElixirConsoleWeb.ConsoleLiveTest do
-  use ElixirConsoleWeb.ConnCase
+  use ElixirConsoleWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
 
   # Code based on https://github.com/phoenixframework/phoenix_live_view/blob/bba042ed6a6efa45f56b30c4d26fda7a0bdb8991/lib/phoenix_live_view/test/live_view_test.ex#L459
