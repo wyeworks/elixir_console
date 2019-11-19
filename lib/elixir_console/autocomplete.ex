@@ -48,12 +48,12 @@ defmodule ElixirConsole.Autocomplete do
   word) and the new caret position (right after the last character of the
   autocompleted word)
   """
-  def autocompleted_input(value, caret_position, suggestion) do
+  def autocompleted_input(value, caret_position, autocompleted_word) do
     word_to_autocomplete = word_to_autocomplete(value, caret_position)
 
     {
-      calculate_new_input_value(value, caret_position, word_to_autocomplete, suggestion),
-      calculate_new_caret_position(caret_position, word_to_autocomplete, suggestion)
+      calculate_new_input_value(value, caret_position, word_to_autocomplete, autocompleted_word),
+      calculate_new_caret_position(caret_position, word_to_autocomplete, autocompleted_word)
     }
   end
 
@@ -67,15 +67,20 @@ defmodule ElixirConsole.Autocomplete do
      String.slice(value, caret_position, @max_command_length)}
   end
 
-  defp calculate_new_caret_position(caret_position, word_to_autocomplete, suggestion) do
-    String.length(suggestion) - String.length(word_to_autocomplete) + caret_position
+  defp calculate_new_caret_position(caret_position, word_to_autocomplete, autocompleted_word) do
+    String.length(autocompleted_word) - String.length(word_to_autocomplete) + caret_position
   end
 
-  defp calculate_new_input_value(input_value, caret_position, word_to_autocomplete, suggestion) do
+  defp calculate_new_input_value(
+         input_value,
+         caret_position,
+         word_to_autocomplete,
+         autocompleted_word
+       ) do
     {value_until_caret, value_from_caret} =
       split_command_for_autocomplete(input_value, caret_position)
 
-    Regex.replace(~r/\.*#{word_to_autocomplete}$/, value_until_caret, suggestion) <>
+    Regex.replace(~r/\.*#{word_to_autocomplete}$/, value_until_caret, autocompleted_word) <>
       value_from_caret
   end
 end
