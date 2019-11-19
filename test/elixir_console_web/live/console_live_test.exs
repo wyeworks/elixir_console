@@ -113,6 +113,7 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
         render_keydown(view, "suggest", %{"keyCode" => 9, "value" => "Enum.conc([1,2], [3])"})
 
       assert html =~ ~r/\<input .* data-input_value\="Enum.concat\(\[1,2\], \[3\]\)"/
+      assert html =~ ~r/\<input .* data-caret_position\="11"/
 
       refute html =~ ~r/Suggestions\:.*Enum\.concat/
       assert html =~ "INSTRUCTIONS"

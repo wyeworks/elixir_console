@@ -24,16 +24,21 @@ defmodule ElixirConsole.Autocomplete do
   end
 
   @doc """
-  Returns a modified version of the command input value with an autocompleted word.
-  It means that the `suggestion` value is used to replace the word that ends in the
-  `caret_position` position of the provided `value`
+  Returns a modified version of the command input value with an autocompleted
+  word. It means that the `suggestion` value is used to replace the word that
+  ends in the `caret_position` position of the provided `value`.
+
+  It returns a tuple with the new input command (modified with the autocompleted
+  word) and the new caret position (right after the last character of the
+  autocompleted word)
   """
   def autocompleted_input(value, caret_position, suggestion) do
     word_to_autocomplete = word_to_autocomplete(value, caret_position)
-    {value_until_caret, value_from_caret} = split_command_for_autocomplete(value, caret_position)
 
-    Regex.replace(~r/\.*#{word_to_autocomplete}$/, value_until_caret, suggestion) <>
-      value_from_caret
+    {
+      calculate_new_input_value(value, caret_position, word_to_autocomplete, suggestion),
+      calculate_new_caret_position(caret_position, word_to_autocomplete, suggestion)
+    }
   end
 
   defp word_to_autocomplete(value, caret_position) do
@@ -44,5 +49,15 @@ defmodule ElixirConsole.Autocomplete do
   defp split_command_for_autocomplete(value, caret_position) do
     {String.slice(value, 0, caret_position),
      String.slice(value, caret_position, @max_command_length)}
+  end
+
+  defp calculate_new_caret_position(caret_position, word_to_autocomplete, suggestion) do
+    String.length(suggestion) - String.length(word_to_autocomplete) + caret_position
+  end
+
+  defp calculate_new_input_value(input_value, caret_position, word_to_autocomplete, suggestion) do
+    {value_until_caret, value_from_caret} = split_command_for_autocomplete(input_value, caret_position)
+    Regex.replace(~r/\.*#{word_to_autocomplete}$/, value_until_caret, suggestion) <>
+      value_from_caret
   end
 end

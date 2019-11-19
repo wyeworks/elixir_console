@@ -35,9 +35,12 @@ Hooks.CommandInput = {
     });
   },
   updated() {
-    let newValue = this.el.getAttribute('data-input_value');
+    const newValue = this.el.getAttribute('data-input_value');
+    const newCaretPosition = parseInt(this.el.getAttribute('data-caret_position'));
+
     if (newValue !== '') {
       this.el.value = newValue;
+      this.el.setSelectionRange(newCaretPosition, newCaretPosition);
     }
   }
 }
