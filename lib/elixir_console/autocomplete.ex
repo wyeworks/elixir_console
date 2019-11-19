@@ -14,12 +14,28 @@ defmodule ElixirConsole.Autocomplete do
   def get_suggestions(value, caret_position, bindings) do
     word_to_autocomplete = word_to_autocomplete(value, caret_position)
 
-    bindings_names = Enum.map(bindings, fn {name, _} -> Atom.to_string(name) end)
-    all_names = bindings_names ++ Documentation.get_functions_names()
+    bindings
+    |> all_suggestions_candidates()
+    |> filter_suggestions(word_to_autocomplete)
+  end
 
-    all_names
-    |> Enum.filter(&String.starts_with?(&1, word_to_autocomplete))
+  defp all_suggestions_candidates(bindings) do
+    bindings_variable_names(bindings) ++ elixir_library_names()
+  end
+
+  defp bindings_variable_names(bindings) do
+    bindings
+    |> Enum.map(fn {name, _} -> Atom.to_string(name) end)
     |> Enum.sort()
+  end
+
+  defp elixir_library_names do
+    Enum.sort(Documentation.get_functions_names())
+  end
+
+  defp filter_suggestions(candidates, word_to_autocomplete) do
+    candidates
+    |> Enum.filter(&String.starts_with?(&1, word_to_autocomplete))
     |> Enum.take(10)
   end
 
@@ -56,7 +72,9 @@ defmodule ElixirConsole.Autocomplete do
   end
 
   defp calculate_new_input_value(input_value, caret_position, word_to_autocomplete, suggestion) do
-    {value_until_caret, value_from_caret} = split_command_for_autocomplete(input_value, caret_position)
+    {value_until_caret, value_from_caret} =
+      split_command_for_autocomplete(input_value, caret_position)
+
     Regex.replace(~r/\.*#{word_to_autocomplete}$/, value_until_caret, suggestion) <>
       value_from_caret
   end
