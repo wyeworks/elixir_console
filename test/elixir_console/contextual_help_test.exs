@@ -47,4 +47,18 @@ defmodule ElixirConsole.ContextualHelpTest do
              "([1,2,3])"
            ] = ContextualHelp.compute("length([1,2,3])")
   end
+
+  test "adds documentation metadata to Kernel macros" do
+    assert [
+             "3 ",
+             {"||",
+              %{
+                docs: _,
+                func_name: "Kernel.||/2",
+                header: ["left || right"],
+                link: "https://hexdocs.pm/elixir/Kernel.html#||/2"
+              }},
+             " 4"
+           ] = ContextualHelp.compute("3 || 4")
+  end
 end

@@ -74,7 +74,8 @@ defmodule ElixirConsole.Documentation do
     docs =
       Enum.reduce(list, %{}, fn function, acc ->
         case function do
-          {{:function, func_name, func_ary}, _, header, %{"en" => docs}, _} ->
+          {{function_or_macro, func_name, func_ary}, _, header, %{"en" => docs}, _}
+          when function_or_macro in [:function, :macro] ->
             {:ok, html_doc, _} = Earmark.as_html(docs)
             [module_name] = Module.split(module)
 
