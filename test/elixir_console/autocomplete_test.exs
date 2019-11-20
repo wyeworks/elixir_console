@@ -27,8 +27,6 @@ defmodule ElixirConsole.AutocompleteTest do
       assert Autocomplete.get_suggestions("Li", 3, []) == ["List"]
     end
 
-    # TODO think if we should return [] in this case, it is a useless replacement
-    # (but maybe this is fine in the sake of easier code)
     test "returns only the module name if this is the last word" do
       assert Autocomplete.get_suggestions("12 + Enum", 9, []) == ["Enum", "Enumerable"]
     end
