@@ -11,7 +11,6 @@ defmodule ElixirConsole.ContextualHelpTest do
              "",
              {"Enum.count",
               %{
-                docs: _,
                 func_name: "Enum.count/1",
                 header: ["count(enumerable)"],
                 link: "https://hexdocs.pm/elixir/Enum.html#count/1"
@@ -25,7 +24,6 @@ defmodule ElixirConsole.ContextualHelpTest do
              "",
              {"Enum.find",
               %{
-                docs: _,
                 func_name: "Enum.find/3",
                 header: ["find(enumerable, default \\\\ nil, fun)"],
                 link: "https://hexdocs.pm/elixir/Enum.html#find/3"
@@ -39,7 +37,6 @@ defmodule ElixirConsole.ContextualHelpTest do
              "",
              {"length",
               %{
-                docs: _,
                 func_name: "Kernel.length/1",
                 header: ["length(list)"],
                 link: "https://hexdocs.pm/elixir/Kernel.html#length/1"
@@ -53,12 +50,27 @@ defmodule ElixirConsole.ContextualHelpTest do
              "3 ",
              {"||",
               %{
-                docs: _,
                 func_name: "Kernel.||/2",
                 header: ["left || right"],
                 link: "https://hexdocs.pm/elixir/Kernel.html#||/2"
               }},
              " 4"
            ] = ContextualHelp.compute("3 || 4")
+  end
+
+  test "adds metadata indicating whether is function or operator" do
+    assert [
+             "5 ",
+             {"+",
+              %{
+                type: :operator
+              }},
+             " ",
+             {"Enum.count",
+              %{
+                type: :function
+              }},
+             "([2,4])"
+           ] = ContextualHelp.compute("5 + Enum.count([2,4])")
   end
 end

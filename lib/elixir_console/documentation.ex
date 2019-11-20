@@ -6,6 +6,7 @@ defmodule ElixirConsole.Documentation do
     defstruct [:func_name, :arity]
   end
 
+  @az_range 97..122
   @modules [
     Access,
     Enum,
@@ -80,6 +81,7 @@ defmodule ElixirConsole.Documentation do
             [module_name] = Module.split(module)
 
             Map.put(acc, %Key{func_name: "#{module_name}.#{func_name}", arity: func_ary}, %{
+              type: function_or_operator(func_name),
               func_name: "#{module_name}.#{func_name}/#{func_ary}",
               header: header,
               docs: html_doc,
@@ -106,4 +108,13 @@ defmodule ElixirConsole.Documentation do
       nil -> nil
     end
   end
+
+  defp function_or_operator(func_name) when is_atom(func_name) do
+    func_name
+    |> to_charlist
+    |> function_or_operator
+  end
+
+  defp function_or_operator([first_char | _]) when first_char in @az_range, do: :function
+  defp function_or_operator(_), do: :operator
 end

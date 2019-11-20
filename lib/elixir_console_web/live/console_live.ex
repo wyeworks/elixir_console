@@ -228,7 +228,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
   defp print_prompt, do: "> "
 
   defp format_command(command) do
-    for part <- splitted_command(command) do
+    for part <- split_command(command) do
       case part do
         {part, help_metadata} ->
           render_command_inline_help(part, help_metadata)
@@ -239,11 +239,12 @@ defmodule ElixirConsoleWeb.ConsoleLive do
     end
   end
 
-  defp splitted_command(command) do
+  defp split_command(command) do
     ContextualHelp.compute(command)
   end
 
   defp render_command_inline_help(part, %{
+         type: function_or_operator,
          func_name: func_name,
          header: header,
          docs: docs,
@@ -255,7 +256,10 @@ defmodule ElixirConsoleWeb.ConsoleLive do
       phx-value-header="<%= header %>"
       phx-value-doc="<%= docs %>"
       phx-value-link="<%= link %>"
-      class="text-green-400 cursor-pointer underline"
+      class="<%= inline_help_class_for(function_or_operator) %>"
     ><%= part %></span>}
   end
+
+  defp inline_help_class_for(:function), do: "text-green-400 cursor-pointer underline"
+  defp inline_help_class_for(:operator), do: "cursor-pointer"
 end
