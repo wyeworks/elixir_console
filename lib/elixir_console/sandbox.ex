@@ -76,7 +76,7 @@ defmodule ElixirConsole.Sandbox do
   """
   @typep execution_result() :: {binary(), sandbox()}
   @spec execute(binary(), sandbox(), keyword()) ::
-          {:success, execution_result()} | {:error, binary()}
+          {:success, execution_result()} | {:error, execution_result()}
   def execute(command, sandbox, opts \\ []) do
     task = Task.async(fn -> do_execute(command, sandbox, opts) end)
     Task.await(task, :infinity)
