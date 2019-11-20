@@ -1,5 +1,5 @@
 defmodule ElixirConsole.SandboxTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias ElixirConsole.Sandbox
 
   setup do

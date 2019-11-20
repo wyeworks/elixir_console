@@ -1,5 +1,5 @@
 defmodule ElixirConsoleWeb.ConsoleLiveTest do
-  use ElixirConsoleWeb.ConnCase
+  use ElixirConsoleWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
 
   # Code based on https://github.com/phoenixframework/phoenix_live_view/blob/bba042ed6a6efa45f56b30c4d26fda7a0bdb8991/lib/phoenix_live_view/test/live_view_test.ex#L459
@@ -113,6 +113,7 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
         render_keydown(view, "suggest", %{"keyCode" => 9, "value" => "Enum.conc([1,2], [3])"})
 
       assert html =~ ~r/\<input .* data-input_value\="Enum.concat\(\[1,2\], \[3\]\)"/
+      assert html =~ ~r/\<input .* data-caret_position\="11"/
 
       refute html =~ ~r/Suggestions\:.*Enum\.concat/
       assert html =~ "INSTRUCTIONS"

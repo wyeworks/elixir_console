@@ -1,5 +1,5 @@
 defmodule ElixirConsole.Sandbox.CommandValidatorTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias ElixirConsole.Sandbox.CommandValidator
 
   describe "safe_command?/1" do

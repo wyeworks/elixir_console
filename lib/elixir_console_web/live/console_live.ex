@@ -35,6 +35,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
               phx-keydown="suggest"
               phx-hook="CommandInput"
               data-input_value="<%= @input_value %>"
+              data-caret_position="<%= @caret_position %>"
             />
           </div>
         </form>
@@ -102,10 +103,14 @@ defmodule ElixirConsoleWeb.ConsoleLive do
 
     case Autocomplete.get_suggestions(value, caret_position, bindings) do
       [suggestion] ->
+        {new_input, new_caret_position} =
+          Autocomplete.autocompleted_input(value, caret_position, suggestion)
+
         {:noreply,
          assign(socket,
            suggestions: [],
-           input_value: Autocomplete.autocompleted_input(value, caret_position, suggestion)
+           input_value: new_input,
+           caret_position: new_caret_position
          )}
 
       suggestions ->
