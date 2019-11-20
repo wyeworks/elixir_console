@@ -20,8 +20,8 @@ defmodule ElixirConsole.Autocomplete do
     |> filter_suggestions(word_to_autocomplete)
   end
 
-  defp all_suggestions_candidates(bindings, modules_or_functions_from_docs) do
-    bindings_variable_names(bindings) ++ elixir_library_names(modules_or_functions_from_docs)
+  defp all_suggestions_candidates(bindings, modules_or_functions) do
+    bindings_variable_names(bindings) ++ elixir_library_names(modules_or_functions)
   end
 
   defp bindings_variable_names(bindings) do
