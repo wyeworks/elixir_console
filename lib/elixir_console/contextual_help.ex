@@ -1,6 +1,15 @@
 defmodule ElixirConsole.ContextualHelp do
+  @moduledoc """
+  Utilities to add metadata to an user-generated Elixir command about the
+  standard library functions that are in use.
+  """
+
   alias ElixirConsole.Documentation
 
+  @doc """
+  Takes an Elixir command and returns it divided in parts, and the ones that
+  correspond to Elixir functions are augmented with metadata containing the docs
+  """
   def compute(command) do
     case Code.string_to_quoted(command) do
       {:ok, expr} ->
