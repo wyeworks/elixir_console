@@ -3,7 +3,7 @@ defmodule ElixirConsole.ContextualHelpTest do
   alias ElixirConsole.ContextualHelp
 
   test "returns only one element if no Elixir functions are found" do
-    assert ContextualHelp.compute("foo(1 + 4)") == ["foo(1 + 4)"]
+    assert ContextualHelp.compute("foo(1)") == ["foo(1)"]
   end
 
   test "adds documentation metadata if Elixir function is found" do
@@ -16,8 +16,8 @@ defmodule ElixirConsole.ContextualHelpTest do
                 header: ["count(enumerable)"],
                 link: "https://hexdocs.pm/elixir/Enum.html#count/1"
               }},
-             "([1,2]) + 3"
-           ] = ContextualHelp.compute("Enum.count([1,2]) + 3")
+             "([1,2])"
+           ] = ContextualHelp.compute("Enum.count([1,2])")
   end
 
   test "adds documentation metadata properly when omitting default parameters" do
@@ -30,7 +30,21 @@ defmodule ElixirConsole.ContextualHelpTest do
                 header: ["find(enumerable, default \\\\ nil, fun)"],
                 link: "https://hexdocs.pm/elixir/Enum.html#find/3"
               }},
-             "([2, 3, 4], fn x -> x == 2 end)"
-           ] = ContextualHelp.compute("Enum.find([2, 3, 4], fn x -> x == 2 end)")
+             "([2, 3, 4], fn x -> x end)"
+           ] = ContextualHelp.compute("Enum.find([2, 3, 4], fn x -> x end)")
+  end
+
+  test "adds documentation metadata to Kernel functions" do
+    assert [
+             "",
+             {"length",
+              %{
+                docs: _,
+                func_name: "Kernel.length/1",
+                header: ["length(list)"],
+                link: "https://hexdocs.pm/elixir/Kernel.html#length/1"
+              }},
+             "([1,2,3])"
+           ] = ContextualHelp.compute("length([1,2,3])")
   end
 end

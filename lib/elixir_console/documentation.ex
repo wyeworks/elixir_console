@@ -36,7 +36,8 @@ defmodule ElixirConsole.Documentation do
     Inspect,
     Protocol,
     Code,
-    Macro
+    Macro,
+    Kernel
   ]
 
   def start_link(_) do

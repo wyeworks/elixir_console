@@ -6,6 +6,103 @@ defmodule ElixirConsole.ContextualHelp do
 
   alias ElixirConsole.Documentation
 
+  @kernel_functions ~w(
+    !=
+    !==
+    *
+    +
+    -
+    /
+    <=
+    ==
+    ===
+    >
+    >=
+    abs
+    and
+    binary_part
+    bit_size
+    byte_size
+    ceil
+    div
+    elem
+    floor
+    hd
+    in
+    is_atom
+    is_binary
+    is_bitstring
+    is_boolean
+    is_float
+    is_function
+    is_integer
+    is_list
+    is_map
+    is_nil
+    is_number
+    is_reference
+    is_tuple
+    length
+    map_size
+    not
+    or
+    rem
+    round
+    self
+    tl
+    trunc
+    tuple_size
+    !
+    &&
+    ++
+    --
+    ..
+    <>
+    =~
+    binding
+    function_exported?
+    get_and_update_in
+    get_in
+    if
+    inspect
+    macro_exported?
+    make_ref
+    match?
+    max
+    min
+    pop_in
+    pop_in
+    put_elem
+    put_in
+    put_in
+    raise
+    raise
+    reraise
+    reraise
+    sigil_C
+    sigil_D
+    sigil_N
+    sigil_R
+    sigil_S
+    sigil_T
+    sigil_U
+    sigil_W
+    sigil_c
+    sigil_r
+    sigil_s
+    sigil_w
+    struct
+    struct!
+    throw
+    to_charlist
+    to_string
+    unless
+    update_in
+    update_in
+    |>
+    ||
+  )a
+
   @doc """
   Takes an Elixir command and returns it divided in parts, and the ones that
   correspond to Elixir functions are augmented with metadata containing the docs
@@ -26,6 +123,12 @@ defmodule ElixirConsole.ContextualHelp do
     Enum.reduce(params, acc, fn node, acc -> find_functions(node, acc) end)
   end
 
+  defp find_functions({func_name, _, params}, acc)
+       when func_name in @kernel_functions and is_list(params) do
+    acc = acc ++ [%{module: "Kernel", func_name: func_name, func_ary: Enum.count(params)}]
+    Enum.reduce(params, acc, fn node, acc -> find_functions(node, acc) end)
+  end
+
   defp find_functions({_, _, list}, acc) when is_list(list) do
     Enum.reduce(list, acc, fn node, acc -> find_functions(node, acc) end)
   end
@@ -39,18 +142,18 @@ defmodule ElixirConsole.ContextualHelp do
          [%{module: module, func_name: func_name, func_ary: func_ary} | rest]
        ) do
     func_fullname = "#{module}.#{func_name}"
-    regex = ~r/#{Regex.escape(func_fullname)}/
+    regex = ~r/#{Regex.escape(func_fullname)}|#{Regex.escape(Atom.to_string(func_name))}/
 
-    [part_before, _, remaining_command] =
+    [before_matched, matched, remaining_command] =
       Regex.split(regex, command, include_captures: true, parts: 2)
 
     parts_to_add =
       case Documentation.get_doc(%Documentation.Key{func_name: func_fullname, arity: func_ary}) do
         nil ->
-          [part_before, func_fullname]
+          [before_matched, matched]
 
         doc ->
-          [part_before, {func_fullname, doc}]
+          [before_matched, {matched, doc}]
       end
 
     parts_to_add ++ add_documentation(remaining_command, rest)
