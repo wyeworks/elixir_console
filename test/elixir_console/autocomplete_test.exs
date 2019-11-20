@@ -11,11 +11,11 @@ defmodule ElixirConsole.AutocompleteTest do
       assert Autocomplete.get_suggestions("Foo.bar", 4, []) == []
     end
 
-    test "returns suggestions with the caret" do
+    test "returns suggestions" do
       assert Autocomplete.get_suggestions("Enum.co", 7, []) == ["Enum.concat", "Enum.count"]
     end
 
-    test "returns suggestions with the caret is in the middle" do
+    test "returns suggestions when the caret is in the middle" do
       assert Autocomplete.get_suggestions("Enum.ch foo bar", 7, []) == [
                "Enum.chunk_by",
                "Enum.chunk_every",
