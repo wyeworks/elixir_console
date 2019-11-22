@@ -63,9 +63,21 @@ defmodule ElixirConsole.Documentation do
     {:reply, functions_names, docs}
   end
 
+  @impl true
+  def handle_call(:get_modules_names, _from, docs) do
+    modules_names =
+      Map.values(docs)
+      |> Enum.map(& &1.module_name)
+      |> Enum.uniq()
+
+    {:reply, modules_names, docs}
+  end
+
   def get_doc(key), do: GenServer.call(__MODULE__, {:get, key})
 
   def get_functions_names(), do: GenServer.call(__MODULE__, :get_functions_names)
+
+  def get_modules_names(), do: GenServer.call(__MODULE__, :get_modules_names)
 
   defp retrieve_docs([module | remaining_modules]) do
     {:docs_v1, _, :elixir, _, _, _, list} = Code.fetch_docs(module)
@@ -79,6 +91,7 @@ defmodule ElixirConsole.Documentation do
 
             Map.put(acc, %Key{func_name: "#{module_name}.#{func_name}", arity: func_ary}, %{
               func_name: "#{module_name}.#{func_name}/#{func_ary}",
+              module_name: module_name,
               header: header,
               docs: html_doc,
               link: "https://hexdocs.pm/elixir/#{module_name}.html##{func_name}/#{func_ary}"

@@ -13,14 +13,15 @@ defmodule ElixirConsole.Autocomplete do
   """
   def get_suggestions(value, caret_position, bindings) do
     word_to_autocomplete = word_to_autocomplete(value, caret_position)
+    modules_or_functions = modules_or_functions_from_docs(word_to_autocomplete)
 
     bindings
-    |> all_suggestions_candidates()
+    |> all_suggestions_candidates(modules_or_functions)
     |> filter_suggestions(word_to_autocomplete)
   end
 
-  defp all_suggestions_candidates(bindings) do
-    bindings_variable_names(bindings) ++ elixir_library_names()
+  defp all_suggestions_candidates(bindings, modules_or_functions) do
+    bindings_variable_names(bindings) ++ elixir_library_names(modules_or_functions)
   end
 
   defp bindings_variable_names(bindings) do
@@ -29,9 +30,22 @@ defmodule ElixirConsole.Autocomplete do
     |> Enum.sort()
   end
 
-  defp elixir_library_names do
-    Enum.sort(Documentation.get_functions_names())
+  defp modules_or_functions_from_docs(word_to_autocomplete) do
+    if String.match?(word_to_autocomplete, ~r/^[A-Z]\w*\.\w*$/) do
+      :functions
+    else
+      :modules
+    end
   end
+
+  defp elixir_library_names(modules_or_functions) do
+    modules_or_functions
+    |> retrieve_names_from_documentation()
+    |> Enum.sort()
+  end
+
+  defp retrieve_names_from_documentation(:functions), do: Documentation.get_functions_names()
+  defp retrieve_names_from_documentation(:modules), do: Documentation.get_modules_names()
 
   defp filter_suggestions(candidates, word_to_autocomplete) do
     candidates

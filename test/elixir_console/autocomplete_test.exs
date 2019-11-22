@@ -23,16 +23,16 @@ defmodule ElixirConsole.AutocompleteTest do
              ]
     end
 
-    test "returns suggestions from bindings" do
-      assert Autocomplete.get_suggestions("4 + va", 6, var1: 1, var2: 2) == [
-               "var1",
-               "var2"
-             ]
+    test "returns suggestions only for the module name" do
+      assert Autocomplete.get_suggestions("Li", 3, []) == ["List"]
     end
 
-    test "returns suggestions including bindings and Elixir functions" do
-      assert Autocomplete.get_suggestions("List", 4, Listado: 1) == [
-               "Listado",
+    test "returns only the module name if this is the last word" do
+      assert Autocomplete.get_suggestions("12 + Enum", 9, []) == ["Enum", "Enumerable"]
+    end
+
+    test "returns functions names when the last word includes module name and period" do
+      assert Autocomplete.get_suggestions("12 + List.", 10, []) == [
                "List.ascii_printable?",
                "List.delete",
                "List.delete_at",
@@ -41,7 +41,15 @@ defmodule ElixirConsole.AutocompleteTest do
                "List.flatten",
                "List.foldl",
                "List.foldr",
-               "List.improper?"
+               "List.improper?",
+               "List.insert_at"
+             ]
+    end
+
+    test "returns suggestions from bindings" do
+      assert Autocomplete.get_suggestions("4 + va", 6, var1: 1, var2: 2) == [
+               "var1",
+               "var2"
              ]
     end
   end
