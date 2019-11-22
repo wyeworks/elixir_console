@@ -6,6 +6,7 @@ defmodule ElixirConsole.Documentation do
     defstruct [:func_name, :arity]
   end
 
+  @az_range 97..122
   @modules [
     Access,
     Enum,
@@ -36,7 +37,8 @@ defmodule ElixirConsole.Documentation do
     Inspect,
     Protocol,
     Code,
-    Macro
+    Macro,
+    Kernel
   ]
 
   def start_link(_) do
@@ -85,11 +87,13 @@ defmodule ElixirConsole.Documentation do
     docs =
       Enum.reduce(list, %{}, fn function, acc ->
         case function do
-          {{:function, func_name, func_ary}, _, header, %{"en" => docs}, _} ->
+          {{function_or_macro, func_name, func_ary}, _, header, %{"en" => docs}, _}
+          when function_or_macro in [:function, :macro] ->
             {:ok, html_doc, _} = Earmark.as_html(docs)
             [module_name] = Module.split(module)
 
             Map.put(acc, %Key{func_name: "#{module_name}.#{func_name}", arity: func_ary}, %{
+              type: function_or_operator(func_name),
               func_name: "#{module_name}.#{func_name}/#{func_ary}",
               module_name: module_name,
               header: header,
@@ -117,4 +121,13 @@ defmodule ElixirConsole.Documentation do
       nil -> nil
     end
   end
+
+  defp function_or_operator(func_name) when is_atom(func_name) do
+    func_name
+    |> to_charlist
+    |> function_or_operator
+  end
+
+  defp function_or_operator([first_char | _]) when first_char in @az_range, do: :function
+  defp function_or_operator(_), do: :operator
 end

@@ -29,7 +29,7 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     setup :render_with_valid_command
 
     test "command is visible in the console history", %{html: html} do
-      assert html =~ "&gt; a = 1 + 2"
+      assert html =~ ~r/&gt; a = 1 <span [\S \n]*>\+<\/span> 2/
     end
 
     test "command result is displayed", %{html: html} do
