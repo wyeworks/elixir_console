@@ -6,7 +6,37 @@ defmodule ElixirConsole.Sandbox.AllowedElixirModules do
   alias ElixirConsole.Sandbox.CommandValidator
   @behaviour CommandValidator
 
-  @valid_modules [:List, :Enum]
+  @valid_modules ~w(
+    Kernel
+    Atom
+    Base
+    Bitwise
+    Date
+    DateTime
+    Float
+    Integer
+    NaiveDateTime
+    Regex
+    String
+    Time
+    Tuple
+    URI
+    Version
+    Version.Requirement
+    Access
+    Date.Range
+    Enum
+    Keyword
+    List
+    Map
+    MapSet
+    Range
+    Stream
+    OptionParser
+    Path
+    Collectable
+    Enumerable
+  )a
 
   @impl CommandValidator
   def validate(ast) do
