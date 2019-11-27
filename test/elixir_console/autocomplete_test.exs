@@ -47,10 +47,14 @@ defmodule ElixirConsole.AutocompleteTest do
     end
 
     test "returns suggestions from bindings" do
-      assert Autocomplete.get_suggestions("4 + va", 6, var1: 1, var2: 2) == [
-               "var1",
-               "var2"
+      assert Autocomplete.get_suggestions("4 + varia", 9, variable1: 1, variable2: 2) == [
+               "variable1",
+               "variable2"
              ]
+    end
+
+    test "returns suggestions from Kernel functions" do
+      assert Autocomplete.get_suggestions("4 + le", 6, []) == ["length"]
     end
   end
 
