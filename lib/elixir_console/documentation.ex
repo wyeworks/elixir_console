@@ -66,6 +66,17 @@ defmodule ElixirConsole.Documentation do
   end
 
   @impl true
+  def handle_call(:get_kernel_functions_names, _from, docs) do
+    functions_names =
+      Map.values(docs)
+      |> Enum.filter(&(&1.module_name == "Kernel"))
+      |> Enum.map(& &1.bare_func_name)
+      |> Enum.uniq()
+
+    {:reply, functions_names, docs}
+  end
+
+  @impl true
   def handle_call(:get_modules_names, _from, docs) do
     modules_names =
       Map.values(docs)
@@ -78,7 +89,7 @@ defmodule ElixirConsole.Documentation do
   def get_doc(key), do: GenServer.call(__MODULE__, {:get, key})
 
   def get_functions_names(), do: GenServer.call(__MODULE__, :get_functions_names)
-
+  def get_kernel_functions_names(), do: GenServer.call(__MODULE__, :get_kernel_functions_names)
   def get_modules_names(), do: GenServer.call(__MODULE__, :get_modules_names)
 
   defp retrieve_docs([module | remaining_modules]) do
@@ -95,6 +106,7 @@ defmodule ElixirConsole.Documentation do
             Map.put(acc, %Key{func_name: "#{module_name}.#{func_name}", arity: func_ary}, %{
               type: function_or_operator(func_name),
               func_name: "#{module_name}.#{func_name}/#{func_ary}",
+              bare_func_name: to_string(func_name),
               module_name: module_name,
               header: header,
               docs: html_doc,
