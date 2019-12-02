@@ -23,6 +23,14 @@ defmodule ElixirConsole.Sandbox.CommandValidatorTest do
                CommandValidator.safe_command?(command)
     end
 
+    test "returns :ok when using a valid Kernel function with implicit module" do
+      assert :ok == CommandValidator.safe_command?("length([])")
+    end
+
+    test "returns :ok when using a valid Kernel function with explicit module" do
+      assert :ok == CommandValidator.safe_command?("Kernel.length([])")
+    end
+
     test "returns :error when using an invalid Kernel function" do
       assert {:error,
               "It is allowed to invoke only safe Kernel functions. " <>
