@@ -31,10 +31,15 @@ defmodule ElixirConsole.Autocomplete do
   end
 
   defp modules_or_functions_from_docs(word_to_autocomplete) do
-    if String.match?(word_to_autocomplete, ~r/^[A-Z]\w*\.\w*$/) do
-      :functions
-    else
-      :modules
+    cond do
+      String.match?(word_to_autocomplete, ~r/^[A-Z]\w*\.\w*$/) ->
+        :functions
+
+      String.match?(word_to_autocomplete, ~r/^[a-z]/) ->
+        :kernel_functions
+
+      true ->
+        :modules
     end
   end
 
@@ -45,6 +50,10 @@ defmodule ElixirConsole.Autocomplete do
   end
 
   defp retrieve_names_from_documentation(:functions), do: Documentation.get_functions_names()
+
+  defp retrieve_names_from_documentation(:kernel_functions),
+    do: Documentation.get_kernel_functions_names()
+
   defp retrieve_names_from_documentation(:modules), do: Documentation.get_modules_names()
 
   defp filter_suggestions(candidates, word_to_autocomplete) do
