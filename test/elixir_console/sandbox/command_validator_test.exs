@@ -38,6 +38,13 @@ defmodule ElixirConsole.Sandbox.CommandValidatorTest do
                CommandValidator.safe_command?("apply(Enum, :count, [[]])")
     end
 
+    test "returns :error when using an invalid Kernel function with explicit module" do
+      assert {:error,
+              "It is allowed to invoke only safe Kernel functions. " <>
+                "Not allowed functions attempted: [:apply]"} ==
+               CommandValidator.safe_command?("Kernel.apply(Enum, :count, [[]])")
+    end
+
     test "returns :error when using an Erlang module" do
       assert {:error,
               "It is not allowed to invoke non-Elixir modules. " <>
