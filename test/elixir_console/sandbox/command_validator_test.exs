@@ -31,6 +31,10 @@ defmodule ElixirConsole.Sandbox.CommandValidatorTest do
       assert :ok == CommandValidator.safe_command?("Kernel.length([])")
     end
 
+    test "returns :ok when using string interpolation" do
+      assert :ok == CommandValidator.safe_command?("\"foo \#{10} bar\"")
+    end
+
     test "returns :error when using an invalid Kernel function" do
       assert {:error,
               "It is allowed to invoke only safe Kernel functions. " <>
