@@ -57,6 +57,7 @@ defmodule ElixirConsole.Documentation do
     Port,
     StringIO,
     System,
+    String,
     Calendar,
     Agent,
     Application,

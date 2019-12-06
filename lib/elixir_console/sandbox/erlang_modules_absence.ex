@@ -6,6 +6,8 @@ defmodule ElixirConsole.Sandbox.ErlangModulesAbsence do
   alias ElixirConsole.Sandbox.CommandValidator
   @behaviour CommandValidator
 
+  @az_range 97..122
+
   @impl CommandValidator
   def validate(ast) do
     {_ast, result} = Macro.prewalk(ast, [], &valid?(&1, &2))
@@ -25,9 +27,24 @@ defmodule ElixirConsole.Sandbox.ErlangModulesAbsence do
     end
   end
 
-  defp valid?({:., _, [erlang_module, _]} = elem, acc) when is_atom(erlang_module) do
-    {elem, [{:error, erlang_module} | acc]}
+  defp valid?({:., _, [module, _]} = elem, acc) do
+    if is_erlang_module?(module) do
+      {elem, [{:error, module} | acc]}
+    else
+      {elem, acc}
+    end
   end
 
   defp valid?(elem, acc), do: {elem, acc}
+
+  defp is_erlang_module?(module) when not is_atom(module), do: false
+
+  defp is_erlang_module?(module) do
+    module
+    |> to_charlist
+    |> starts_with_lowercase?
+  end
+
+  defp starts_with_lowercase?([first_char | _]) when first_char in @az_range, do: true
+  defp starts_with_lowercase?(_module_charlist), do: false
 end
