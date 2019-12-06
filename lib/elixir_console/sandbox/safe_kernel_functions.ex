@@ -67,5 +67,10 @@ defmodule ElixirConsole.Sandbox.SafeKernelFunctions do
     {elem, [{:error, function} | acc]}
   end
 
+  defp valid?({:., _, [{:__aliases__, _, [:Kernel]}, function]} = elem, acc)
+       when function in @kernel_functions_blacklist do
+    {elem, [{:error, function} | acc]}
+  end
+
   defp valid?(elem, acc), do: {elem, acc}
 end
