@@ -6,43 +6,7 @@ defmodule ElixirConsole.Sandbox.SafeKernelFunctions do
   alias ElixirConsole.Sandbox.CommandValidator
   @behaviour CommandValidator
 
-  @kernel_functions_blacklist ~w(
-    apply
-    def
-    defdelegate
-    defexception
-    defguard
-    defguardp
-    defimpl
-    defmacro
-    defmacrop
-    defmodule
-    defoverridable
-    defp
-    defprotocol
-    defstruct
-    destructure
-    send
-    spawn
-    spawn
-    spawn_link
-    spawn_link
-    spawn_monitor
-    spawn_monitor
-    use
-    var!
-    __CALLER__
-    __DIR__
-    __ENV__
-    __MODULE__
-    __STACKTRACE__
-    __block__
-    alias
-    import
-    receive
-    require
-    super
-  )a
+  @kernel_functions_blacklist ElixirConsole.ElixirSafeParts.unsafe_kernel_functions()
 
   @impl CommandValidator
   def validate(ast) do
