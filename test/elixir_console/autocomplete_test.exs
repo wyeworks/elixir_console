@@ -56,6 +56,14 @@ defmodule ElixirConsole.AutocompleteTest do
     test "returns suggestions from Kernel functions" do
       assert Autocomplete.get_suggestions("4 + le", 6, []) == ["length"]
     end
+
+    test "does not return unsafe functions into the suggestions" do
+      assert Autocomplete.get_suggestions("spawn", 5, []) == []
+    end
+
+    test "does not return unsafe modules into the suggestions" do
+      assert Autocomplete.get_suggestions("Cod", 3, []) == []
+    end
   end
 
   describe "autocompleted_input" do

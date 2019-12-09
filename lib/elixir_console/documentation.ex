@@ -42,40 +42,9 @@ defmodule ElixirConsole.Documentation do
     defp function_or_operator(_), do: :operator
   end
 
-  @modules [
-    Access,
-    Enum,
-    Keyword,
-    List,
-    Map,
-    MapSet,
-    Range,
-    Stream,
-    File,
-    IO,
-    Path,
-    Port,
-    StringIO,
-    System,
-    String,
-    Calendar,
-    Agent,
-    Application,
-    Config,
-    DynamicSupervisor,
-    GenEvent,
-    Node,
-    Process,
-    Registry,
-    Task,
-    Collectable,
-    Enumerable,
-    Inspect,
-    Protocol,
-    Code,
-    Macro,
-    Kernel
-  ]
+  alias ElixirConsole.ElixirSafeParts
+  @modules ElixirSafeParts.safe_elixir_modules()
+  @unsafe_kernel_functions ElixirSafeParts.unsafe_kernel_functions()
 
   def start_link(_) do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
@@ -135,31 +104,52 @@ defmodule ElixirConsole.Documentation do
     {:docs_v1, _, :elixir, _, _, _, list} = Code.fetch_docs(module)
 
     docs =
-      Enum.reduce(list, %{}, fn function, acc ->
-        case function do
-          {{function_or_macro, func_name, func_ary}, _, header, %{"en" => docs}, _}
-          when function_or_macro in [:function, :macro] ->
-            {:ok, html_doc, _} = Earmark.as_html(docs)
-            [module_name] = Module.split(module)
-
-            Map.put(
-              acc,
-              %Key{func_name: "#{module_name}.#{func_name}", arity: func_ary},
-              %DocEntry{
-                module_name: module_name,
-                func_name: func_name,
-                func_ary: func_ary,
-                docs_header: header,
-                docs_body: html_doc
-              }
-            )
-
-          _ ->
-            acc
-        end
-      end)
+      list
+      |> reject_unsafe_functions(module)
+      |> build_module_documentation(module)
 
     Map.merge(docs, retrieve_docs(remaining_modules))
+  end
+
+  defp reject_unsafe_functions(function_docs, Kernel) do
+    Enum.reject(function_docs, fn function ->
+      case function do
+        {{_, func_name, _}, _, _, %{"en" => _}, _}
+        when func_name in @unsafe_kernel_functions ->
+          true
+
+        _ ->
+          false
+      end
+    end)
+  end
+
+  defp reject_unsafe_functions(function_docs, _), do: function_docs
+
+  defp build_module_documentation(function_list, module) do
+    Enum.reduce(function_list, %{}, fn function, acc ->
+      case function do
+        {{function_or_macro, func_name, func_ary}, _, header, %{"en" => docs}, _}
+        when function_or_macro in [:function, :macro] ->
+          {:ok, html_doc, _} = Earmark.as_html(docs)
+          [module_name] = Module.split(module)
+
+          Map.put(
+            acc,
+            %Key{func_name: "#{module_name}.#{func_name}", arity: func_ary},
+            %DocEntry{
+              module_name: module_name,
+              func_name: func_name,
+              func_ary: func_ary,
+              docs_header: header,
+              docs_body: html_doc
+            }
+          )
+
+        _ ->
+          acc
+      end
+    end)
   end
 
   defp find_with_greater_arity(%Key{func_name: func_name, arity: func_ary}, docs) do
