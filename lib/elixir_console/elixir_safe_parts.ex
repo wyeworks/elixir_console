@@ -141,15 +141,15 @@ defmodule ElixirConsole.ElixirSafeParts do
   def safe_modules, do: @safe_modules
 
   def unsafe_kernel_functions do
-    IO.inspect  all_kernel_functions() -- @safe_kernel_functions
     all_kernel_functions() -- @safe_kernel_functions
   end
 
   defp all_kernel_functions do
-    all_kernel_functions_raw() |> Keyword.keys |> Enum.uniq
+    all_kernel_functions_raw() |> Keyword.keys() |> Enum.uniq()
   end
 
   defp all_kernel_functions_raw do
-    Kernel.__info__(:functions) ++ Kernel.__info__(:macros) ++ Kernel.SpecialForms.__info__(:functions)
+    Kernel.__info__(:functions) ++
+      Kernel.__info__(:macros) ++ Kernel.SpecialForms.__info__(:functions)
   end
 end
