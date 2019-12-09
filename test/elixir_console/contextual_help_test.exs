@@ -19,6 +19,45 @@ defmodule ElixirConsole.ContextualHelpTest do
            ] = ContextualHelp.compute("Enum.count([1,2])")
   end
 
+  test "adds documentation metadata when expression is a list" do
+    assert [
+             "[",
+             {"Enum.count",
+              %{
+                func_name: "Enum.count/1",
+                header: ["count(enumerable)"],
+                link: "https://hexdocs.pm/elixir/Enum.html#count/1"
+              }},
+             "([1,2])]"
+           ] = ContextualHelp.compute("[Enum.count([1,2])]")
+  end
+
+  test "adds documentation metadata when expression is a map" do
+    assert [
+             "%{\"a\" => ",
+             {"Enum.count",
+              %{
+                func_name: "Enum.count/1",
+                header: ["count(enumerable)"],
+                link: "https://hexdocs.pm/elixir/Enum.html#count/1"
+              }},
+             "([1,2])}"
+           ] = ContextualHelp.compute("%{\"a\" => Enum.count([1,2])}")
+  end
+
+  test "adds documentation metadata when expression is a keyword list" do
+    assert [
+             "[a: ",
+             {"Enum.count",
+              %{
+                func_name: "Enum.count/1",
+                header: ["count(enumerable)"],
+                link: "https://hexdocs.pm/elixir/Enum.html#count/1"
+              }},
+             "([1,2])]"
+           ] = ContextualHelp.compute("[a: Enum.count([1,2])]")
+  end
+
   test "adds documentation metadata properly when omitting default parameters" do
     assert [
              "",

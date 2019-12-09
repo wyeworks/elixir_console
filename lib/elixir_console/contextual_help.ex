@@ -118,6 +118,10 @@ defmodule ElixirConsole.ContextualHelp do
     end
   end
 
+  defp find_functions(list, acc) when is_list(list) do
+    Enum.reduce(list, acc, fn node, acc -> find_functions(node, acc) end)
+  end
+
   defp find_functions({{:., _, [{_, _, [module]}, func_name]}, _, params}, acc) do
     acc = acc ++ [%{module: module, func_name: func_name, func_ary: Enum.count(params)}]
     Enum.reduce(params, acc, fn node, acc -> find_functions(node, acc) end)
@@ -131,6 +135,10 @@ defmodule ElixirConsole.ContextualHelp do
 
   defp find_functions({_, _, list}, acc) when is_list(list) do
     Enum.reduce(list, acc, fn node, acc -> find_functions(node, acc) end)
+  end
+
+  defp find_functions({node_left, node_right}, acc) do
+    find_functions(node_right, find_functions(node_left, acc))
   end
 
   defp find_functions(_, acc), do: acc
