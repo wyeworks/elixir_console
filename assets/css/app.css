@@ -1,10 +1,12 @@
 /* This file is for your main application css. */
 
+/* csslint ignore:start */
 @import "../../deps/phoenix_live_view/assets/css/live_view.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* csslint ignore:end */
 
 .live-view-parent > div {
   height: 100%;
@@ -14,13 +16,13 @@ body {
   font-family: 'Fira Mono', monospace;
 }
 
-/* extend tailwind since we're not using a custom config TODO we probably should */
+/* extending tailwind provided classes */
 .max-h-1\/3 {
   max-height: 33%;
 }
 
 /* styling contextual help (Utility-first paradigm is not useful here since it's inserted raw) */
-.contextual-help-doc h2 {
+.contextual-help-doc h2 { /* csslint allow: qualified-headings */
   margin-bottom: 0.5rem;
   margin-top: 0.5rem;
 }
