@@ -149,6 +149,8 @@ defmodule ElixirConsole.ElixirSafeParts do
 
   def safe_modules, do: @safe_modules
 
+  def safe_elixir_modules, do: Enum.map(@safe_modules, &:"Elixir.#{&1}")
+
   def unsafe_kernel_functions do
     all_kernel_functions() -- @safe_kernel_functions
   end
