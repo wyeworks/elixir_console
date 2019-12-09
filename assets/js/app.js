@@ -43,7 +43,7 @@ Hooks.CommandInput = {
       this.el.setSelectionRange(newCaretPosition, newCaretPosition);
     }
   }
-}
+};
 
 let liveSocket = new LiveSocket('/live', Socket, {hooks: Hooks});
 liveSocket.connect();
@@ -54,5 +54,5 @@ document.addEventListener('DOMContentLoaded', function(event) {
     if (e.keyCode === 9) {
       e.preventDefault();
     }
-  }, true)
+  }, true);
 })
