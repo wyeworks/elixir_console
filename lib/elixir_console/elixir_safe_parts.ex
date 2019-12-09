@@ -1,4 +1,13 @@
 defmodule ElixirConsole.ElixirSafeParts do
+  @moduledoc """
+  List of modules and functions considered safe to be executed by the Elixir
+  Console
+
+  The goal of the console is to run Elixir code from untrusted sources.
+  Therefore, here is defined a few whitelists of Elixir modules and functions,
+  in order to limit the accessible feature of the language that are at disposal
+  """
+
   @safe_modules ~w(
     Kernel
     Atom
