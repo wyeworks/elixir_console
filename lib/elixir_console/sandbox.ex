@@ -8,6 +8,7 @@ defmodule ElixirConsole.Sandbox do
   require Logger
   alias ElixirConsole.Sandbox.CommandValidator
 
+  @max_command_length 500
   @max_memory_kb_default 256
   @timeout_ms_default 5000
   @check_every_ms_default 20
@@ -77,7 +78,13 @@ defmodule ElixirConsole.Sandbox do
   @typep execution_result() :: {binary(), sandbox()}
   @spec execute(binary(), sandbox(), keyword()) ::
           {:success, execution_result()} | {:error, execution_result()}
-  def execute(command, sandbox, opts \\ []) do
+  def execute(command, sandbox, opts \\ [])
+
+  def execute(command, sandbox, _) when byte_size(command) > @max_command_length do
+    {:error, {"Command is too long. Try running a shorter piece of code.", sandbox}}
+  end
+
+  def execute(command, sandbox, opts) do
     task = Task.async(fn -> do_execute(command, sandbox, opts) end)
     Task.await(task, :infinity)
   end
