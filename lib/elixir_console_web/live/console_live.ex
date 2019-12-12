@@ -67,7 +67,13 @@ defmodule ElixirConsoleWeb.ConsoleLive do
               <h2 class="underline mb-3">INSTRUCTIONS</h2>
               <p>[UP] [DOWN]: Navigate through commands history</p>
               <p>[TAB]: Autocomplete/Suggestions for variable or function names</p>
-              <p>Click on Elixir functions to see their related documentation</p>
+              <p>Click on Elixir functions to see their related documentation.</p>
+              <h2 class="underline mt-5 mb-3">ABOUT SECURITY</h2>
+              <p class="text-sm">This is a shared place where everyone is invited to run bits of Elixir code. Please note that only part of the language is available.
+              If you want to know more about the limitations <a class="underline" href="https://github.com/wyeworks/elixir_console">read here</a>.</p>
+              <p class="text-sm">Please report any security vulnerabilities to
+                <a class="underline" href="mailto:elixir-console-security@wyeworks.com">elixir-console-security@wyeworks.com<a>.
+              </p>
             <% end %>
           <% end %>
           <ul>
