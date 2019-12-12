@@ -1,5 +1,6 @@
 defmodule ElixirConsoleWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :elixir_console
+  use Sentry.Phoenix.Endpoint
 
   socket "/socket", ElixirConsoleWeb.UserSocket,
     websocket: [timeout: 45_000],
