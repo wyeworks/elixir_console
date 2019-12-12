@@ -54,6 +54,14 @@ defmodule ElixirConsole.SandboxTest do
              _}} = Sandbox.execute("File.cwd()", sandbox)
   end
 
+  test "refuses to run a very large command", %{sandbox: sandbox} do
+    assert {:error, {"Command is too long. Try running a shorter piece of code.", _}} =
+             Sandbox.execute(
+               String.duplicate("a", 600),
+               sandbox
+             )
+  end
+
   test "allows to run more commands after excessive memory usage error", %{sandbox: sandbox} do
     {:error, {_, sandbox}} = Sandbox.execute("for i <- 1..70_000, do: i", sandbox)
 
