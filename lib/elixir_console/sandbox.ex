@@ -8,7 +8,7 @@ defmodule ElixirConsole.Sandbox do
   require Logger
   alias ElixirConsole.Sandbox.CommandValidator
 
-  @max_memory_kb_default 30
+  @max_memory_kb_default 256
   @timeout_ms_default 5000
   @check_every_ms_default 20
   @bytes_in_kb 1024
