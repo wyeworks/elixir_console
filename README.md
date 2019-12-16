@@ -1,44 +1,66 @@
 [![Build Status](https://travis-ci.org/wyeworks/elixir_console.svg?branch=master)](https://travis-ci.org/wyeworks/elixir_console)
+[![SourceLevel](https://app.sourcelevel.io/github/wyeworks/elixir_console.svg)](https://app.sourcelevel.io/github/wyeworks/elixir_console)
 
 ---
 
-# (App Name Here)
+# Elixir Web Console
 
-This is my entry in [Phoenix Phrenzy](https://phoenixphrenzy.com), showing off what [Phoenix](https://phoenixframework.org/) and [LiveView](https://github.com/phoenixframework/phoenix_live_view) can do.
+This project was originally implemented as an entry for [Phoenix Phrenzy](https://phoenixphrenzy.com), and for this reason it is built using [Phoenix](https://phoenixframework.org/) and [LiveView](https://github.com/phoenixframework/phoenix_live_view).
 
-![App Name Here preview](assets/static/images/preview.gif "App Name Here")
+It is now available [in the web](https://elixirconsole.wyeworks.com/), providing an easy way where people can take a peek into the [Elixir language](https://elixir-lang.org/ Elixir language) without the need to leave the browser. Happy hacking with Elixir!
 
-# Phrenzy Instructions
+This is inspired in existing playground sites for other technologies, such as [SwiftPlayground](http://online.swiftplayground.run/) and [Rust Playground](https://play.rust-lang.org/), but this is somehow different because it aims to mimic the [Elixir interactive shell (iEX)](https://hexdocs.pm/iex/IEx.html) providing a more interactive user experience.
 
-Fork this repo and start build an application! See [Phoenix Phrenzy](https://phoenixphrenzy.com) for details.
+# Features
 
-Note: for development, you'll need Elixir, Erlang and Node.js. If you use the [asdf version manager](https://github.com/asdf-vm/asdf) and install the [relevant plugins](https://asdf-vm.com/#/plugins-all?id=plugin-list), you can install the versions specified in `.tool-versions` with `asdf install`.
+* Binding are persisted through the current session. Users can assign values to variables and their are always visible at the side of the screen.
+* Autocomplete can be triggered pressing the Tab key. It will help to discover module's public functions and already defined bindings.
+* Commands history is visible to the user, including links to display the documentation of Elixir functions that were used. 
+* Easy access to already-executed commands pressing Up and Down keys.
 
+![Elixir Web Console](https://media.giphy.com/media/JUM6QQWQWjDpA03MBv/giphy.gif "Elixir Web Console")
 
-## Deployment
+# Where my Elixir code is executed?
 
-How you deploy your app is up to you. A couple of the easiest options are:
+Unlike other playground projects, user code is executed into the Elixir application that is serving the web page. It does not rely on spawing sandbox nodes or servers that are responsible to run the code. Of course, there are plenty of security considerations related with the execution of code from not-trusted sources, but we are dealing with that directly on our Elixir backend code (see next section). 
 
-- Heroku ([instructions](https://hexdocs.pm/phoenix/heroku.html))
-- [Gigalixir](https://gigalixir.com/) (doesn't limit number of connections)
+Each sumbitted command is run in the context of a process that is used thought the whole session. It means that subsequent calls to `self()` should return the same pid value. At the same time, this process is only used to run user code, so there is no risk to have conflict with the LiveView channel process or other processes in the system.
 
-## The Usual README Content
+# How much Elixir can I run in the web console?
 
-To start your Phoenix server:
+As you might guess, not all Elixir code is safe to be run in our online console. The system verifies is the provided code is safe enough to be executed before attempting to do it. It relies on the capability of Elixir to return the AST of a provided piece of code, so it is relativelity easy to inspect it before running the code.
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.setup`
-  * Install Node.js dependencies with `cd assets && npm install`
-  * Start Phoenix endpoint with `mix phx.server`
+## Elixir safe modules and Kernel functions
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+The console has a whitelist of allowed Elixir's modules and safe `Kernel` functions. If users attempts to use dangerous modules, an error is returned. We are limiting the modules having access to the filesystem, the networks, the system itself (ErlangVM and server operating system). In addition, Elixir metaprogramming modules and functions are also forbidden.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+The function `Kernel.apply` is also not available, in order to avoid the indirect invokation of not-secure functions.
 
-## Learn more
+## Processes
 
-  * Official website: http://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+Currently, we have limited the `Process` module and additional modules and functions that can create additional processes. Existing resource usage limitations (see next section) would be much harder to enforce if users were able to spawn processes. Also, `send` and `receive` functions are not available to avoid integrity and security issues.
+
+This is a limitation that **does not make us happy**, since processes are a very interesting aspect of Elixir to play with in an interactive shell. We have ideas to make possible the usage of processes in a controlled manner although it has to be done with some caution due to additional security implications.
+
+## The problem with atoms
+
+It represents a tricky issue for our web console, because in Elixir/Erlang atoms are never garbage collected. Therefore, each atom created by users code will be added to the global list of existing atoms. It means that, eventually, the [maximum number of atoms](http://erlang.org/doc/efficiency_guide/advanced.html#atoms) will be reached, making the server crash.
+
+We are considering this issue as not severe, at least for now. The website is deployed in Heroku and it will automatically restart if that happens. Of course, existing session will be lost and it is not acceptable if it happens often, but we are currently monitoring the server in order to learn how to better deal with this problem. Hopefully, it will require some server restart from time to time, and we actually have some ideas to automate it in the future.
+
+In particular, the `String.to_atom/1` function is not available in the console, in order to prevent a massive creation of atoms in a programatic way. Given this and other limitations, we expect that the atoms list will growth relatevely slow, giving us (the administrators) time to restore the server, if this ever needed.
+
+# Other limitations
+
+The execution of code in this console is limited by the backend logic in additional ways in an attempt to preserve the server health and able to attend a larger number of users.
+
+Each submitted command should run in a limited number of seconds, otherwise a timeout error is returned. Moreover, the execution of the command must respect a memory usage limitation.
+
+The lenght of the command itself (the number of characters) is limited as well. This restriction was added for security and resource saving reasons.
+
+# Roadmap
+
+# Contributing
+
+Everyone is invited to open issues or pull requests that help us to extend and improve the Elixir Web Console.
+Given this project is in its early stages and the nature of the problem, we feel that security vulnerabilities exist. If you have found any related issue, please let us know privatelly at [elixirconsole@wyeworks.com](mailto:elixirconsole@wyeworks.com)
