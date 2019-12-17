@@ -5,7 +5,7 @@
 
 # Elixir Web Console
 
-The Elixir Web Console is a virtual place where people can try the [Elixir language](https://elixir-lang.org/) without the need to leave the browser or installing it in their computers. While this is still a project in its early stages, we hope this is a contribution to promote the language, bringing a comfortable to developers to discover the wonders of this technology. We recognize that more work has to be done to fulfill this goal, and for this reason, we would love to hear ideas about how to extend this project to better serve this purpose (see the Contributing section).
+The [Elixir Web Console](https://elixirconsole.wyeworks.com/) is a virtual place where people can try the [Elixir language](https://elixir-lang.org/) without the need to leave the browser or installing it in their computers. While this is still a project in its early stages, we hope this is a contribution to promote the language, bringing a comfortable to developers to discover the wonders of this technology. We recognize that more work has to be done to fulfill this goal, and for this reason, we would love to hear ideas about how to extend this project to better serve this purpose (see the Contributing section).
 
 This is inspired in existing playground sites for other technologies, such as [SwiftPlayground](http://online.swiftplayground.run/) and [Rust Playground](https://play.rust-lang.org/), but this is somehow different because it aims to mimic the [Elixir interactive shell (iEX)](https://hexdocs.pm/iex/IEx.html) providing a more interactive user experience.
 
