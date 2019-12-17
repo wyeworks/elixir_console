@@ -52,7 +52,7 @@ When the server is restarted any existing sessions are lost. Of course, it would
 
 To mitigate this problem, the function `String.to_atom/1`  is not available in the console limiting the creation of a large number of atoms programmatically.
 
-We are confident that the number of created atoms will growth relatively slow, giving us time to restore the server if this ever needed.
+We are confident that the number of created atoms will growth relatively slow, giving us time to restore the server if this is ever needed.
 
 # Other limitations
 
