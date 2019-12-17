@@ -5,7 +5,7 @@
 
 # Elixir Web Console
 
-The [Elixir Web Console](https://elixirconsole.wyeworks.com/) is a virtual place where people can try the [Elixir language](https://elixir-lang.org/) without the need to leave the browser or installing it in their computers. While this is a project in its early stages, we hope this is a contribution to the effort to promote the language, providing a convenient way to assess the capabilities of this technology. We would love to hear ideas about how to extend this project to better serve this purpose (see the Contributing section).
+The [Elixir Web Console](https://elixirconsole.wyeworks.com/) is a virtual place where people can try the [Elixir language](https://elixir-lang.org/) without the need to leave the browser or installing it on their computers. While this is a project in its early stages, we hope this is a contribution to the effort to promote the language, providing a convenient way to assess the capabilities of this technology. We would love to hear ideas about how to extend this project to better serve this purpose (see the Contributing section).
 
 This project is inspired in existing playground sites from distinct communities, such as [SwiftPlayground](http://online.swiftplayground.run/) and [Rust Playground](https://play.rust-lang.org/), Yet, it is unique because it aims to mimic the [Elixir interactive shell (iEX)](https://hexdocs.pm/iex/IEx.html).
 
@@ -21,7 +21,9 @@ This project is inspired in existing playground sites from distinct communities,
 # Where my Elixir code is executed?
 
 Unlike other playground projects, it does not rely on spawning sandbox nodes or additional servers to run the code. The Elixir application that is also serving the web page is also responsible for executing the user code.
+
 Of course, there are plenty of security considerations related to the execution of untrusted code. However, we came up with a solution that allows us to execute them directly on our Elixir backend (see next section).
+
 The system executes every submitted command in the context of a dedicated process. Note that subsequent invocations to `self()` will return the same PID value. Since this is an isolated process, the executed code should not interfere with the LiveView channel or any other process in the system.
 
 # How much Elixir can I run in the web console?
@@ -31,14 +33,14 @@ As you might guess, not all Elixir code coming from unknown people on the intern
 ## Elixir safe modules and Kernel functions
 
 The console has a whitelist including modules and functions of Elixir considered safe to execute. The system will inform about this limitation when users attempt to use disallowed stuff, such as modules providing access to the file system, the network, and the operating system, among others.
+
 Moreover, the mentioned whitelist does exclude the metaprogramming functionality of Elixir. The functions [`Kernel.apply/2`](https://hexdocs.pm/elixir/Kernel.html#apply/2) and [`Kernel.apply/3`](https://hexdocs.pm/elixir/Kernel.html#apply/3) are also out of the whitelist to prevent the indirect invocation of not-secure functions.
 
 ## Processes
 
 The console currently does not allow the usage of the module `Process` and other parts of Elixir related to processes. Existing resource usage limitations (see next section) would be much harder to enforce if users were permitted to spawn processes. Similarly, the functions `send` and `receive` are restricted to avoid integrity and security problems.
 
-**This limitation does not make us happy** because it would be valuable to let people play with processes within our interactive shell.
-We are currently thinking about manners to have those modules and functions in the whitelist. Extra precaution is needed to implement it due to possible security implications.
+**This limitation does not make us happy** because it would be valuable to let people play with processes within our interactive shell. We are currently thinking about manners to include those modules and functions within the whitelist. Extra precaution is needed to implement it due to possible security implications.
 
 ## The problem with atoms
 
@@ -55,7 +57,9 @@ We are confident that the number of created atoms will growth relatively slow, g
 # Other limitations
 
 The execution of code in this console is limited by the backend logic in additional ways in an attempt to preserve the server health and able to attend a larger number of users.
+
 Each submitted command should run in a limited number of seconds, otherwise, a timeout error is returned. Moreover, the execution of the command must respect a memory usage limit.
+
 The length of the command itself (the number of characters) is limited as well. This restriction was added for security and resource-saving reasons.
 
 # Roadmap
