@@ -11,10 +11,10 @@ This project is inspired in existing playground sites from distinct communities,
 
 # Features
 
-*  Bindings are persisted through the current session. Users can assign values to variables. They will remain visible at the side of the screen.
-*  Pressing the Tab key displays a list of suggestions based on what the user is currently typing in the command input. If only one option is available, the word is autocompleted. It will help to discover modules and public functions. Existing binding names are also taken into account to form the list of suggestions.
-*  The console presents the history of executed commands and results. The sidebar will display the documentation of Elixir functions when the user clicks on them.
-*  There is easy access to already-executed commands pressing Up and Down keys when the focus is in the command input.
+*   Bindings are persisted through the current session. Users can assign values to variables. They will remain visible at the side of the screen.
+*   Pressing the Tab key displays a list of suggestions based on what the user is currently typing in the command input. If only one option is available, the word is autocompleted. It will help to discover modules and public functions. Existing binding names are also taken into account to form the list of suggestions.
+*   The console presents the history of executed commands and results. The sidebar will display the documentation of Elixir functions when the user clicks on them.
+*   There is easy access to already-executed commands pressing Up and Down keys when the focus is in the command input.
 
 ![Elixir Web Console](https://media.giphy.com/media/JUM6QQWQWjDpA03MBv/giphy.gif "Elixir Web Console")
 
@@ -62,11 +62,11 @@ The length of the command itself (the number of characters) is limited as well. 
 
 While a refined ongoing plan does not exist yet, the following is a list of possible improvements.
 
-*  Extract the Elixir Sandbox functionality to a package.
-*  Allow spawning a limited amount of processes.
-*  Sandboxed versions of certain restricted modules and functions. For example, a fake implementation of the filesystem functions.
-*  Provide controlled access to additional concurrency-related functionality (send/receive, Agent, GenServer), if possible.
-*  There are ideas to overcome the problem with atoms. We are still working on a prototype to confirm if this is feasible.
+*   Extract the Elixir Sandbox functionality to a package.
+*   Allow spawning a limited amount of processes.
+*   Sandboxed versions of certain restricted modules and functions. For example, a fake implementation of the filesystem functions.
+*   Provide controlled access to additional concurrency-related functionality (send/receive, Agent, GenServer), if possible.
+*   There are ideas to overcome the problem with atoms. We are still working on a prototype to confirm if this is feasible.
 
 # About this project
 
