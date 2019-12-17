@@ -5,18 +5,16 @@
 
 # Elixir Web Console
 
-This project was originally implemented as an entry for [Phoenix Phrenzy](https://phoenixphrenzy.com), and for this reason it is built using [Phoenix](https://phoenixframework.org/) and [LiveView](https://github.com/phoenixframework/phoenix_live_view).
-
-It is now available [in the web](https://elixirconsole.wyeworks.com/), providing an easy way where people can take a peek into the [Elixir language](https://elixir-lang.org/ Elixir language) without the need to leave the browser. Happy hacking with Elixir!
+The [Elixir Web Console](https://elixirconsole.wyeworks.com/) is a virtual place where people can try the [Elixir language](https://elixir-lang.org/ Elixir language) without the need to leave the browser or installing it in their computers. While this is still a project in its early stages, we hope this is a contribution to promote the language, bringing a confortable to developers to discover the wonders of this technology. We recognize that more work has to be done to fulfill this goal, and for this reason, we would love to hear ideas about how to extend this project to better serve to this purpose (see the Contributing section).
 
 This is inspired in existing playground sites for other technologies, such as [SwiftPlayground](http://online.swiftplayground.run/) and [Rust Playground](https://play.rust-lang.org/), but this is somehow different because it aims to mimic the [Elixir interactive shell (iEX)](https://hexdocs.pm/iex/IEx.html) providing a more interactive user experience.
 
 # Features
 
-* Binding are persisted through the current session. Users can assign values to variables and their are always visible at the side of the screen.
-* Autocomplete can be triggered pressing the Tab key. It will help to discover module's public functions and already defined bindings.
-* Commands history is visible to the user, including links to display the documentation of Elixir functions that were used. 
-* Easy access to already-executed commands pressing Up and Down keys.
+  * Binding are persisted through the current session. Users can assign values to variables and their are always visible at the side of the screen.
+  * Autocomplete can be triggered pressing the Tab key. It will help to discover module's public functions and already defined bindings.
+  * Commands history is visible to the user, including links to display the documentation of Elixir functions that were used. 
+  * Easy access to already-executed commands pressing Up and Down keys.
 
 ![Elixir Web Console](https://media.giphy.com/media/JUM6QQWQWjDpA03MBv/giphy.gif "Elixir Web Console")
 
@@ -60,7 +58,25 @@ The lenght of the command itself (the number of characters) is limited as well. 
 
 # Roadmap
 
+Although we don't have a refined ongoing plan yet, we do have a list of possible improvements to do.
+
+  * Extract the Elixir Sandbox funtionality to its own package.
+  * Allow to spawn a limited amount of processes.
+  * Sandboxed versions of some restricted modules and functions (e.g. in memory implementation of file maniputation functions). 
+  * "Sandboxed atoms" (we have some ideas to solve the atoms usage problem, still working on a prototype to confirm if this is feasible).
+  * Provide controlled access to additional concurrency-related functionality (`send`/`receive`, `Agent`, `GenServer`), if possible.
+
+# About this project
+
+This project was originally implemented to participate in the [Phoenix Phrenzy](https://phoenixphrenzy.com) contest.
+It is an example of what can be built with [Phoenix](https://phoenixframework.org/) and [LiveView](https://github.com/phoenixframework/phoenix_live_view).
+
+Beyond its main purpose, this is also an experimental project. In particular, we are interested on doing additional research around the idea of having a way to run untrusted Elixir code in a sandboxed manner, relying on an Elixir-only solution (one that could be provided as a package). 
+
+The authors of the project are [Noelia](https://github.com/noelia-lencina), [Ignacio](https://github.com/iaguirre88), [Javier](https://github.com/JavierM42) and [Jorge](https://github.com/jmbejar). Special thanks to [WyeWorks](https://www.wyeworks.com WyeWorks) for providing working hours to be dedicated to this project.
+
 # Contributing
 
-Everyone is invited to open issues or pull requests that help us to extend and improve the Elixir Web Console.
-Given this project is in its early stages and the nature of the problem, we feel that security vulnerabilities exist. If you have found any related issue, please let us know privatelly at [elixirconsole@wyeworks.com](mailto:elixirconsole@wyeworks.com)
+Everyone is invited to open issues or pull requests that help us to extend and improve the Elixir Web Console. All contributions will be welcomed :tada:
+
+Given the nature of the problem, we feel that security vulnerabilities actually exist. If you have found any related issue, please let us know privatelly at [elixirconsole@wyeworks.com](mailto:elixirconsole@wyeworks.com). We think that the strong Elixir community can play a relevant role helping us to keep this website robust and safe :muscle:.
