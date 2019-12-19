@@ -14,7 +14,7 @@ defmodule ElixirConsole.Sandbox.SafeKernelFunctions do
 
     result
     |> Enum.filter(&match?({:error, _}, &1))
-    |> Enum.map(fn {:error, module} -> module end)
+    |> Enum.map(fn {:error, function} -> function end)
     |> Enum.dedup()
     |> case do
       [] ->

@@ -55,5 +55,12 @@ defmodule ElixirConsole.Sandbox.CommandValidatorTest do
                 "Not allowed modules attempted: [:lists]"} ==
                CommandValidator.safe_command?(":lists.last([5])")
     end
+
+    test "returns :error when attempting to use String.to_atom/1" do
+      assert {:error,
+              "It is not allowed to programmatically convert to atoms. " <>
+                "Consider using String.to_existing_atom/1"} ==
+               CommandValidator.safe_command?("String.to_atom(\"foo\")")
+    end
   end
 end

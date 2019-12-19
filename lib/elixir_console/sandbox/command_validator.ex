@@ -9,9 +9,19 @@ defmodule ElixirConsole.Sandbox.CommandValidator do
   @type ast :: Macro.t()
   @callback validate(ast()) :: :ok | {:error, String.t()}
 
-  alias ElixirConsole.Sandbox.{AllowedElixirModules, ErlangModulesAbsence, SafeKernelFunctions}
+  alias ElixirConsole.Sandbox.{
+    AllowedElixirModules,
+    ErlangModulesAbsence,
+    ExcludeConversionToAtoms,
+    SafeKernelFunctions
+  }
 
-  @ast_validator_modules [SafeKernelFunctions, AllowedElixirModules, ErlangModulesAbsence]
+  @ast_validator_modules [
+    AllowedElixirModules,
+    ErlangModulesAbsence,
+    ExcludeConversionToAtoms,
+    SafeKernelFunctions
+  ]
 
   def safe_command?(command) do
     ast = Code.string_to_quoted!(command)
