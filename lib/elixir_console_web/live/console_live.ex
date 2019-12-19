@@ -42,14 +42,14 @@ defmodule ElixirConsoleWeb.ConsoleLive do
       </div>
       <div class="w-full sm:w-32 md:w-1/3 h-32 sm:h-full bg-teal-800 text-gray-300 overflow-scroll flex flex-col">
         <div class="bg-teal-700 p-2 overflow-y-scroll max-h-1/3">
-          <h2 class="font-medium">Current Variables</h2>
+          <h2 class="font-medium">Current Bindings</h2>
           <ul>
             <%= if length(@sandbox.bindings) > 0 do %>
               <%= for {key, value} <- @sandbox.bindings do %>
                 <li class="truncate"><%= key %>: <code class="text-teal-300"><%= inspect(value) %></code></li>
               <% end %>
             <% else %>
-              <code class="text-teal-300">None</code>
+              <code class="text-teal-300 text-sm">No bindings yet!</code>
             <% end %>
           </ul>
         </div>
@@ -66,11 +66,12 @@ defmodule ElixirConsoleWeb.ConsoleLive do
             <% else %>
               <h2 class="underline mb-3">INSTRUCTIONS</h2>
               <p>[UP] [DOWN]: Navigate through commands history</p>
-              <p>[TAB]: Autocomplete/Suggestions for variable or function names</p>
-              <p>Click on Elixir functions to see their related documentation.</p>
+              <p>[TAB]: Get suggestions or autocomplete while typing</p>
+              <p class="text-sm mt-3"> You can see the history panel that includes all your commands and their output.
+              Click on any Elixir function to see here the corresponding documentation.</p>
               <h2 class="underline mt-5 mb-3">ABOUT SECURITY</h2>
-              <p class="text-sm">This is a shared place where everyone is invited to run bits of Elixir code. Please note that only part of the language is available.
-              If you want to know more about the limitations <a class="underline" href="https://github.com/wyeworks/elixir_console">read here</a>.</p>
+              <p class="text-sm">Please note some features of the language are not safe to run in a shared environment like this console.
+              If you are interested in knowing more about the limitations, you must <a class="underline" href="https://github.com/wyeworks/elixir_console#how-much-elixir-can-i-run-in-the-web-console">read here</a>.</p>
               <p class="text-sm">Please report any security vulnerabilities to
                 <a class="underline" href="mailto:elixir-console-security@wyeworks.com">elixir-console-security@wyeworks.com<a>.
               </p>

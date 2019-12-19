@@ -37,7 +37,7 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     end
 
     test "binding value is displayed in the Current Variables section", %{html: html} do
-      assert html =~ ~r/<h2.*Current Variables<\/h2><ul><li.*>a: <code.*3<\/code>/s
+      assert html =~ ~r/<h2.*Current Bindings<\/h2><ul><li.*>a: <code.*3<\/code>/s
     end
   end
 
