@@ -27,6 +27,6 @@ defmodule ElixirConsoleWeb.ConnCase do
   end
 
   setup _tags do
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    {:ok, conn: Map.put(Phoenix.ConnTest.build_conn(), :host, "localhost")}
   end
 end

@@ -45,5 +45,6 @@ defmodule ElixirConsoleWeb.Endpoint do
     key: "_elixir_console_key",
     signing_salt: "pIQrFsE9"
 
+  plug ElixirConsoleWeb.HerokuRedirect
   plug ElixirConsoleWeb.Router
 end
