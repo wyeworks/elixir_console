@@ -6,18 +6,29 @@ defmodule ElixirConsole.ContextualHelp do
 
   alias ElixirConsole.Documentation
 
-  @kernel_functions ~w(
+  @kernel_binary_operators ~w(
     !=
     !==
     *
-    +
     -
+    +
     /
     <=
     ==
     ===
     >
     >=
+    &&
+    ++
+    --
+    ..
+    <>
+    =~
+    |>
+    ||
+  )a
+
+  @kernel_functions ~w(
     abs
     and
     binary_part
@@ -53,12 +64,6 @@ defmodule ElixirConsole.ContextualHelp do
     trunc
     tuple_size
     !
-    &&
-    ++
-    --
-    ..
-    <>
-    =~
     binding
     function_exported?
     get_and_update_in
@@ -99,8 +104,6 @@ defmodule ElixirConsole.ContextualHelp do
     unless
     update_in
     update_in
-    |>
-    ||
   )a
 
   @doc """
@@ -131,6 +134,13 @@ defmodule ElixirConsole.ContextualHelp do
        when func_name in @kernel_functions and is_list(params) do
     acc = acc ++ [%{module: "Kernel", func_name: func_name, func_ary: Enum.count(params)}]
     Enum.reduce(params, acc, fn node, acc -> find_functions(node, acc) end)
+  end
+
+  defp find_functions({func_name, _, [left_param, right_param]}, acc)
+       when func_name in @kernel_binary_operators do
+    acc = find_functions(left_param, acc)
+    acc = acc ++ [%{module: "Kernel", func_name: func_name, func_ary: 2}]
+    find_functions(right_param, acc)
   end
 
   defp find_functions({_, _, list}, acc) when is_list(list) do

@@ -112,4 +112,20 @@ defmodule ElixirConsole.ContextualHelpTest do
              "([2,4])"
            ] = ContextualHelp.compute("5 + Enum.count([2,4])")
   end
+
+  test "adds metadata also for binary operator with functions in the left side" do
+    assert [
+             "",
+             {"Enum.count",
+              %{
+                type: :function
+              }},
+             "([2]) ",
+             {"+",
+              %{
+                type: :operator
+              }},
+             " 5"
+           ] = ContextualHelp.compute("Enum.count([2]) + 5")
+  end
 end
