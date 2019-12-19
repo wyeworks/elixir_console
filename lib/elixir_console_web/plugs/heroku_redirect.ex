@@ -10,7 +10,7 @@ defmodule ElixirConsoleWeb.HerokuRedirect do
   def call(conn, _default) do
     if configured_url() != conn.host do
       conn
-      |> put_resp_header("Location", redirect_url())
+      |> put_resp_header("location", redirect_url())
       |> send_resp(:moved_permanently, "")
       |> halt()
     else
@@ -18,7 +18,7 @@ defmodule ElixirConsoleWeb.HerokuRedirect do
     end
   end
 
-  defp configured_url, do: ElixirConsoleWeb.Endpoint.config(:url)[:host] || "localhost:4001"
+  defp configured_url, do: ElixirConsoleWeb.Endpoint.config(:url)[:host] || "localhost"
 
   defp redirect_url do
     %URI{
