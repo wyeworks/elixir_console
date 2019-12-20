@@ -95,6 +95,7 @@ defmodule ElixirConsole.ElixirSafeParts do
     >
     >=
     abs
+    and
     binary_part
     bit_size
     byte_size
