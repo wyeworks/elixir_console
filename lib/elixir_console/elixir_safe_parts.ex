@@ -90,6 +90,7 @@ defmodule ElixirConsole.ElixirSafeParts do
     -
     /
     <=
+    <
     ==
     ===
     >
@@ -161,6 +162,6 @@ defmodule ElixirConsole.ElixirSafeParts do
 
   defp all_kernel_functions_raw do
     Kernel.__info__(:functions) ++
-      Kernel.__info__(:macros) ++ Kernel.SpecialForms.__info__(:functions)
+      Kernel.__info__(:macros) ++ Kernel.SpecialForms.__info__(:macros)
   end
 end

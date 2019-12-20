@@ -42,6 +42,20 @@ defmodule ElixirConsole.Sandbox.CommandValidatorTest do
                CommandValidator.safe_command?("apply(Enum, :count, [[]])")
     end
 
+    test "returns :error when using an invalid Kernel macro" do
+      assert {:error,
+              "It is allowed to invoke only safe Kernel functions. " <>
+                "Not allowed functions attempted: [:use]"} ==
+               CommandValidator.safe_command?("use Integer")
+    end
+
+    test "returns :error when using an invalid Kernel.SpecialForms macro" do
+      assert {:error,
+              "It is allowed to invoke only safe Kernel functions. " <>
+                "Not allowed functions attempted: [:quote]"} ==
+               CommandValidator.safe_command?("quote do: 1 + 2")
+    end
+
     test "returns :error when using an invalid Kernel function with explicit module" do
       assert {:error,
               "It is allowed to invoke only safe Kernel functions. " <>
