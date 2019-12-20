@@ -13,6 +13,7 @@ defmodule ElixirConsole.ContextualHelp do
     -
     +
     /
+    <
     <=
     ==
     ===
