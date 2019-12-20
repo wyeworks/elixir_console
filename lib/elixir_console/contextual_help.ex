@@ -26,11 +26,13 @@ defmodule ElixirConsole.ContextualHelp do
     =~
     |>
     ||
+    and
+    or
+    in
   )a
 
   @kernel_functions ~w(
     abs
-    and
     binary_part
     bit_size
     byte_size
@@ -39,7 +41,6 @@ defmodule ElixirConsole.ContextualHelp do
     elem
     floor
     hd
-    in
     is_atom
     is_binary
     is_bitstring
@@ -56,7 +57,6 @@ defmodule ElixirConsole.ContextualHelp do
     length
     map_size
     not
-    or
     rem
     round
     self
@@ -76,13 +76,9 @@ defmodule ElixirConsole.ContextualHelp do
     max
     min
     pop_in
-    pop_in
     put_elem
     put_in
-    put_in
     raise
-    raise
-    reraise
     reraise
     sigil_C
     sigil_D
@@ -102,7 +98,6 @@ defmodule ElixirConsole.ContextualHelp do
     to_charlist
     to_string
     unless
-    update_in
     update_in
   )a
 
