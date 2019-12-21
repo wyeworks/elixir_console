@@ -140,4 +140,10 @@ defmodule ElixirConsole.ContextualHelpTest do
              "(foo).bar"
            ] = ContextualHelp.compute("Map.new(foo).bar")
   end
+
+  @tag :pending
+  test "adds metadata to sigils" do
+    assert ["regex = ", {"Kerne.sigil_r", _}, "/foo|bar/"] =
+             ContextualHelp.compute("regex = ~r/foo|bar/")
+  end
 end

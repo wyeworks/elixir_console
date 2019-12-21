@@ -81,18 +81,6 @@ defmodule ElixirConsole.ContextualHelp do
     put_in
     raise
     reraise
-    sigil_C
-    sigil_D
-    sigil_N
-    sigil_R
-    sigil_S
-    sigil_T
-    sigil_U
-    sigil_W
-    sigil_c
-    sigil_r
-    sigil_s
-    sigil_w
     struct
     struct!
     throw
