@@ -81,18 +81,6 @@ defmodule ElixirConsole.ContextualHelp do
     put_in
     raise
     reraise
-    sigil_C
-    sigil_D
-    sigil_N
-    sigil_R
-    sigil_S
-    sigil_T
-    sigil_U
-    sigil_W
-    sigil_c
-    sigil_r
-    sigil_s
-    sigil_w
     struct
     struct!
     throw
@@ -121,8 +109,14 @@ defmodule ElixirConsole.ContextualHelp do
     Enum.reduce(list, acc, fn node, acc -> find_functions(node, acc) end)
   end
 
-  defp find_functions({{:., _, [{_, _, [module]}, func_name]}, _, params}, acc) do
+  defp find_functions({{:., _, [{_, _, [module]}, func_name]}, _, params}, acc)
+       when is_atom(module) do
     acc = acc ++ [%{module: module, func_name: func_name, func_ary: Enum.count(params)}]
+    Enum.reduce(params, acc, fn node, acc -> find_functions(node, acc) end)
+  end
+
+  defp find_functions({{:., _, nested_expression}, _, params}, acc) do
+    acc = find_functions(nested_expression, acc)
     Enum.reduce(params, acc, fn node, acc -> find_functions(node, acc) end)
   end
 
