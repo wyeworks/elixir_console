@@ -128,4 +128,16 @@ defmodule ElixirConsole.ContextualHelpTest do
              " 5"
            ] = ContextualHelp.compute("Enum.count([2]) + 5")
   end
+
+  test "adds metadata when expression uses dot notation" do
+    assert [
+             "",
+             {"Map.new",
+              %{
+                func_name: "Map.new/1",
+                header: ["new(enumerable)"]
+              }},
+             "(foo).bar"
+           ] = ContextualHelp.compute("Map.new(foo).bar")
+  end
 end
