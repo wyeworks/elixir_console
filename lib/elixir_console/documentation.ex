@@ -1,4 +1,9 @@
 defmodule ElixirConsole.Documentation do
+  @moduledoc """
+  GenServer that holds Elixir functions/macros documentation in memory for fast
+  access.
+  """
+
   use GenServer
 
   defmodule Key do

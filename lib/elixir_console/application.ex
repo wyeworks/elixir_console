@@ -9,6 +9,7 @@ defmodule ElixirConsole.Application do
     # List all child processes to be supervised
     children = [
       ElixirConsoleWeb.Endpoint,
+      ElixirConsoleWeb.LiveMonitor,
       ElixirConsole.Documentation
     ]
 

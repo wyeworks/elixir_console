@@ -117,8 +117,16 @@ defmodule ElixirConsole.Sandbox do
     end
   end
 
+  @doc """
+  The sandbox process is exited. This function should be used when the sandbox
+  is not longer needed so resources are properly disposed.
+  """
+  def terminate(%__MODULE__{pid: pid}) do
+    Process.exit(pid, :kill)
+  end
+
   defp restore(sandbox) do
-    %{sandbox | pid: init().pid}
+    %__MODULE__{sandbox | pid: init().pid}
   end
 
   defp check_execution_status(pid, [{:ticks, 0} | _]) do

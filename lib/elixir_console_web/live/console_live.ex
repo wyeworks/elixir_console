@@ -1,8 +1,13 @@
 defmodule ElixirConsoleWeb.ConsoleLive do
+  @moduledoc """
+  This is the main LiveView module of the application.
+  """
+
   use Phoenix.LiveView
   import Phoenix.HTML, only: [sigil_e: 2]
 
   alias ElixirConsole.{Autocomplete, ContextualHelp, Sandbox}
+  alias ElixirConsoleWeb.LiveMonitor
 
   defmodule Output do
     @enforce_keys [:command, :id]
@@ -89,6 +94,9 @@ defmodule ElixirConsoleWeb.ConsoleLive do
   end
 
   def mount(_session, socket) do
+    sandbox = Sandbox.init()
+    LiveMonitor.monitor(self(), __MODULE__, %{id: socket.id, sandbox: sandbox})
+
     {:ok,
      assign(
        socket,
@@ -100,8 +108,13 @@ defmodule ElixirConsoleWeb.ConsoleLive do
        caret_position: 0,
        contextual_help: nil,
        command_id: 0,
-       sandbox: Sandbox.init()
+       sandbox: sandbox
      )}
+  end
+
+  @doc "Function invoked when the live view process is finished. See LiveMonitor.terminate/1."
+  def unmount(%{sandbox: sandbox}) do
+    Sandbox.terminate(sandbox)
   end
 
   # TAB KEY
@@ -193,6 +206,8 @@ defmodule ElixirConsoleWeb.ConsoleLive do
          |> assign(contextual_help: nil)}
 
       {:error, error, sandbox} ->
+        LiveMonitor.update_sandbox(self(), __MODULE__, %{id: socket.id, sandbox: sandbox})
+
         {:noreply,
          socket
          |> append_output(:error, command, error)
