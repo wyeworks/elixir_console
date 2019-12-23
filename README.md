@@ -83,7 +83,7 @@ The authors of the project are [Noelia](https://github.com/noelia-lencina), [Ign
 # Contributing
 
 Please feel free to open issues or pull requests. Both things will help us to extend and improve the Elixir Web Console  🎉
-Given the nature of the problem, we know that security vulnerabilities probably exist. If you have found a security problem, please send us a note privately at [elixirconsole@wyeworks.com](mailto:elixirconsole@wyeworks.com).
+Given the nature of the problem, we know that security vulnerabilities probably exist. If you have found a security problem, please send us a note privately at [elixir-console-security@wyeworks.com](mailto:elixir-console-security@wyeworks.com).
 
 # License
 
