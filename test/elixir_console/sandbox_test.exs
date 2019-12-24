@@ -73,4 +73,12 @@ defmodule ElixirConsole.SandboxTest do
 
     assert {:success, {3, _}} = Sandbox.execute("1 + 2", sandbox)
   end
+
+  test "returns a runtime error when about to invoke an unsafe function", %{sandbox: sandbox} do
+    assert {:error,
+            {"%RuntimeError{message: \"Sandbox runtime error: " <>
+               "It is not allowed to use some Elixir modules. " <>
+               "Not allowed module attempted: File\"}",
+             _}} = Sandbox.execute(":\"Elixir.File\".cwd()", sandbox)
+  end
 end

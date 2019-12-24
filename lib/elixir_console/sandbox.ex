@@ -6,7 +6,7 @@ defmodule ElixirConsole.Sandbox do
   @type sandbox() :: %__MODULE__{}
 
   require Logger
-  alias ElixirConsole.Sandbox.CommandValidator
+  alias ElixirConsole.Sandbox.{CommandValidator, RuntimeValidations}
 
   @max_command_length 500
   @max_memory_kb_default 256
@@ -160,7 +160,8 @@ defmodule ElixirConsole.Sandbox do
   defp execute_code(command, bindings) do
     try do
       with :ok <- CommandValidator.safe_command?(command),
-           {result, bindings} <- Code.eval_string(command, bindings) do
+           command_ast <- RuntimeValidations.get_augmented_ast(command),
+           {result, bindings} <- Code.eval_quoted(command_ast, bindings) do
         {:success, {result, bindings}}
       else
         error -> error
