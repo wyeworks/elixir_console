@@ -4,7 +4,7 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
     ensures that non-secure functions are not invoked at runtime.
   """
 
-  @this_module Module.split(__MODULE__) |> Enum.map(&String.to_atom/1)
+  @this_module __MODULE__ |> Module.split() |> Enum.map(&String.to_atom/1)
   @valid_modules ElixirConsole.ElixirSafeParts.safe_elixir_modules()
   @kernel_functions_blacklist ElixirConsole.ElixirSafeParts.unsafe_kernel_functions()
 
