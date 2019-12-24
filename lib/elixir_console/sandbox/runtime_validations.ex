@@ -4,6 +4,8 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
     ensures that non-secure functions are not invoked at runtime.
   """
 
+  alias ElixirConsole.Sandbox.Util
+
   @this_module __MODULE__ |> Module.split() |> Enum.map(&String.to_atom/1)
   @valid_modules ElixirConsole.ElixirSafeParts.safe_elixir_modules()
   @kernel_functions_blacklist ElixirConsole.ElixirSafeParts.unsafe_kernel_functions()
@@ -63,25 +65,11 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
   end
 
   def safe_invocation(callee, _function) do
-    if is_erlang_module?(callee) do
+    if ElixirConsole.Sandbox.Util.is_erlang_module?(callee) do
       raise "It is not allowed to invoke non-Elixir modules. " <>
               "Not allowed module attempted: #{inspect(callee)}"
     else
       callee
     end
   end
-
-  # TODO repeated code
-  @az_range 97..122
-
-  defp is_erlang_module?(module) when not is_atom(module), do: false
-
-  defp is_erlang_module?(module) do
-    module
-    |> to_charlist
-    |> starts_with_lowercase?
-  end
-
-  defp starts_with_lowercase?([first_char | _]) when first_char in @az_range, do: true
-  defp starts_with_lowercase?(_module_charlist), do: false
 end
