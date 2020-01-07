@@ -35,7 +35,6 @@ defmodule ElixirConsole.ElixirSafeParts do
     Range
     Stream
     OptionParser
-    Path
     Collectable
     Enumerable
   )a
