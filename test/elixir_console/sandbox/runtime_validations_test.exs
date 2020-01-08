@@ -9,27 +9,29 @@ defmodule ElixirConsole.Sandbox.RuntimeValidationsTest do
   end
 
   test "inserts an inline call when dot operator is used" do
-    command = "Enum.count([])"
+    command = "Enum.count([2])"
 
     {:ok, expected_ast} =
       Code.string_to_quoted(
-        "ElixirConsole.Sandbox.RuntimeValidations.safe_invocation(Enum, :count).count([])"
+        "ElixirConsole.Sandbox.RuntimeValidations.safe_invocation(Enum, :count, [[2]])"
       )
 
     assert expected_ast == RuntimeValidations.get_augmented_ast(command)
   end
 
+  @tag :pending
   test "inserts an inline call when pipe operator is used" do
     command = "[] |> Enum.count"
 
     {:ok, expected_ast} =
       Code.string_to_quoted(
-        "[] |> ElixirConsole.Sandbox.RuntimeValidations.safe_invocation(Enum, :count).count()"
+        "ElixirConsole.Sandbox.RuntimeValidations.safe_invocation(Enum, :count, [[]])"
       )
 
     assert expected_ast == RuntimeValidations.get_augmented_ast(command)
   end
 
+  @tag :pending
   test "inserts inline calls within nested expressions" do
     command = "Enum.count(Enum.map([1,2,3], &(&1 * 2)))"
 
@@ -37,6 +39,18 @@ defmodule ElixirConsole.Sandbox.RuntimeValidationsTest do
       Code.string_to_quoted(
         "ElixirConsole.Sandbox.RuntimeValidations.safe_invocation(Enum, :count).count(" <>
           "ElixirConsole.Sandbox.RuntimeValidations.safe_invocation(Enum, :map).map([1,2,3], &(&1 * 2)))"
+      )
+
+    assert expected_ast == RuntimeValidations.get_augmented_ast(command)
+  end
+
+  @tag :pending
+  test "inserts an inline call when string interpolation is used" do
+    command = "\"Hello \#{:world}\""
+
+    {:ok, expected_ast} =
+      Code.string_to_quoted(
+        "<<\"Hello \", ElixirConsole.Sandbox.RuntimeValidations.safe_invocation(Kernel, :to_string).to_string(:world)::binary>>"
       )
 
     assert expected_ast == RuntimeValidations.get_augmented_ast(command)

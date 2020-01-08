@@ -20,21 +20,13 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
     augmented_ast
   end
 
-  defp add_safe_invocation({:., meta, [callee, function]}, acc) do
+  defp add_safe_invocation({{:., meta, [callee, function]}, outer_meta, params}, acc) do
     elem =
-      {:., meta,
-       [
-         {
-           {:., meta,
-            [
-              {:__aliases__, meta, @this_module},
-              :safe_invocation
-            ]},
-           meta,
-           [callee, function]
-         },
-         function
-       ]}
+      {{:., outer_meta,
+        [
+          {:__aliases__, meta, @this_module},
+          :safe_invocation
+        ]}, meta, [callee, function, params]}
 
     {elem, acc}
   end
@@ -42,32 +34,45 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
   defp add_safe_invocation(elem, acc), do: {elem, acc}
 
   @doc """
-    This function is meant to be invoked before calling a function (from an
-    expression with the form `foo.bar`), so the Sandbox can effectively check if
-    this invocation is considered safe. In case of success, the callee is
-    returned. In this way, this function can be inlined in the original
-    expression (like `safe_invocation(foo, bar).bar`).
+    This function is meant to be injected into the modified AST so we have safe
+    invocations. The original invocation is done once it is validated as a
+    secure call.
   """
-  def safe_invocation(callee, _) when callee not in @valid_modules do
+  def safe_invocation(callee, _, _) when callee not in @valid_modules do
     raise "Sandbox runtime error: It is not allowed to use some Elixir modules. " <>
             "Not allowed module attempted: #{inspect(callee)}"
   end
 
-  def safe_invocation(Kernel, function) when function in @kernel_functions_blacklist do
+  def safe_invocation(Kernel, function, _) when function in @kernel_functions_blacklist do
     raise "Sandbox runtime error: It is not allowed to use some Elixir modules. " <>
             "Not allowed function attempted: #{inspect(function)}"
   end
 
-  def safe_invocation(String, :to_atom) do
+  def safe_invocation(String, :to_atom, _) do
     raise "Sandbox runtime error: String.to_atom/1 is not allowed."
   end
 
-  def safe_invocation(callee, _function) do
+  # TODO generalize to other macros from Kernel and Integer (and for other modules?)
+  def safe_invocation(Kernel, :to_string, params) do
+    apply(&(Kernel.to_string(&1)), params)
+  end
+
+  def safe_invocation(Integer, :is_odd, params) do
+    require Integer
+    apply(&(Integer.is_odd(&1)), params)
+  end
+  def safe_invocation(Integer, :is_even, params) do
+    require Integer
+    apply(&(Integer.is_even(&1)), params)
+  end
+
+
+  def safe_invocation(callee, function, params) do
     if ElixirConsole.Sandbox.Util.is_erlang_module?(callee) do
       raise "It is not allowed to invoke non-Elixir modules. " <>
               "Not allowed module attempted: #{inspect(callee)}"
     else
-      callee
+      apply(callee, function, params)
     end
   end
 end
