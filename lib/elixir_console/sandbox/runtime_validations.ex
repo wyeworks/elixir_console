@@ -69,21 +69,42 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
     raise "Sandbox runtime error: String.to_atom/1 is not allowed."
   end
 
-  # TODO generalize to other macros from Kernel and Integer (and for other modules?)
-  def safe_invocation(Kernel, :to_string, params) do
-    apply(&to_string(&1), params)
+  # This approach is not working well with Kernel macros that are invoked with
+  # explicit callee (e.g. Kernel.to_string/1). The following functions cover a
+  # little portion of the cases. Future work can be done to transform AST
+  # converting those macro calls to implicit invocations.
+
+  # In particular, Kernel.to_string/1 must be supported because of string
+  # interpolation. This is the only one that is very important to have done.
+  def safe_invocation(Kernel, :to_string, [param]) do
+    to_string(param)
   end
 
-  def safe_invocation(Integer, :is_odd, params) do
-    require Integer
-    apply(&Integer.is_odd(&1), params)
+  # A few extra cases that are cheap to cover
+  def safe_invocation(Kernel, :binding, params) do
+    apply(&binding(&1), params)
   end
 
-  def safe_invocation(Integer, :is_even, params) do
-    require Integer
-    apply(&Integer.is_even(&1), params)
+  def safe_invocation(Kernel, :is_nil, [param]) do
+    is_nil(param)
   end
 
+  def safe_invocation(Kernel, :to_charlist, [param]) do
+    to_charlist(param)
+  end
+
+  # Integer macros
+  require Integer
+
+  def safe_invocation(Integer, :is_odd, param) do
+    Integer.is_odd(param)
+  end
+
+  def safe_invocation(Integer, :is_even, param) do
+    Integer.is_even(param)
+  end
+
+  # Base case
   def safe_invocation(callee, function, params) do
     if ElixirConsole.Sandbox.Util.is_erlang_module?(callee) do
       raise "It is not allowed to invoke non-Elixir modules. " <>

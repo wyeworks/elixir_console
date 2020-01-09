@@ -112,5 +112,29 @@ defmodule ElixirConsole.SandboxTest do
       assert Sandbox.execute("[head | tail] = [1, 2, 3]", sandbox) ==
                {:success, {[1, 2, 3], expected_sandbox}}
     end
+
+    test "works with basic if blocks", %{sandbox: sandbox} do
+      expected_sandbox = %Sandbox{sandbox | bindings: []}
+
+      assert Sandbox.execute("if true, do: :great", sandbox) ==
+               {:success, {:great, expected_sandbox}}
+
+      assert Sandbox.execute("if false, do: :great, else: :bad", sandbox) ==
+               {:success, {:bad, expected_sandbox}}
+    end
+
+    test "works with Bitwise macros (without the need to use the module)", %{sandbox: sandbox} do
+      expected_sandbox = %Sandbox{sandbox | bindings: []}
+
+      assert Sandbox.execute("1 &&& 1", sandbox) ==
+               {:success, {1, expected_sandbox}}
+    end
+
+    test "works with improper lists", %{sandbox: sandbox} do
+      expected_sandbox = %Sandbox{sandbox | bindings: [a: [1, 2 | 3], b: [4 | 5]]}
+
+      assert Sandbox.execute("{a, b} = {[1, 2] ++ 3, [4 | 5]}", sandbox) ==
+               {:success, {{[1, 2 | 3], [4 | 5]}, expected_sandbox}}
+    end
   end
 end
