@@ -125,4 +125,14 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
       apply(callee, function, params)
     end
   end
+
+  def safe_invocation(callee, function, params) do
+    try do
+      Sentry.capture_message("safe_invocation unexpected case",
+        extra: %{callee: callee, function: function, params: params}
+      )
+    after
+      raise "Internal error. Please fill an issue at https://github.com/wyeworks/elixir_console/issues."
+    end
+  end
 end
