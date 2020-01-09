@@ -20,14 +20,17 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
     augmented_ast
   end
 
-  defp add_safe_invocation(
-         {:|>, outer_meta,
-          [first_param, {{:., meta, [callee, function]}, meta, remaining_params}]},
-         acc
-       )
-       when is_atom(callee) or is_tuple(callee) do
-    params = [first_param | remaining_params]
+  # Do not inline a `safe_invocation` call when the dot operator is used to access
+  # nested structures
+  defp add_safe_invocation({{:., _, [{{:., _, [Access, :get]}, _, _}, _]}, _, _} = elem, acc),
+    do: {elem, acc}
 
+  defp add_safe_invocation({{:., _, [Access, :get]}, _, _} = elem, acc), do: {elem, acc}
+
+  # Inline `safe_invocation` call when dot operator implies to invoke a function
+  # (this is exactly the case we want to intercept)
+  defp add_safe_invocation({{:., meta, [callee, function]}, outer_meta, params}, acc)
+       when is_atom(callee) or is_tuple(callee) do
     elem =
       {{:., outer_meta,
         [
@@ -38,8 +41,16 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
     {elem, acc}
   end
 
-  defp add_safe_invocation({{:., meta, [callee, function]}, outer_meta, params}, acc)
+  # Also inline a `safe_invocation` call when pipe operator is used, since it is
+  # equivalent to direct invocation
+  defp add_safe_invocation(
+         {:|>, outer_meta,
+          [first_param, {{:., meta, [callee, function]}, meta, remaining_params}]},
+         acc
+       )
        when is_atom(callee) or is_tuple(callee) do
+    params = [first_param | remaining_params]
+
     elem =
       {{:., outer_meta,
         [
@@ -73,8 +84,8 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
 
   # This approach is not working well with Kernel macros that are invoked with
   # explicit callee (e.g. Kernel.to_string/1). The following functions cover a
-  # little portion of the cases. Future work can be done to transform AST
-  # converting those macro calls to implicit invocations.
+  # little portion of the existing cases. Future work can be done to transform
+  # AST converting those macro calls to implicit invocations.
 
   # In particular, Kernel.to_string/1 must be supported because of string
   # interpolation. This is the only one that is very important to have done.

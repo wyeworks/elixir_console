@@ -148,5 +148,28 @@ defmodule ElixirConsole.SandboxTest do
       assert Sandbox.execute("users[:john].age", initial_and_expected_sandbox) ==
                {:success, {27, initial_and_expected_sandbox}}
     end
+
+    test "works when using Kernel.put_in/2 and friends", %{sandbox: sandbox} do
+      users = %{"john" => %{age: 27}, "meg" => %{age: 23}}
+      initial_and_expected_sandbox = %Sandbox{sandbox | bindings: [users: users]}
+
+      assert Sandbox.execute("put_in(users[\"john\"][:age], 28)", initial_and_expected_sandbox) ==
+               {:success,
+                {%{"john" => %{age: 28}, "meg" => %{age: 23}}, initial_and_expected_sandbox}}
+
+      assert Sandbox.execute(
+               "update_in(users[\"john\"].age, &(&1 + 1))",
+               initial_and_expected_sandbox
+             ) ==
+               {:success,
+                {%{"john" => %{age: 28}, "meg" => %{age: 23}}, initial_and_expected_sandbox}}
+
+      assert Sandbox.execute(
+               "get_and_update_in(users[\"john\"].age, &{&1, &1 + 1})",
+               initial_and_expected_sandbox
+             ) ==
+               {:success,
+                {{27, %{"john" => %{age: 28}, "meg" => %{age: 23}}}, initial_and_expected_sandbox}}
+    end
   end
 end
