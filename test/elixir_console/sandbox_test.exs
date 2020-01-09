@@ -136,5 +136,17 @@ defmodule ElixirConsole.SandboxTest do
       assert Sandbox.execute("{a, b} = {[1, 2] ++ 3, [4 | 5]}", sandbox) ==
                {:success, {{[1, 2 | 3], [4 | 5]}, expected_sandbox}}
     end
+
+    test "works with nested structures", %{sandbox: sandbox} do
+      users = [
+        john: %{name: "John", age: 27, languages: ["Erlang", "Ruby", "Elixir"]},
+        mary: %{name: "Mary", age: 29, languages: ["Elixir", "F#", "Clojure"]}
+      ]
+
+      initial_and_expected_sandbox = %Sandbox{sandbox | bindings: [users: users]}
+
+      assert Sandbox.execute("users[:john].age", initial_and_expected_sandbox) ==
+               {:success, {27, initial_and_expected_sandbox}}
+    end
   end
 end

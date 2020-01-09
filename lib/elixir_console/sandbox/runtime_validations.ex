@@ -24,7 +24,8 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
          {:|>, outer_meta,
           [first_param, {{:., meta, [callee, function]}, meta, remaining_params}]},
          acc
-       ) do
+       )
+       when is_atom(callee) or is_tuple(callee) do
     params = [first_param | remaining_params]
 
     elem =
@@ -37,7 +38,8 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
     {elem, acc}
   end
 
-  defp add_safe_invocation({{:., meta, [callee, function]}, outer_meta, params}, acc) do
+  defp add_safe_invocation({{:., meta, [callee, function]}, outer_meta, params}, acc)
+       when is_atom(callee) or is_tuple(callee) do
     elem =
       {{:., outer_meta,
         [
@@ -55,14 +57,14 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
     invocations. The original invocation is done once it is validated as a
     secure call.
   """
-  def safe_invocation(callee, _, _) when callee not in @valid_modules do
+  def safe_invocation(callee, _, _) when is_atom(callee) and callee not in @valid_modules do
     raise "Sandbox runtime error: It is not allowed to use some Elixir modules. " <>
             "Not allowed module attempted: #{inspect(callee)}"
   end
 
   def safe_invocation(Kernel, function, _) when function in @kernel_functions_blacklist do
-    raise "Sandbox runtime error: It is not allowed to use some Elixir modules. " <>
-            "Not allowed function attempted: #{inspect(function)}"
+    raise "Sandbox runtime error: It is not allowed to use some Kernel functions/macros. " <>
+            "Not allowed function/macro attempted: #{inspect(function)}"
   end
 
   def safe_invocation(String, :to_atom, _) do
@@ -104,8 +106,18 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
     Integer.is_even(param)
   end
 
+  # Case where dot operator is used as a way to access a nested structure We are
+  # still adding the safe_invocation call, just to make sure the callee is not
+  # an atom but we can not resolve it using Kernel.apply/3
+  def safe_invocation(term, key, []) when is_map(term) and is_atom(key) do
+    case Access.fetch(term, key) do
+      {:ok, result} -> result
+      :error -> %KeyError{key: key, message: nil, term: term}
+    end
+  end
+
   # Base case
-  def safe_invocation(callee, function, params) do
+  def safe_invocation(callee, function, params) when is_atom(callee) do
     if ElixirConsole.Sandbox.Util.is_erlang_module?(callee) do
       raise "It is not allowed to invoke non-Elixir modules. " <>
               "Not allowed module attempted: #{inspect(callee)}"
