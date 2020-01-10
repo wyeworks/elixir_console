@@ -22,8 +22,8 @@ defmodule ElixirConsole.Sandbox.ExcludeConversionToAtoms do
 
   defp valid?(elem, :error), do: {elem, :error}
 
-  defp valid?({:., _, [{:__aliases__, _, [:String]}, function]} = elem, _acc)
-       when function == :to_atom do
+  defp valid?({:., _, [{:__aliases__, _, [module]}, function]} = elem, _acc)
+       when function == :to_atom and module in [:String, :List] do
     {elem, :error}
   end
 
