@@ -8,11 +8,6 @@ defmodule ElixirConsole.Sandbox do
   require Logger
   alias ElixirConsole.Sandbox.{CommandValidator, RuntimeValidations}
 
-  # This is just to make available Bitwise macros when evaluating user code
-  # Bitwise is special because the module must be `used` to have access to their
-  # macros
-  use Bitwise
-
   @max_command_length 500
   @max_memory_kb_default 256
   @timeout_ms_default 5000
@@ -166,7 +161,8 @@ defmodule ElixirConsole.Sandbox do
     try do
       with :ok <- CommandValidator.safe_command?(command),
            command_ast <- RuntimeValidations.get_augmented_ast(command),
-           {result, bindings} <- Code.eval_quoted(command_ast, bindings, __ENV__) do
+           {result, bindings} <-
+             Code.eval_quoted(command_ast, bindings, eval_context()) do
         {:success, {result, bindings}}
       else
         error -> error
@@ -175,5 +171,32 @@ defmodule ElixirConsole.Sandbox do
       exception ->
         {:error, inspect(exception)}
     end
+  end
+
+  # This is just to make available Bitwise macros when evaluating user code
+  # Bitwise is special because the module must be `used` to have access to their
+  # macros
+  defp eval_context do
+    [
+      requires: [Bitwise, Kernel],
+      macros: [
+        {Kernel, __ENV__.macros[Kernel]},
+        {Bitwise,
+         [
+           &&&: 2,
+           <<<: 2,
+           >>>: 2,
+           ^^^: 2,
+           band: 2,
+           bnot: 1,
+           bor: 2,
+           bsl: 2,
+           bsr: 2,
+           bxor: 2,
+           |||: 2,
+           ~~~: 1
+         ]}
+      ]
+    ]
   end
 end

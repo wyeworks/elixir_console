@@ -70,7 +70,8 @@ defmodule ElixirConsole.SandboxTest do
     end
 
     test "allows to run more commands after timeout error", %{sandbox: sandbox} do
-      {:error, {_, sandbox}} = Sandbox.execute(":timer.sleep(100)", sandbox, timeout: 50)
+      {:error, {_, sandbox}} =
+        Sandbox.execute("Enum.each(1..100_000_000, &(&1))", sandbox, timeout: 50)
 
       assert {:success, {3, _}} = Sandbox.execute("1 + 2", sandbox)
     end
@@ -81,6 +82,18 @@ defmodule ElixirConsole.SandboxTest do
                  "It is not allowed to use some Elixir modules. " <>
                  "Not allowed module attempted: File\"}",
                _}} = Sandbox.execute(":\"Elixir.File\".cwd()", sandbox)
+    end
+
+    test "returns a runtime error when about to invoke an Erlang function", %{sandbox: sandbox} do
+      assert {:error,
+              {"%CompileError{description: \"undefined function date/0\", file: \"nofile\", line: 1}",
+               _}} = Sandbox.execute("date()", sandbox)
+    end
+
+    test "returns a runtime error when invoking unknown function", %{sandbox: sandbox} do
+      assert {:error,
+              {"%CompileError{description: \"undefined function foo/1\", file: \"nofile\", line: 1}",
+               _}} = Sandbox.execute("foo(:bar)", sandbox)
     end
   end
 
