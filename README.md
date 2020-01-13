@@ -36,6 +36,8 @@ The console has a whitelist that includes modules and functions of Elixir consid
 
 Moreover, the mentioned whitelist does exclude the metaprogramming functionality of Elixir. The functions [`Kernel.apply/2`](https://hexdocs.pm/elixir/Kernel.html#apply/2) and [`Kernel.apply/3`](https://hexdocs.pm/elixir/Kernel.html#apply/3) are also out of the whitelist to prevent the indirect invocation of not-secure functions.
 
+The AST of the user code is verified before its actual execution, checking if the function invocations are not dangerous. However, some cases are impossible to detect by only inspecting at the code. For this reason, a layer of runtime validations exists as well, providing an additional way to detect non-secure invocations that only happens when the user code computes the callee at runtime. Both approaches have some overlap, and the design of the solution is still in its early stages, so we expect to work on having a more refined solution in the future.
+
 ## Processes
 
 The console currently does not allow the usage of the module `Process` and other parts of Elixir related to processes. Existing resource usage limitations (see next section) would be much harder to enforce if users were permitted to spawn processes. Similarly, the functions `send` and `receive` are restricted to avoid integrity and security problems.
@@ -81,6 +83,12 @@ This project was originally implemented to participate in the [Phoenix Phrenzy](
 Beyond its primary purpose, this is a research initiative. We are exploring the implications of executing untrusted Elixir code in a sandboxed manner. In particular, we want to solve it without using extra infrastructure, being as accessible and easy to use as possible. We have plans to create a package  that includes the sandbox functionality. This package would enable the usage of Elixir as a scripting language (although we are not sure if this is a good idea).
 
 The authors of the project are [Noelia](https://github.com/noelia-lencina), [Ignacio](https://github.com/iaguirre88), [Javier](https://github.com/JavierM42), and [Jorge](https://github.com/jmbejar). Special thanks to [WyeWorks](https://www.wyeworks.com) for providing working hours to dedicate to this project.
+
+# Special Thanks
+
+The authors of the project are [Noelia](https://github.com/noelia-lencina), [Ignacio](https://github.com/iaguirre88), [Javier](https://github.com/JavierM42), and [Jorge](https://github.com/jmbejar). Special thanks to [WyeWorks](https://www.wyeworks.com) for providing working hours to dedicate to this project.
+
+We also want to publicly thanks [Marcelo Dominguez](https://github.com/marpo60), [Allen Madsen](https://github.com/noelia-lencina), [Gabriel Roldán](https://github.com/luisgabrielroldan), and [Luis Ferreira](https://github.com/hidnasio) for testing the console and reporting several security issues.
 
 # Contributing
 
