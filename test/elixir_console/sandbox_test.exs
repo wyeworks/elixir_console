@@ -98,6 +98,13 @@ defmodule ElixirConsole.SandboxTest do
   end
 
   describe "Elixir functionality that is supported by the console" do
+    test "works with empty command", %{sandbox: sandbox} do
+      expected_sandbox = %Sandbox{sandbox | bindings: []}
+
+      assert Sandbox.execute("", sandbox) ==
+               {:success, {nil, expected_sandbox}}
+    end
+
     test "works with string interpolation", %{sandbox: sandbox} do
       expected_sandbox = %Sandbox{sandbox | bindings: []}
 

@@ -139,6 +139,7 @@ defmodule ElixirConsole.ElixirSafeParts do
     =
     ^
     __aliases__
+    __block__
     case
     cond
     fn
