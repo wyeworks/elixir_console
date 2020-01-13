@@ -66,11 +66,13 @@ The length of the command itself (the number of characters) is limited as well. 
 
 While a refined ongoing plan does not exist yet, the following is a list of possible improvements.
 
+*   Add the ability to write multiline code.
 *   Extract the Elixir Sandbox functionality to a package.
 *   Allow spawning a limited amount of processes.
+*   Try to permit the definition of modules and structs.
 *   Implement sandboxed versions of individual restricted modules and functions (for example, a fake implementation of the filesystem functions).
 *   Provide controlled access to additional concurrency-related functionality (send/receive, Agent, GenServer), if possible.
-*   There are ideas to overcome the problem with atoms. We are still working on a prototype to confirm if this is feasible.
+*   Overcome the problem with atoms (we are working on a prototype to confirm if this is feasible).
 
 # About this project
 
