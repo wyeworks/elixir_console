@@ -7,7 +7,7 @@
 
 The [Elixir Web Console](https://elixirconsole.wyeworks.com/) is a virtual place where people can try the [Elixir language](https://elixir-lang.org/) without the need to leave the browser or installing it on their computers. While this is a project in its early stages, we hope this is a contribution to the effort to promote the language, providing a convenient way to assess the capabilities of this technology. We would love to hear ideas about how to extend this project to better serve this purpose (see the Contributing section).
 
-This project is inspired in existing playground sites from distinct communities, such as [SwiftPlayground](http://online.swiftplayground.run/) and [Rust Playground](https://play.rust-lang.org/), Yet, it is unique because it aims to mimic the [Elixir interactive shell (iEX)](https://hexdocs.pm/iex/IEx.html).
+This project is inspired in existing playground sites from distinct communities, such as [SwiftPlayground](http://online.swiftplayground.run/) and [Rust Playground](https://play.rust-lang.org/), yet, it is unique because it aims to mimic the [Elixir interactive shell (iEX)](https://hexdocs.pm/iex/IEx.html).
 
 # Features
 
