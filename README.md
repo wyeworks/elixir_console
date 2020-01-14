@@ -5,7 +5,7 @@
 
 # Elixir Web Console
 
-The [Elixir Web Console](https://elixirconsole.wyeworks.com/) is a virtual place where people can try the [Elixir language](https://elixir-lang.org/) without the need to leave the browser or installing it on their computers. While this is a project in its early stages, we hope this is a contribution to the effort to promote the language, providing a convenient way to assess the capabilities of this technology. We would love to hear ideas about how to extend this project to better serve this purpose (see the Contributing section).
+The [Elixir Web Console](https://elixirconsole.wyeworks.com/) is a virtual place where people can try the [Elixir language](https://elixir-lang.org/) without the need to leave the browser or installing it on their computers. While this is a project in its early stages, we hope this is a contribution to the effort to promote the language, providing a convenient way to assess the capabilities of this technology. We would love to hear ideas about how to extend this project to serve this purpose better (see the Contributing section).
 
 This project is inspired in existing playground sites from distinct communities, such as [SwiftPlayground](http://online.swiftplayground.run/) and [Rust Playground](https://play.rust-lang.org/), yet, it is unique because it aims to mimic the [Elixir interactive shell (iEX)](https://hexdocs.pm/iex/IEx.html).
 
@@ -32,9 +32,11 @@ As you might guess, not all Elixir code coming from unknown people on the intern
 
 ## Elixir safe modules and Kernel functions
 
-The console has a whitelist including modules and functions of Elixir considered safe to execute. The system will inform about this limitation when users attempt to use disallowed stuff, such as modules providing access to the file system, the network, and the operating system, among others.
+The console has a whitelist that includes modules and functions of Elixir considered safe to execute. The system will inform about this limitation when users attempt to use disallowed stuff, such as modules providing access to the file system, the network, and the operating system, among others.
 
 Moreover, the mentioned whitelist does exclude the metaprogramming functionality of Elixir. The functions [`Kernel.apply/2`](https://hexdocs.pm/elixir/Kernel.html#apply/2) and [`Kernel.apply/3`](https://hexdocs.pm/elixir/Kernel.html#apply/3) are also out of the whitelist to prevent the indirect invocation of not-secure functions.
+
+The AST of the user code is verified before its actual execution, checking if the function invocations are not dangerous. However, some cases are impossible to detect by only inspecting at the code. For this reason, a layer of runtime validations exists as well, providing an additional way to detect non-secure invocations that only happens when the user code computes the callee at runtime. Both approaches have some overlap, and the design of the solution has room for improvement, so we expect to work on having a more refined solution shortly.
 
 ## Processes
 
@@ -48,42 +50,50 @@ It represents a tricky issue for our web console because in Elixir/Erlang atoms 
 
 We consider this issue is not an impediment to have the server operating, at least for now. In case of a crash due to the overflow of atoms, Heroku will automatically restart the application.
 
-When the server is restarted any existing sessions are lost. Of course, it would be problematic if it happens often. We are monitoring the server to better diagnose the relevance of this issue. Hopefully, it will require some server restart from time to time, and we have some ideas to automate it in the future.
+When the server is restarted, any existing sessions are lost. Of course, it would be problematic if it happens often. We are monitoring the server to diagnose the relevance of this issue better. Hopefully, it will require some server restart from time to time, and we have some ideas to automate it in the future.
 
 To mitigate this problem, the function `String.to_atom/1`  is not available in the console limiting the creation of a large number of atoms programmatically.
 
-We are confident that the number of created atoms will growth relatively slow, giving us time to restore the server if this is ever needed.
+We are confident that the number of created atoms will grow relatively slow, giving us time to restore the server if this is ever needed.
 
 # Other limitations
 
-The execution of code in this console is limited by the backend logic in additional ways in an attempt to preserve the server health and able to attend a larger number of users.
+The execution of code in this console is limited by the backend logic in additional ways in an attempt to preserve the server health and able to attend able to attend a more significant number of users.
 
-Each submitted command should run in a limited number of seconds, otherwise, a timeout error is returned. Moreover, the execution of the command must respect a memory usage limit.
+Each submitted command should run in a limited number of seconds; otherwise, a timeout error is returned. Moreover, the execution of the piece of code must respect a memory usage limit.
 
-The length of the command itself (the number of characters) is limited as well. This restriction was added for security and resource-saving reasons.
+The length of the command itself (the number of characters) is limited as well. This restriction exists due to security and resource-saving reasons.
 
 # Roadmap
 
 While a refined ongoing plan does not exist yet, the following is a list of possible improvements.
 
+*   Add the ability to write multiline code.
 *   Extract the Elixir Sandbox functionality to a package.
 *   Allow spawning a limited amount of processes.
-*   Sandboxed versions of certain restricted modules and functions. For example, a fake implementation of the filesystem functions.
+*   Try to permit the definition of modules and structs.
+*   Implement sandboxed versions of individual restricted modules and functions (for example, a fake implementation of the filesystem functions).
 *   Provide controlled access to additional concurrency-related functionality (send/receive, Agent, GenServer), if possible.
-*   There are ideas to overcome the problem with atoms. We are still working on a prototype to confirm if this is feasible.
+*   Overcome the problem with atoms (we are working on a prototype to confirm if this is feasible).
 
 # About this project
 
-This project was originally implemented to participate in the [Phoenix Phrenzy](https://phoenixphrenzy.com) contest.  It is an example of the capabilities of [Phoenix](https://phoenixframework.org/) and [LiveView](https://github.com/phoenixframework/phoenix_live_view).
+This project was initially implemented to participate in the [Phoenix Phrenzy](https://phoenixphrenzy.com) contest.  It is an example of the capabilities of [Phoenix](https://phoenixframework.org/) and [LiveView](https://github.com/phoenixframework/phoenix_live_view).
 
-Beyond its main purpose, this is a research initiative. We are exploring the implications of executing untrusted Elixir code in a sandboxed manner. In particular, we want to solve it without using extra infrastructure, being as accessible and easy to use as possible. We have plans to create a package including the sandbox functionality. This package would enable the usage of Elixir as a scripting language (although we are not sure if this is a good idea).
+Beyond its primary purpose, this is a research initiative. We are exploring the implications of executing untrusted Elixir code in a sandboxed manner. In particular, we want to solve it without using extra infrastructure, being as accessible and easy to use as possible. We have plans to create a package that includes the sandbox functionality. This package would enable the usage of Elixir as a scripting language (although we are not sure if this is a good idea).
 
-The authors of the project are [Noelia](https://github.com/noelia-lencina), [Ignacio](https://github.com/iaguirre88), [Javier](https://github.com/JavierM42) and [Jorge](https://github.com/jmbejar). Special thanks to [WyeWorks](https://www.wyeworks.com) for providing working hours to dedicate to this project.
+The authors of the project are [Noelia](https://github.com/noelia-lencina), [Ignacio](https://github.com/iaguirre88), [Javier](https://github.com/JavierM42), and [Jorge](https://github.com/jmbejar). Special thanks to [WyeWorks](https://www.wyeworks.com) for providing working hours to dedicate to this project.
+
+# Special Thanks
+
+The authors of the project are [Noelia](https://github.com/noelia-lencina), [Ignacio](https://github.com/iaguirre88), [Javier](https://github.com/JavierM42), and [Jorge](https://github.com/jmbejar). Special thanks to [WyeWorks](https://www.wyeworks.com) for providing working hours to dedicate to this project.
+
+We also want to publicly thanks [Marcelo Dominguez](https://github.com/marpo60), [Allen Madsen](https://github.com/noelia-lencina), [Gabriel Roldán](https://github.com/luisgabrielroldan), and [Luis Ferreira](https://github.com/hidnasio) for testing the console and reporting several security issues.
 
 # Contributing
 
 Please feel free to open issues or pull requests. Both things will help us to extend and improve the Elixir Web Console  🎉
-Given the nature of the problem, we know that security vulnerabilities probably exist. If you have found a security problem, please send us a note privately at [elixir-console-security@wyeworks.com](mailto:elixir-console-security@wyeworks.com).
+We know that security vulnerabilities probably exist due to the nature of the technical challenge. If you have found a security issue, please send us a note privately at [elixir-console-security@wyeworks.com](mailto:elixir-console-security@wyeworks.com).
 
 # License
 
