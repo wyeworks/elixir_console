@@ -129,12 +129,7 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
 
   # Base case
   def safe_invocation(callee, function, params) when is_atom(callee) do
-    if ElixirConsole.Sandbox.Util.is_erlang_module?(callee) do
-      raise "Non-Elixir are not allowed to be used" <>
-              "Not allowed module attempted: #{inspect(callee)}"
-    else
-      apply(callee, function, params)
-    end
+    apply(callee, function, params)
   end
 
   def safe_invocation(callee, function, params) do

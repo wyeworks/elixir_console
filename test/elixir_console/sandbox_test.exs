@@ -84,13 +84,29 @@ defmodule ElixirConsole.SandboxTest do
                _}} = Sandbox.execute(":\"Elixir.File\".cwd()", sandbox)
     end
 
+    test "returns a runtime error when about to invoke an unsafe function indirectly", %{sandbox: sandbox} do
+      assert {:error,
+              {"%RuntimeError{message: \"Sandbox runtime error: " <>
+                 "Some Elixir modules are not allowed to be used. " <>
+                 "Not allowed module attempted: File\"}",
+               _}} = Sandbox.execute("a = :\"Elixir.File\"; a.cwd()", sandbox)
+    end
+
     test "returns a runtime error when about to invoke an Erlang function", %{sandbox: sandbox} do
+      assert {:error,
+              {"%RuntimeError{message: \"Sandbox runtime error: " <>
+                 "Some Elixir modules are not allowed to be used. " <>
+                 "Not allowed module attempted: :lists\"}",
+               _}} = Sandbox.execute("a = :lists; a.last([5])", sandbox)
+    end
+
+    test "returns a compile error when about to invoke an Erlang function", %{sandbox: sandbox} do
       assert {:error,
               {"%CompileError{description: \"undefined function date/0\", file: \"nofile\", line: 1}",
                _}} = Sandbox.execute("date()", sandbox)
     end
 
-    test "returns a runtime error when invoking unknown function", %{sandbox: sandbox} do
+    test "returns a compile error when invoking unknown function", %{sandbox: sandbox} do
       assert {:error,
               {"%CompileError{description: \"undefined function foo/1\", file: \"nofile\", line: 1}",
                _}} = Sandbox.execute("foo(:bar)", sandbox)
