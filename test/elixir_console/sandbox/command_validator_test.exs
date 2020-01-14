@@ -35,6 +35,14 @@ defmodule ElixirConsole.Sandbox.CommandValidatorTest do
       assert :ok == CommandValidator.safe_command?("\"foo \#{10} bar\"")
     end
 
+    test "returns :ok when using ~w without the atoms modifier" do
+      assert :ok == CommandValidator.safe_command?("~w(\#{Enum.random(1..10)})")
+    end
+
+    test "returns :ok when using ~W and atoms modifier" do
+      assert :ok == CommandValidator.safe_command?("~W(foo bar)a")
+    end
+
     test "returns :error when using an invalid Kernel function" do
       assert {:error,
               "It is allowed to invoke only safe Kernel functions. " <>
@@ -75,6 +83,14 @@ defmodule ElixirConsole.Sandbox.CommandValidatorTest do
               "It is not allowed to programmatically convert to atoms. " <>
                 "Consider using String.to_existing_atom/1"} ==
                CommandValidator.safe_command?("String.to_atom(\"foo\")")
+    end
+
+    test "returns :error when attempting to use sigils that create atoms dynamically" do
+      assert {:error,
+              "It is not allowed to programmatically convert to atoms. " <>
+                "For this reason, the `a` modifier is not allowed when using ~w. " <>
+                "Instead, try using ~W since it does not interpolate the content"} ==
+               CommandValidator.safe_command?("~w(\#{Enum.random(1..10)})a")
     end
   end
 end
