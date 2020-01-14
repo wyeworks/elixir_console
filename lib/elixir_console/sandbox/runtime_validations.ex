@@ -69,12 +69,12 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
     secure call.
   """
   def safe_invocation(callee, _, _) when is_atom(callee) and callee not in @valid_modules do
-    raise "Sandbox runtime error: It is not allowed to use some Elixir modules. " <>
+    raise "Sandbox runtime error: Some Elixir modules are not allowed to be used. " <>
             "Not allowed module attempted: #{inspect(callee)}"
   end
 
   def safe_invocation(Kernel, function, _) when function in @kernel_functions_blacklist do
-    raise "Sandbox runtime error: It is not allowed to use some Kernel functions/macros. " <>
+    raise "Sandbox runtime error: Some Kernel functions/macros are not allowed to be used. " <>
             "Not allowed function/macro attempted: #{inspect(function)}"
   end
 
@@ -130,7 +130,7 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
   # Base case
   def safe_invocation(callee, function, params) when is_atom(callee) do
     if ElixirConsole.Sandbox.Util.is_erlang_module?(callee) do
-      raise "It is not allowed to invoke non-Elixir modules. " <>
+      raise "Non-Elixir are not allowed to be used" <>
               "Not allowed module attempted: #{inspect(callee)}"
     else
       apply(callee, function, params)

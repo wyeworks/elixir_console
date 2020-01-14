@@ -14,12 +14,12 @@ defmodule ElixirConsole.Sandbox.ExcludeConversionToAtoms do
     case result do
       :to_atom_error ->
         {:error,
-         "It is not allowed to programmatically convert to atoms. " <>
+         "Programmatically creation of atoms is not allowed in this online console. " <>
            "Consider using String.to_existing_atom/1"}
 
       :atom_modifier_in_sigils ->
         {:error,
-         "It is not allowed to programmatically convert to atoms. " <>
+         "Programmatically creation of atoms is not allowed in this online console. " <>
            "For this reason, the `a` modifier is not allowed when using ~w. " <>
            "Instead, try using ~W since it does not interpolate the content"}
 
