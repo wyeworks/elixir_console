@@ -84,7 +84,9 @@ defmodule ElixirConsole.SandboxTest do
                _}} = Sandbox.execute(":\"Elixir.File\".cwd()", sandbox)
     end
 
-    test "returns a runtime error when about to invoke an unsafe function indirectly", %{sandbox: sandbox} do
+    test "returns a runtime error when about to invoke an unsafe function indirectly", %{
+      sandbox: sandbox
+    } do
       assert {:error,
               {"%RuntimeError{message: \"Sandbox runtime error: " <>
                  "Some Elixir modules are not allowed to be used. " <>
