@@ -43,18 +43,6 @@ defmodule ElixirConsole.SandboxTest do
                Sandbox.execute("for i <- 1..100_000_000, do: i", sandbox, max_memory_kb: 10)
     end
 
-    test "reports excessive memory usage in binaries", %{sandbox: sandbox} do
-      assert {:error, {"The command used more memory than allowed", _}} =
-               Sandbox.execute("String.duplicate(\"a\", 100_000_000)", sandbox)
-    end
-
-    test "reports excessive memory usage in binaries with custom limit", %{sandbox: sandbox} do
-      assert {:error, {"The command used more memory than allowed", _}} =
-               Sandbox.execute("String.duplicate(\"a\", 10_000_000)", sandbox,
-                 max_binary_memory_kb: 10
-               )
-    end
-
     test "reports excessive time spent on the execution", %{sandbox: sandbox} do
       assert {:error, {"The command was cancelled due to timeout", _}} =
                Sandbox.execute("Enum.each(1..100_000_000, &(&1))", sandbox, timeout: 50)
@@ -112,6 +100,23 @@ defmodule ElixirConsole.SandboxTest do
                  "Some Elixir modules are not allowed to be used. " <>
                  "Not allowed module attempted: :lists\"}",
                _}} = Sandbox.execute("a = :lists; a.last([5])", sandbox)
+    end
+
+    test "returns a runtime error when abusive string creation is attempted", %{sandbox: sandbox} do
+      assert {:error,
+              {"%RuntimeError{message: \"Sandbox runtime error: String.duplicate/2 " <>
+                 "is not safe to be executed when the second parameter is a very large number.\"}",
+               _}} = Sandbox.execute("String.duplicate(\"a\", 100_000_000)", sandbox)
+
+      assert {:error,
+              {"%RuntimeError{message: \"Sandbox runtime error: String.pad_leading/3 " <>
+                 "is not safe to be executed when the second parameter is a very large number.\"}",
+               _}} = Sandbox.execute("String.pad_leading(\"a\", 1_000_000, \"b\")", sandbox)
+
+      assert {:error,
+              {"%RuntimeError{message: \"Sandbox runtime error: String.pad_trailing/3 " <>
+                 "is not safe to be executed when the second parameter is a very large number.\"}",
+               _}} = Sandbox.execute("String.pad_trailing(\"a\", 1_000_000, \"b\")", sandbox)
     end
 
     test "returns a compile error when about to invoke an Erlang function", %{sandbox: sandbox} do
