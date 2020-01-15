@@ -8,6 +8,8 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
   @valid_modules ElixirConsole.ElixirSafeParts.safe_elixir_modules()
   @kernel_functions_blacklist ElixirConsole.ElixirSafeParts.unsafe_kernel_functions()
 
+  @max_string_duplication_times 100_000
+
   @doc """
     Returns the AST for the given Elixir code but including invocations to
     `safe_invocation/2` before invoking any given function (based on the
@@ -80,6 +82,18 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
 
   def safe_invocation(String, :to_atom, _) do
     raise "Sandbox runtime error: String.to_atom/1 is not allowed."
+  end
+
+  def safe_invocation(String, :duplicate, [_, times])
+      when times >= @max_string_duplication_times do
+    raise "Sandbox runtime error: String.duplicate/2 is not safe to be executed " <>
+            "when the second parameter is a very large number."
+  end
+
+  def safe_invocation(String, function, [_, times, _])
+      when times >= @max_string_duplication_times and function in [:pad_leading, :pad_trailing] do
+    raise "Sandbox runtime error: String.#{function}/3 is not safe to be executed " <>
+            "when the second parameter is a very large number."
   end
 
   # This approach is not working well with Kernel macros that are invoked with

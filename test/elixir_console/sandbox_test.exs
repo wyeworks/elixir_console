@@ -102,6 +102,23 @@ defmodule ElixirConsole.SandboxTest do
                _}} = Sandbox.execute("a = :lists; a.last([5])", sandbox)
     end
 
+    test "returns a runtime error when abusive string creation is attempted", %{sandbox: sandbox} do
+      assert {:error,
+              {"%RuntimeError{message: \"Sandbox runtime error: String.duplicate/2 " <>
+                 "is not safe to be executed when the second parameter is a very large number.\"}",
+               _}} = Sandbox.execute("String.duplicate(\"a\", 100_000_000)", sandbox)
+
+      assert {:error,
+              {"%RuntimeError{message: \"Sandbox runtime error: String.pad_leading/3 " <>
+                 "is not safe to be executed when the second parameter is a very large number.\"}",
+               _}} = Sandbox.execute("String.pad_leading(\"a\", 1_000_000, \"b\")", sandbox)
+
+      assert {:error,
+              {"%RuntimeError{message: \"Sandbox runtime error: String.pad_trailing/3 " <>
+                 "is not safe to be executed when the second parameter is a very large number.\"}",
+               _}} = Sandbox.execute("String.pad_trailing(\"a\", 1_000_000, \"b\")", sandbox)
+    end
+
     test "returns a compile error when about to invoke an Erlang function", %{sandbox: sandbox} do
       assert {:error,
               {"%CompileError{description: \"undefined function date/0\", file: \"nofile\", line: 1}",
