@@ -22,7 +22,7 @@ defmodule ElixirConsole.Sandbox.AllowedElixirModules do
 
       invalid_modules ->
         {:error,
-         "It is not allowed to use some Elixir modules. " <>
+         "Some Elixir modules are not allowed to be used. " <>
            "Not allowed modules attempted: #{inspect(invalid_modules)}"}
     end
   end

@@ -22,7 +22,7 @@ defmodule ElixirConsole.Sandbox.SafeKernelFunctions do
 
       unsafe_functions ->
         {:error,
-         "It is allowed to invoke only safe Kernel functions. " <>
+         "Only safe Kernel functions are allowed to be used. " <>
            "Not allowed functions attempted: #{inspect(unsafe_functions)}"}
     end
   end

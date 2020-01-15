@@ -70,7 +70,7 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
       html = render_submit(view, "execute", %{"command" => "File.exists?(Code.get_docs())"})
 
       assert html =~
-               "It is not allowed to use some Elixir modules. " <>
+               "Some Elixir modules are not allowed to be used. " <>
                  "Not allowed modules attempted: [:Code, :File]"
     end
   end

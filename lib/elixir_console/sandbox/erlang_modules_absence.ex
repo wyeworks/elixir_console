@@ -20,7 +20,7 @@ defmodule ElixirConsole.Sandbox.ErlangModulesAbsence do
 
       invalid_modules ->
         {:error,
-         "It is not allowed to invoke non-Elixir modules. " <>
+         "Non-Elixir modules are not allowed to be used. " <>
            "Not allowed modules attempted: #{inspect(invalid_modules)}"}
     end
   end
