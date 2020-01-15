@@ -10,6 +10,7 @@ defmodule ElixirConsole.Sandbox do
 
   @max_command_length 500
   @max_memory_kb_default 256
+  @max_binary_memory_kb_default 50 * 1024
   @timeout_ms_default 5000
   @check_every_ms_default 20
   @bytes_in_kb 1024
@@ -98,10 +99,14 @@ defmodule ElixirConsole.Sandbox do
 
     max_memory_kb = Keyword.get(opts, :max_memory_kb, @max_memory_kb_default) * @bytes_in_kb
 
+    max_binary_memory_kb =
+      Keyword.get(opts, :max_binary_memory_kb, @max_binary_memory_kb_default) * @bytes_in_kb
+
     case check_execution_status(sandbox.pid,
            ticks: ticks,
            check_every: check_every,
-           max_memory_kb: max_memory_kb
+           max_memory_kb: max_memory_kb,
+           max_binary_memory_kb: max_binary_memory_kb
          ) do
       {:ok, {:success, {result, bindings}}} ->
         {:success, {result, %{sandbox | bindings: bindings}}}
@@ -136,14 +141,20 @@ defmodule ElixirConsole.Sandbox do
 
   defp check_execution_status(
          pid,
-         [ticks: ticks, check_every: check_every, max_memory_kb: max_memory_kb] = opts
+         [
+           ticks: ticks,
+           check_every: check_every,
+           max_memory_kb: max_memory_kb,
+           max_binary_memory_kb: max_binary_memory_kb
+         ] = opts
        ) do
     receive do
       {:result, result} ->
         {:ok, result}
     after
       check_every ->
-        if allowed_memory_usage?(pid, max_memory_kb) do
+        if allowed_memory_usage_by_process?(pid, max_memory_kb) and
+             allowed_memory_usage_in_binaries?(max_binary_memory_kb) do
           check_execution_status(pid, Keyword.put(opts, :ticks, ticks - 1))
         else
           Process.exit(pid, :kill)
@@ -152,9 +163,13 @@ defmodule ElixirConsole.Sandbox do
     end
   end
 
-  defp allowed_memory_usage?(pid, memory_limit) do
+  defp allowed_memory_usage_by_process?(pid, memory_limit) do
     {:memory, memory} = Process.info(pid, :memory)
     memory <= memory_limit
+  end
+
+  defp allowed_memory_usage_in_binaries?(binaries_memory_limit) do
+    :erlang.memory(:binary) <= binaries_memory_limit
   end
 
   defp execute_code(command, bindings) do

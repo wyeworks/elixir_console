@@ -43,6 +43,18 @@ defmodule ElixirConsole.SandboxTest do
                Sandbox.execute("for i <- 1..100_000_000, do: i", sandbox, max_memory_kb: 10)
     end
 
+    test "reports excessive memory usage in binaries", %{sandbox: sandbox} do
+      assert {:error, {"The command used more memory than allowed", _}} =
+               Sandbox.execute("String.duplicate(\"a\", 100_000_000)", sandbox)
+    end
+
+    test "reports excessive memory usage in binaries with custom limit", %{sandbox: sandbox} do
+      assert {:error, {"The command used more memory than allowed", _}} =
+               Sandbox.execute("String.duplicate(\"a\", 10_000_000)", sandbox,
+                 max_binary_memory_kb: 10
+               )
+    end
+
     test "reports excessive time spent on the execution", %{sandbox: sandbox} do
       assert {:error, {"The command was cancelled due to timeout", _}} =
                Sandbox.execute("Enum.each(1..100_000_000, &(&1))", sandbox, timeout: 50)
