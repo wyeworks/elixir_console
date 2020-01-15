@@ -173,6 +173,8 @@ defmodule ElixirConsole.Sandbox do
   end
 
   defp execute_code(command, bindings) do
+    Logger.info("Command to be executed: #{command}")
+
     try do
       with :ok <- CommandValidator.safe_command?(command),
            command_ast <- RuntimeValidations.get_augmented_ast(command),
