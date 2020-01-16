@@ -65,4 +65,11 @@ defmodule ElixirConsole.Sandbox.RuntimeValidationsTest do
 
     assert expected_ast == RuntimeValidations.get_augmented_ast(command)
   end
+
+  test "does not make changes when dot operator exists but it is not an invocation" do
+    command = "&Kernel.+/2"
+    {:ok, expected_ast} = Code.string_to_quoted("&Kernel.+/2")
+
+    assert expected_ast == RuntimeValidations.get_augmented_ast(command)
+  end
 end
