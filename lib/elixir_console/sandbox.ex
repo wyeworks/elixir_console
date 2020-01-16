@@ -93,21 +93,7 @@ defmodule ElixirConsole.Sandbox do
   defp do_execute(command, sandbox, opts) do
     send(sandbox.pid, {:command, command, sandbox.bindings, self()})
 
-    timeout = Keyword.get(opts, :timeout, @timeout_ms_default)
-    check_every = Keyword.get(opts, :check_every, @check_every_ms_default)
-    ticks = floor(timeout / check_every)
-
-    max_memory_kb = Keyword.get(opts, :max_memory_kb, @max_memory_kb_default) * @bytes_in_kb
-
-    max_binary_memory_kb =
-      Keyword.get(opts, :max_binary_memory_kb, @max_binary_memory_kb_default) * @bytes_in_kb
-
-    case check_execution_status(sandbox.pid,
-           ticks: ticks,
-           check_every: check_every,
-           max_memory_kb: max_memory_kb,
-           max_binary_memory_kb: max_binary_memory_kb
-         ) do
+    case check_execution_status(sandbox.pid, normalize_options(opts)) do
       {:ok, {:success, {result, bindings}}} ->
         {:success, {result, %{sandbox | bindings: bindings}}}
 
@@ -128,6 +114,24 @@ defmodule ElixirConsole.Sandbox do
   """
   def terminate(%__MODULE__{pid: pid}) do
     Process.exit(pid, :kill)
+  end
+
+  defp normalize_options(opts) do
+    timeout = Keyword.get(opts, :timeout, @timeout_ms_default)
+    check_every = Keyword.get(opts, :check_every, @check_every_ms_default)
+    ticks = floor(timeout / check_every)
+
+    max_memory_kb = Keyword.get(opts, :max_memory_kb, @max_memory_kb_default) * @bytes_in_kb
+
+    max_binary_memory_kb =
+      Keyword.get(opts, :max_binary_memory_kb, @max_binary_memory_kb_default) * @bytes_in_kb
+
+    [
+      ticks: ticks,
+      check_every: check_every,
+      max_memory_kb: max_memory_kb,
+      max_binary_memory_kb: max_binary_memory_kb
+    ]
   end
 
   defp restore(sandbox) do
