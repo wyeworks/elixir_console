@@ -88,7 +88,8 @@ The authors of the project are [Noelia](https://github.com/noelia-lencina), [Ign
 
 The authors of the project are [Noelia](https://github.com/noelia-lencina), [Ignacio](https://github.com/iaguirre88), [Javier](https://github.com/JavierM42), and [Jorge](https://github.com/jmbejar). Special thanks to [WyeWorks](https://www.wyeworks.com) for providing working hours to dedicate to this project.
 
-We also want to publicly thanks [Marcelo Dominguez](https://github.com/marpo60), [Allen Madsen](https://github.com/noelia-lencina), [Gabriel Roldán](https://github.com/luisgabrielroldan), and [Luis Ferreira](https://github.com/hidnasio) for testing the console and reporting several security issues.
+We also want to publicly thanks [Marcelo Dominguez](https://github.com/marpo60), [Allen Madsen](https://github.com/noelia-lencina), [Gabriel Roldán](https://github.com/luisgabrielroldan), [Luis Ferreira](https://github.com/hidnasio), and [
+Ben Hu](https://github.com/Ben-Hu) for testing the console and reporting several security issues.
 
 # Contributing
 
