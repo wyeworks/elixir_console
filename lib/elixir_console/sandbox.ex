@@ -5,8 +5,7 @@ defmodule ElixirConsole.Sandbox do
 
   @type sandbox() :: %__MODULE__{}
 
-  require Logger
-  alias ElixirConsole.Sandbox.{CommandValidator, RuntimeValidations}
+  alias ElixirConsole.Sandbox.CodeExecutor
 
   @max_command_length 500
   @max_memory_kb_default 256
@@ -32,7 +31,7 @@ defmodule ElixirConsole.Sandbox do
     loop = fn loop_func ->
       receive do
         {:command, command, bindings, parent_pid} ->
-          result = execute_code(command, bindings)
+          result = CodeExecutor.execute_code(command, bindings)
           send(parent_pid, {:result, result})
 
           loop_func.(loop_func)
@@ -174,50 +173,5 @@ defmodule ElixirConsole.Sandbox do
 
   defp allowed_memory_usage_in_binaries?(binaries_memory_limit) do
     :erlang.memory(:binary) <= binaries_memory_limit
-  end
-
-  defp execute_code(command, bindings) do
-    Logger.info("Command to be executed: #{command}")
-
-    try do
-      with :ok <- CommandValidator.safe_command?(command),
-           command_ast <- RuntimeValidations.get_augmented_ast(command),
-           {result, bindings} <-
-             Code.eval_quoted(command_ast, bindings, eval_context()) do
-        {:success, {result, bindings}}
-      else
-        error -> error
-      end
-    rescue
-      exception ->
-        {:error, inspect(exception)}
-    end
-  end
-
-  # This is just to make available Bitwise macros when evaluating user code
-  # Bitwise is special because the module must be `used` to have access to their
-  # macros
-  defp eval_context do
-    [
-      requires: [Bitwise, Kernel],
-      macros: [
-        {Kernel, __ENV__.macros[Kernel]},
-        {Bitwise,
-         [
-           &&&: 2,
-           <<<: 2,
-           >>>: 2,
-           ^^^: 2,
-           band: 2,
-           bnot: 1,
-           bor: 2,
-           bsl: 2,
-           bsr: 2,
-           bxor: 2,
-           |||: 2,
-           ~~~: 1
-         ]}
-      ]
-    ]
   end
 end
