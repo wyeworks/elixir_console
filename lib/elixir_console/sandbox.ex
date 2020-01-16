@@ -5,8 +5,7 @@ defmodule ElixirConsole.Sandbox do
 
   @type sandbox() :: %__MODULE__{}
 
-  require Logger
-  alias ElixirConsole.Sandbox.{CommandValidator, RuntimeValidations}
+  alias ElixirConsole.Sandbox.CodeExecutor
 
   @max_command_length 500
   @max_memory_kb_default 256
@@ -32,7 +31,7 @@ defmodule ElixirConsole.Sandbox do
     loop = fn loop_func ->
       receive do
         {:command, command, bindings, parent_pid} ->
-          result = execute_code(command, bindings)
+          result = CodeExecutor.execute_code(command, bindings)
           send(parent_pid, {:result, result})
 
           loop_func.(loop_func)
@@ -93,21 +92,7 @@ defmodule ElixirConsole.Sandbox do
   defp do_execute(command, sandbox, opts) do
     send(sandbox.pid, {:command, command, sandbox.bindings, self()})
 
-    timeout = Keyword.get(opts, :timeout, @timeout_ms_default)
-    check_every = Keyword.get(opts, :check_every, @check_every_ms_default)
-    ticks = floor(timeout / check_every)
-
-    max_memory_kb = Keyword.get(opts, :max_memory_kb, @max_memory_kb_default) * @bytes_in_kb
-
-    max_binary_memory_kb =
-      Keyword.get(opts, :max_binary_memory_kb, @max_binary_memory_kb_default) * @bytes_in_kb
-
-    case check_execution_status(sandbox.pid,
-           ticks: ticks,
-           check_every: check_every,
-           max_memory_kb: max_memory_kb,
-           max_binary_memory_kb: max_binary_memory_kb
-         ) do
+    case check_execution_status(sandbox.pid, normalize_options(opts)) do
       {:ok, {:success, {result, bindings}}} ->
         {:success, {result, %{sandbox | bindings: bindings}}}
 
@@ -128,6 +113,24 @@ defmodule ElixirConsole.Sandbox do
   """
   def terminate(%__MODULE__{pid: pid}) do
     Process.exit(pid, :kill)
+  end
+
+  defp normalize_options(opts) do
+    timeout = Keyword.get(opts, :timeout, @timeout_ms_default)
+    check_every = Keyword.get(opts, :check_every, @check_every_ms_default)
+    ticks = floor(timeout / check_every)
+
+    max_memory_kb = Keyword.get(opts, :max_memory_kb, @max_memory_kb_default) * @bytes_in_kb
+
+    max_binary_memory_kb =
+      Keyword.get(opts, :max_binary_memory_kb, @max_binary_memory_kb_default) * @bytes_in_kb
+
+    [
+      ticks: ticks,
+      check_every: check_every,
+      max_memory_kb: max_memory_kb,
+      max_binary_memory_kb: max_binary_memory_kb
+    ]
   end
 
   defp restore(sandbox) do
@@ -170,50 +173,5 @@ defmodule ElixirConsole.Sandbox do
 
   defp allowed_memory_usage_in_binaries?(binaries_memory_limit) do
     :erlang.memory(:binary) <= binaries_memory_limit
-  end
-
-  defp execute_code(command, bindings) do
-    Logger.info("Command to be executed: #{command}")
-
-    try do
-      with :ok <- CommandValidator.safe_command?(command),
-           command_ast <- RuntimeValidations.get_augmented_ast(command),
-           {result, bindings} <-
-             Code.eval_quoted(command_ast, bindings, eval_context()) do
-        {:success, {result, bindings}}
-      else
-        error -> error
-      end
-    rescue
-      exception ->
-        {:error, inspect(exception)}
-    end
-  end
-
-  # This is just to make available Bitwise macros when evaluating user code
-  # Bitwise is special because the module must be `used` to have access to their
-  # macros
-  defp eval_context do
-    [
-      requires: [Bitwise, Kernel],
-      macros: [
-        {Kernel, __ENV__.macros[Kernel]},
-        {Bitwise,
-         [
-           &&&: 2,
-           <<<: 2,
-           >>>: 2,
-           ^^^: 2,
-           band: 2,
-           bnot: 1,
-           bor: 2,
-           bsl: 2,
-           bsr: 2,
-           bxor: 2,
-           |||: 2,
-           ~~~: 1
-         ]}
-      ]
-    ]
   end
 end
