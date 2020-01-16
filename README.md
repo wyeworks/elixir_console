@@ -82,8 +82,6 @@ This project was initially implemented to participate in the [Phoenix Phrenzy](h
 
 Beyond its primary purpose, this is a research initiative. We are exploring the implications of executing untrusted Elixir code in a sandboxed manner. In particular, we want to solve it without using extra infrastructure, being as accessible and easy to use as possible. We have plans to create a package that includes the sandbox functionality. This package would enable the usage of Elixir as a scripting language (although we are not sure if this is a good idea).
 
-The authors of the project are [Noelia](https://github.com/noelia-lencina), [Ignacio](https://github.com/iaguirre88), [Javier](https://github.com/JavierM42), and [Jorge](https://github.com/jmbejar). Special thanks to [WyeWorks](https://www.wyeworks.com) for providing working hours to dedicate to this project.
-
 # Special Thanks
 
 The authors of the project are [Noelia](https://github.com/noelia-lencina), [Ignacio](https://github.com/iaguirre88), [Javier](https://github.com/JavierM42), and [Jorge](https://github.com/jmbejar). Special thanks to [WyeWorks](https://www.wyeworks.com) for providing working hours to dedicate to this project.
