@@ -4,11 +4,11 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
     ensures that non-secure functions are not invoked at runtime.
   """
 
-  alias ElixirConsole.Sandbox.Util
+  alias ElixirConsole.{ElixirSafeParts, Sandbox.Util}
 
   @this_module __MODULE__ |> Module.split() |> Enum.map(&String.to_atom/1)
-  @valid_modules ElixirConsole.ElixirSafeParts.safe_elixir_modules()
-  @kernel_functions_blacklist ElixirConsole.ElixirSafeParts.unsafe_kernel_functions()
+  @valid_modules ElixirSafeParts.safe_elixir_modules()
+  @kernel_functions_blacklist ElixirSafeParts.unsafe_kernel_functions()
 
   @max_string_duplication_times 100_000
 
@@ -35,7 +35,11 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
 
   defp add_safe_invocation({{:., _, [Access, :get]}, _, _} = elem, acc), do: {elem, acc}
 
-  # Do not inline a `safe_invocation` call when the dot operator is used in function capturing
+  # Do not inline a `safe_invocation` call when the dot operator is used in
+  # function capturing Note it is using the special token.
+  # @keep_dot_operator_mark to prevent the modification of the inner node with
+  # the dot operator. restore_dot_operator/2 is responsible for restoring the
+  # AST by changing the token by the :. atom
   defp add_safe_invocation(
          {:&, outer_meta,
           [
