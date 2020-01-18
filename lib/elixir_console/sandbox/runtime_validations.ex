@@ -12,6 +12,7 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
 
   @max_string_duplication_times 100_000
 
+  # Random string that is large enough so it does not collide with user's code
   @keep_dot_operator_mark Util.random_atom(64)
 
   @doc """
@@ -36,10 +37,10 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
   defp add_safe_invocation({{:., _, [Access, :get]}, _, _} = elem, acc), do: {elem, acc}
 
   # Do not inline a `safe_invocation` call when the dot operator is used in
-  # function capturing Note it is using the special token.
+  # function capturing. Note it is using the special token.
   # @keep_dot_operator_mark to prevent the modification of the inner node with
   # the dot operator. restore_dot_operator/2 is responsible for restoring the
-  # AST by changing the token by the :. atom
+  # AST by replacing token occurrences with the :. atom
   defp add_safe_invocation(
          {:&, outer_meta,
           [
@@ -106,13 +107,11 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
   # Note that add_safe_invocation/2 could interchange a dot operator by an
   # special token (@keep_dot_operator_mark) in cases where the dot operator does
   # not represents an invocation (situation that is determined by the parent
-  # nodes). This function has to be run as a "post walk" callback to restore the
-  # original :. occurrences.
+  # nodes). This function restores the original :. occurrences.
   defp restore_dot_operator(
          {{@keep_dot_operator_mark, meta, [callee, function]}, outer_meta, params},
          acc
-       )
-       when is_atom(callee) or is_tuple(callee) do
+       ) do
     elem = {{:., meta, [callee, function]}, outer_meta, params}
 
     {elem, acc}
