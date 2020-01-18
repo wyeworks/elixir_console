@@ -226,5 +226,12 @@ defmodule ElixirConsole.SandboxTest do
                {:success,
                 {{27, %{"john" => %{age: 28}, "meg" => %{age: 23}}}, initial_and_expected_sandbox}}
     end
+
+    test "works with function capturing", %{sandbox: sandbox} do
+      expected_sandbox = %Sandbox{sandbox | bindings: []}
+
+      assert Sandbox.execute("Enum.reduce([1,2,3,4,5], &Kernel.+/2)", sandbox) ==
+               {:success, {15, expected_sandbox}}
+    end
   end
 end

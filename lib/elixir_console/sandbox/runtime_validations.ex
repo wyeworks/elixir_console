@@ -4,11 +4,16 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
     ensures that non-secure functions are not invoked at runtime.
   """
 
+  alias ElixirConsole.{ElixirSafeParts, Sandbox.Util}
+
   @this_module __MODULE__ |> Module.split() |> Enum.map(&String.to_atom/1)
-  @valid_modules ElixirConsole.ElixirSafeParts.safe_elixir_modules()
-  @kernel_functions_blacklist ElixirConsole.ElixirSafeParts.unsafe_kernel_functions()
+  @valid_modules ElixirSafeParts.safe_elixir_modules()
+  @kernel_functions_blacklist ElixirSafeParts.unsafe_kernel_functions()
 
   @max_string_duplication_times 100_000
+
+  # Random string that is large enough so it does not collide with user's code
+  @keep_dot_operator_mark Util.random_atom(64)
 
   @doc """
     Returns the AST for the given Elixir code but including invocations to
@@ -17,7 +22,9 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
   """
   def get_augmented_ast(command) do
     ast = Code.string_to_quoted!(command)
-    {augmented_ast, _result} = Macro.prewalk(ast, nil, &add_safe_invocation(&1, &2))
+
+    {augmented_ast, _result} =
+      Macro.traverse(ast, nil, &add_safe_invocation(&1, &2), &restore_dot_operator(&1, &2))
 
     augmented_ast
   end
@@ -28,6 +35,38 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
     do: {elem, acc}
 
   defp add_safe_invocation({{:., _, [Access, :get]}, _, _} = elem, acc), do: {elem, acc}
+
+  # Do not inline a `safe_invocation` call when the dot operator is used in
+  # function capturing. Note it is using the special token.
+  # @keep_dot_operator_mark to prevent the modification of the inner node with
+  # the dot operator. restore_dot_operator/2 is responsible for restoring the
+  # AST by replacing token occurrences with the :. atom
+  defp add_safe_invocation(
+         {:&, outer_meta,
+          [
+            {:/, middle_meta,
+             [
+               {{:., inner_meta, [{:__aliases__, meta, [module]}, function]}, inner_params,
+                outer_params},
+               arity
+             ]}
+          ]},
+         acc
+       )
+       when is_atom(module) and is_atom(function) and is_integer(arity) do
+    elem =
+      {:&, outer_meta,
+       [
+         {:/, middle_meta,
+          [
+            {{@keep_dot_operator_mark, inner_meta, [{:__aliases__, meta, [module]}, function]},
+             inner_params, outer_params},
+            arity
+          ]}
+       ]}
+
+    {elem, acc}
+  end
 
   # Inline `safe_invocation` call when dot operator implies to invoke a function
   # (this is exactly the case we want to intercept)
@@ -64,6 +103,21 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
   end
 
   defp add_safe_invocation(elem, acc), do: {elem, acc}
+
+  # Note that add_safe_invocation/2 could interchange a dot operator by an
+  # special token (@keep_dot_operator_mark) in cases where the dot operator does
+  # not represents an invocation (situation that is determined by the parent
+  # nodes). This function restores the original :. occurrences.
+  defp restore_dot_operator(
+         {{@keep_dot_operator_mark, meta, [callee, function]}, outer_meta, params},
+         acc
+       ) do
+    elem = {{:., meta, [callee, function]}, outer_meta, params}
+
+    {elem, acc}
+  end
+
+  defp restore_dot_operator(elem, acc), do: {elem, acc}
 
   @doc """
     This function is meant to be injected into the modified AST so we have safe
