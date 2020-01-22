@@ -14,13 +14,14 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Elixir Console - WyeWorks</title>
+    <title>Elixir Web Console - WyeWorks</title>
+    <meta name="description" content="The Elixir Web Console is where you can try the Elixir language without the need to leave the browser." />
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
     <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,500&display=swap" rel="stylesheet">
   </head>
   <body class="h-screen bg-white flex flex-col px-10 pb-5">
     <header class="w-full h-10 flex items-center justify-between bg-white">
-        <h1>Online Elixir Console</h1>
+        <h1>Elixir Web Console</h1>
         <a class="flex-grow ml-4" href="https://github.com/wyeworks/elixir_console"><img class="w-5" src="/images/github.png"/></a>
         <a href="https://www.wyeworks.com">
           <svg width="117" height="22" viewBox="0 0 117 22" fill="none" xmlns="http://www.w3.org/2000/svg">
