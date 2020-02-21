@@ -2,24 +2,6 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
   use ElixirConsoleWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
 
-  # Code based on https://github.com/phoenixframework/phoenix_live_view/blob/bba042ed6a6efa45f56b30c4d26fda7a0bdb8991/lib/phoenix_live_view/test/live_view_test.ex#L459
-  # because LiveViewTest module does not have a public "render_hook" function yet.
-  # Let's remove this when this method is available.
-  alias Phoenix.LiveViewTest.View
-
-  def render_event([%View{} = view | path], type, event, value) do
-    case GenServer.call(
-           proxy_pid(view),
-           {:render_event, proxy_topic(view), type, path, event, value}
-         ) do
-      {:ok, html} -> html
-      {:error, reason} -> {:error, reason}
-    end
-  end
-
-  defp proxy_pid(%View{proxy: {_ref, _topic, pid}}), do: pid
-  defp proxy_topic(%View{proxy: {_ref, topic, _pid}}), do: topic
-
   describe "sending valid commands" do
     def render_with_valid_command(%{conn: conn}) do
       {:ok, view, _html} = live(conn, "/")
@@ -78,7 +60,7 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
   describe "autocomplete" do
     test "show suggestions if more than one", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
-      _ = render_event([view], :hook, :"caret-position", %{"position" => 7})
+      _ = render_hook(view, :"caret-position", %{"position" => 7})
       html = render_keydown(view, "suggest", %{"keyCode" => 9, "value" => "Enum.co"})
 
       assert html =~ ~r/Suggestions\:.*Enum\.concat.*Enum\.count/
@@ -86,7 +68,7 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
 
     test "autocomplete and do not show suggestions if only one", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
-      _ = render_event([view], :hook, :"caret-position", %{"position" => 9})
+      _ = render_hook(view, :"caret-position", %{"position" => 9})
       html = render_keydown(view, "suggest", %{"keyCode" => 9, "value" => "Enum.conc"})
 
       assert html =~ ~r/\<input .* data-input_value\="Enum.concat"/
@@ -98,7 +80,7 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     test "show suggestions considering caret position in the command input", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
 
-      _ = render_event([view], :hook, :"caret-position", %{"position" => 7})
+      _ = render_hook(view, :"caret-position", %{"position" => 7})
       html = render_keydown(view, "suggest", %{"keyCode" => 9, "value" => "Enum.co([1,2]) - 2"})
 
       assert html =~ ~r/Suggestions\:.*Enum\.concat.*Enum\.count/
@@ -107,7 +89,7 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     test "autocomplete considering caret position in the command input", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
 
-      _ = render_event([view], :hook, :"caret-position", %{"position" => 9})
+      _ = render_hook(view, :"caret-position", %{"position" => 9})
 
       html =
         render_keydown(view, "suggest", %{"keyCode" => 9, "value" => "Enum.conc([1,2], [3])"})
