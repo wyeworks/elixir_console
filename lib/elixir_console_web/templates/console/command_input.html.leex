@@ -1,0 +1,16 @@
+<form phx-submit="execute">
+  <div class="text-gray-300 font-medium flex bg-teal-700 p-2">
+    <%= print_prompt() %>
+    <input
+      type="text"
+      id="commandInput"
+      class="ml-2 bg-transparent flex-1 outline-none"
+      autocomplete="off"
+      name="command"
+      phx-keydown="suggest"
+      phx-hook="CommandInput"
+      data-input_value="<%= @input_value %>"
+      data-caret_position="<%= @caret_position %>"
+    />
+  </div>
+</form>
