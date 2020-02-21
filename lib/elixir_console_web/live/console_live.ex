@@ -4,7 +4,6 @@ defmodule ElixirConsoleWeb.ConsoleLive do
   """
 
   use Phoenix.LiveView
-  import Phoenix.HTML, only: [sigil_e: 2]
 
   alias ElixirConsole.Sandbox
   alias ElixirConsoleWeb.ConsoleLive.{CommandInputComponent, HistoryComponent, SidebarComponent}

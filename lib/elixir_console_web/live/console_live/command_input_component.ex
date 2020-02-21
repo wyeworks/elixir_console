@@ -1,9 +1,6 @@
 defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   use Phoenix.LiveComponent
-
-  alias ElixirConsole.{Autocomplete, Sandbox}
-  alias ElixirConsoleWeb.ConsoleLive.Output
-  alias ElixirConsoleWeb.LiveMonitor
+  alias ElixirConsole.Autocomplete
 
   def render(assigns) do
     Phoenix.View.render(ElixirConsoleWeb.ConsoleView, "command_input.html", assigns)
