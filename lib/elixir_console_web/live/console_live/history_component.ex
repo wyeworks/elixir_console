@@ -9,4 +9,17 @@ defmodule ElixirConsoleWeb.ConsoleLive.HistoryComponent do
   def render(assigns) do
     Phoenix.View.render(ElixirConsoleWeb.ConsoleView, "history.html", assigns)
   end
+
+  def handle_event(
+        "function_link_clicked",
+        %{"func_name" => func_name, "header" => header, "doc" => doc, "link" => link},
+        socket
+      ) do
+    send(
+      self(),
+      {:show_function_docs, %{func_name: func_name, header: header, doc: doc, link: link}}
+    )
+
+    {:noreply, socket}
+  end
 end

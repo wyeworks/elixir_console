@@ -19,7 +19,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
     <div class="flex h-full flex-col sm:flex-row">
       <div class="flex-1 sm:h-full overflow-scroll">
         <div class="h-full flex flex-col">
-          <%= live_component(@socket, HistoryComponent, output: @output) %>
+          <%= live_component(@socket, HistoryComponent, output: @output, id: :history) %>
           <%= live_component(@socket, CommandInputComponent,
             history: @history, bindings: @sandbox.bindings, id: :command_input) %>
         </div>
@@ -52,14 +52,11 @@ defmodule ElixirConsoleWeb.ConsoleLive do
     Sandbox.terminate(sandbox)
   end
 
-  def handle_event(
-        "show_contextual_info",
-        %{"func_name" => func_name, "header" => header, "doc" => doc, "link" => link},
-        socket
-      ) do
+  # This event comes from HistoryComponent
+  def handle_info({:show_function_docs, contextual_help}, socket) do
     {:noreply,
      socket
-     |> assign(contextual_help: %{func_name: func_name, header: header, doc: doc, link: link})
+     |> assign(contextual_help: contextual_help)
      |> assign(suggestions: [])}
   end
 

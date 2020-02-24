@@ -29,7 +29,7 @@ defmodule ElixirConsoleWeb.ConsoleView do
          link: link
        }) do
     ~e{<span
-    phx-click="show_contextual_info"
+    phx-click="function_link_clicked"
     phx-value-func_name="<%= func_name %>"
     phx-value-header="<%= header %>"
     phx-value-doc="<%= docs %>"
