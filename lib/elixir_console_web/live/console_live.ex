@@ -6,7 +6,6 @@ defmodule ElixirConsoleWeb.ConsoleLive do
   use Phoenix.LiveView
 
   alias ElixirConsole.Sandbox
-  alias ElixirConsoleWeb.ConsoleLive.{CommandInputComponent, HistoryComponent, SidebarComponent}
   alias ElixirConsoleWeb.LiveMonitor
 
   defmodule Output do
@@ -15,20 +14,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
   end
 
   def render(assigns) do
-    ~L"""
-    <div class="flex h-full flex-col sm:flex-row">
-      <div class="flex-1 sm:h-full overflow-scroll">
-        <div class="h-full flex flex-col">
-          <%= live_component(@socket, HistoryComponent, output: @output, id: :history) %>
-          <%= live_component(@socket, CommandInputComponent,
-            history: @history, bindings: @sandbox.bindings, id: :command_input) %>
-        </div>
-      </div>
-      <%= live_component(@socket, SidebarComponent,
-        sandbox: @sandbox, contextual_help: @contextual_help, suggestions: @suggestions)
-      %>
-    </div>
-    """
+    Phoenix.View.render(ElixirConsoleWeb.ConsoleView, "index.html", assigns)
   end
 
   def mount(_session, socket) do

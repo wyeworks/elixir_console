@@ -7,7 +7,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.HistoryComponent do
   use Phoenix.LiveComponent
 
   def render(assigns) do
-    Phoenix.View.render(ElixirConsoleWeb.ConsoleView, "history.html", assigns)
+    Phoenix.View.render(ElixirConsoleWeb.Console.HistoryView, "index.html", assigns)
   end
 
   def handle_event(
