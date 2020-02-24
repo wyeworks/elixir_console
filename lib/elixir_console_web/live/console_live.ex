@@ -1,6 +1,6 @@
 defmodule ElixirConsoleWeb.ConsoleLive do
   @moduledoc """
-  This is the main LiveView module of the application.
+  This is the live view component that implements the console UI.
   """
 
   use Phoenix.LiveView
@@ -63,10 +63,12 @@ defmodule ElixirConsoleWeb.ConsoleLive do
      |> assign(suggestions: [])}
   end
 
+  # This event comes from CommandInputComponent
   def handle_info({:update_suggestions, suggestions}, socket) do
     {:noreply, assign(socket, suggestions: suggestions)}
   end
 
+  # This event comes from CommandInputComponent
   def handle_info({:execute_command, command}, socket) do
     history =
       if socket.assigns.history == [] do
