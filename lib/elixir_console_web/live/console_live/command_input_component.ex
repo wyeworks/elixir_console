@@ -8,6 +8,10 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   use Phoenix.LiveComponent
   alias ElixirConsole.Autocomplete
 
+  @tab_keycode 9
+  @up_keycode 38
+  @down_keycode 40
+
   def render(assigns) do
     Phoenix.View.render(ElixirConsoleWeb.ConsoleView, "command_input.html", assigns)
   end
@@ -22,8 +26,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
      )}
   end
 
-  # TAB KEY
-  def handle_event("suggest", %{"keyCode" => 9, "value" => value}, socket) do
+  def handle_event("suggest", %{"keyCode" => @tab_keycode, "value" => value}, socket) do
     %{caret_position: caret_position, bindings: bindings} = socket.assigns
 
     case Autocomplete.get_suggestions(value, caret_position, bindings) do
@@ -41,46 +44,21 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
 
       suggestions ->
         send(self(), {:update_suggestions, suggestions})
+
         {:noreply, assign(socket, input_value: "")}
     end
   end
 
-  # KEY UP
-  def handle_event("suggest", %{"keyCode" => 38}, socket) do
-    counter = socket.assigns.history_counter
-    history = socket.assigns.history
-
-    {input_value, new_counter} =
-      cond do
-        history == [] ->
-          {[], 0}
-
-        counter + 1 < length(history) ->
-          {[Enum.at(history, counter + 1)], counter + 1}
-
-        counter + 1 >= length(history) ->
-          {[List.last(history)], counter}
-      end
+  def handle_event("suggest", %{"keyCode" => @up_keycode}, socket) do
+    %{history_counter: counter, history: history} = socket.assigns
+    {input_value, new_counter} = get_previous_history_entry(history, counter)
 
     {:noreply, assign(socket, input_value: input_value, history_counter: new_counter)}
   end
 
-  # KEY DOWN
-  def handle_event("suggest", %{"keyCode" => 40}, socket) do
-    counter = socket.assigns.history_counter
-    history = socket.assigns.history
-
-    {input_value, new_counter} =
-      cond do
-        history == [] ->
-          {[], 0}
-
-        counter > 0 ->
-          {[Enum.at(history, counter - 1)], counter - 1}
-
-        counter <= 0 ->
-          {[List.first(history)], 0}
-      end
+  def handle_event("suggest", %{"keyCode" => @down_keycode}, socket) do
+    %{history_counter: counter, history: history} = socket.assigns
+    {input_value, new_counter} = get_next_history_entry(history, counter)
 
     {:noreply, assign(socket, input_value: input_value, history_counter: new_counter)}
   end
@@ -96,5 +74,25 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   def handle_event("execute", %{"command" => command}, socket) do
     send(self(), {:execute_command, command})
     {:noreply, socket}
+  end
+
+  defp get_previous_history_entry([], _counter), do: {[], 0}
+
+  defp get_previous_history_entry(history, counter) when counter + 1 < length(history) do
+    {[Enum.at(history, counter + 1)], counter + 1}
+  end
+
+  defp get_previous_history_entry(history, counter) do
+    {[List.last(history)], counter}
+  end
+
+  defp get_next_history_entry([], _counter), do: {[], 0}
+
+  defp get_next_history_entry(history, counter) when counter > 0 do
+    {[Enum.at(history, counter - 1)], counter - 1}
+  end
+
+  defp get_next_history_entry(history, _counter) do
+    {[List.first(history)], 0}
   end
 end
