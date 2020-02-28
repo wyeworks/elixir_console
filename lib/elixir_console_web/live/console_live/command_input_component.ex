@@ -1,7 +1,7 @@
 defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   @moduledoc """
   Live component module that implements the portion of the application where
-  users prompt the commands. It also handle special key events to mimic the iEX
+  users prompt the commands. It also handles special key events to mimic the iEX
   user experience.
   """
 
