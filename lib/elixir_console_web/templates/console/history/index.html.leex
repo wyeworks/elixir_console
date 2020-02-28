@@ -3,7 +3,7 @@
     <%= for output <- @output do %>
       <div id="command<%= output.id %>" class="text-gray-300 font-medium"><%= print_prompt() %><%= format_command(output.command) %></div>
       <div id="output<%= output.id %>" class="text-teal-300">
-        <%= if output.result do output.result end %>
+        <%= output.result %>
         <%= if output.error do %><span class="text-pink-400"><%= output.error %></span><% end %>
       </div>
     <% end %>
