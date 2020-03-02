@@ -30,7 +30,7 @@ Hooks.CommandInput = {
       }
     };
 
-    ['keydown', 'click', 'focus'].forEach(event => {
+    ['keyup', 'click', 'focus'].forEach(event => {
       input.addEventListener(event, sendCursorPosition, true);
     });
   },
