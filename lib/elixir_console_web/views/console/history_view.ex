@@ -33,6 +33,7 @@ defmodule ElixirConsoleWeb.Console.HistoryView do
     phx-value-header="<%= header %>"
     phx-value-doc="<%= docs %>"
     phx-value-link="<%= link %>"
+    phx-target="#commandOutput"
     class="<%= inline_help_class_for(function_or_operator) %>"
     ><%= part %></span>}
   end

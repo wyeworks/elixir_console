@@ -26,7 +26,7 @@ Hooks.CommandInput = {
     const input = document.getElementById('commandInput');
     const sendCursorPosition = e => {
       if (input.selectionStart === input.selectionEnd) {
-        this.pushEvent('caret-position', { position: input.selectionEnd });
+        this.pushEventTo('#commandInput', 'caret-position', { position: input.selectionEnd });
       }
     };
 
