@@ -22,7 +22,6 @@ import LiveSocket from 'phoenix_live_view';
 let Hooks = {};
 Hooks.CommandInput = {
   mounted() {
-    const pushEvent = this.pushEvent;
     const input = document.getElementById('commandInput');
     const sendCursorPosition = e => {
       if (input.selectionStart === input.selectionEnd) {
