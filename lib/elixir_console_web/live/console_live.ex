@@ -17,7 +17,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
     Phoenix.View.render(ElixirConsoleWeb.ConsoleView, "index.html", assigns)
   end
 
-  def mount(_session, socket) do
+  def mount(_params, _session, socket) do
     sandbox = Sandbox.init()
     LiveMonitor.monitor(self(), __MODULE__, %{id: socket.id, sandbox: sandbox})
 
