@@ -14,6 +14,7 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <%= csrf_meta_tag() %>
     <title>Elixir Web Console - WyeWorks</title>
     <meta name="description" content="The Elixir Web Console is where you can try the Elixir language without the need to leave the browser." />
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>

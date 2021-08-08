@@ -44,7 +44,8 @@ Hooks.CommandInput = {
   }
 };
 
-let liveSocket = new LiveSocket('/live', Socket, {hooks: Hooks});
+let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+let liveSocket = new LiveSocket('/live', Socket, {hooks: Hooks, params: {_csrf_token: csrfToken}});
 liveSocket.connect();
 
 document.addEventListener('DOMContentLoaded', function(event) {
