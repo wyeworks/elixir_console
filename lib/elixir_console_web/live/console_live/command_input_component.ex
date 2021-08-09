@@ -12,10 +12,6 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   @up_keycode "ArrowUp"
   @down_keycode "ArrowDown"
 
-  def render(assigns) do
-    Phoenix.View.render(ElixirConsoleWeb.ConsoleView, "command_input.html", assigns)
-  end
-
   def mount(socket) do
     {:ok,
      assign(

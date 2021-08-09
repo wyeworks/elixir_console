@@ -13,10 +13,6 @@ defmodule ElixirConsoleWeb.ConsoleLive do
     defstruct [:command, :result, :error, :id]
   end
 
-  def render(assigns) do
-    Phoenix.View.render(ElixirConsoleWeb.ConsoleView, "index.html", assigns)
-  end
-
   def mount(_params, _session, socket) do
     sandbox = Sandbox.init()
     LiveMonitor.monitor(self(), __MODULE__, %{id: socket.id, sandbox: sandbox})
@@ -37,6 +33,8 @@ defmodule ElixirConsoleWeb.ConsoleLive do
   def unmount(%{sandbox: sandbox}) do
     Sandbox.terminate(sandbox)
   end
+
+  def print_prompt, do: "> "
 
   # This event comes from HistoryComponent
   def handle_info({:show_function_docs, contextual_help}, socket) do

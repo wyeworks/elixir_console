@@ -1,6 +1,8 @@
+<% alias ElixirConsoleWeb.ConsoleLive %>
+
 <form phx-submit="execute" id="command_input" phx-target="#command_input">
   <div class="text-gray-300 font-medium flex bg-teal-700 p-2">
-    <%= print_prompt() %>
+    <%= ConsoleLive.print_prompt() %>
     <input
       type="text"
       id="commandInput"
