@@ -10,12 +10,10 @@ use Mix.Config
 # Configures the endpoint
 config :elixir_console, ElixirConsoleWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "dummy_val_for_dev_env",
+  secret_key_base: "xkn0Oy0t0ydkJkKxKwFVJ36lc5MX7kHtdo+4vtEVqGrBNN/Kv4a9GIGqbx6CHlVw",
   render_errors: [view: ElixirConsoleWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: ElixirConsole.PubSub, adapter: Phoenix.PubSub.PG2],
-  live_view: [
-    signing_salt: "another_dummy_val_for_dev_env"
-  ]
+  live_view: [signing_salt: "7vohZO+j"]
 
 # Configures Elixir's Logger
 config :logger, :console,
