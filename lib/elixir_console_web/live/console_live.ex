@@ -7,6 +7,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
 
   alias ElixirConsole.Sandbox
   alias ElixirConsoleWeb.LiveMonitor
+  alias ElixirConsoleWeb.ConsoleLive.{CommandInputComponent, HistoryComponent, SidebarComponent}
 
   defmodule Output do
     @enforce_keys [:command, :id]
@@ -33,8 +34,6 @@ defmodule ElixirConsoleWeb.ConsoleLive do
   def unmount(%{sandbox: sandbox}) do
     Sandbox.terminate(sandbox)
   end
-
-  def print_prompt, do: "> "
 
   # This event comes from HistoryComponent
   def handle_info({:show_function_docs, contextual_help}, socket) do

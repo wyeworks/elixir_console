@@ -6,6 +6,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.HistoryComponent do
 
   use Phoenix.LiveComponent
   import Phoenix.HTML, only: [sigil_e: 2]
+  import ElixirConsoleWeb.ConsoleLive.Helpers
   alias ElixirConsole.ContextualHelp
 
   def handle_event(

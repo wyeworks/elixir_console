@@ -6,6 +6,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   """
 
   use Phoenix.LiveComponent
+  import ElixirConsoleWeb.ConsoleLive.Helpers
   alias ElixirConsole.Autocomplete
 
   @tab_keycode "Tab"

@@ -1,10 +1,7 @@
-<% alias ElixirConsoleWeb.ConsoleLive.HistoryComponent  %>
-<% alias ElixirConsoleWeb.ConsoleLive %>
-
 <div class="flex-1"></div>
 <div class="p-2" id="commandOutput" phx-update="append">
   <%= for output <- @output do %>
-    <div id="command<%= output.id %>" class="text-gray-300 font-medium"><%= ConsoleLive.print_prompt() %><%= HistoryComponent.format_command(output.command) %></div>
+    <div id="command<%= output.id %>" class="text-gray-300 font-medium"><%= print_prompt() %><%= format_command(output.command) %></div>
     <div id="output<%= output.id %>" class="text-teal-300">
       <%= output.result %>
       <%= if output.error do %><span class="text-pink-400"><%= output.error %></span><% end %>
