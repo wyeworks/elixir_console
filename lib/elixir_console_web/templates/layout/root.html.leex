@@ -39,10 +39,10 @@
       </a>
     </header>
     <main role="main" class="w-full flex-1 overflow-hidden">
-      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+      <p class="alert alert-info" role="alert"><%= live_flash(@flash, :info) %></p>
+      <p class="alert alert-danger" role="alert"><%= live_flash(@flash, :error) %></p>
       <div class="bg-teal-900 w-full h-full rounded overflow-hidden shadow-lg live-view-parent">
-        <%= render @view_module, @view_template, assigns %>
+        <%= @inner_content %>
       </div>
     </main>
     <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>

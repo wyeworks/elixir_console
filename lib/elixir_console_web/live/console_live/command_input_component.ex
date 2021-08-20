@@ -6,15 +6,12 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   """
 
   use Phoenix.LiveComponent
+  import ElixirConsoleWeb.ConsoleLive.Helpers
   alias ElixirConsole.Autocomplete
 
   @tab_keycode "Tab"
   @up_keycode "ArrowUp"
   @down_keycode "ArrowDown"
-
-  def render(assigns) do
-    Phoenix.View.render(ElixirConsoleWeb.ConsoleView, "command_input.html", assigns)
-  end
 
   def mount(socket) do
     {:ok,

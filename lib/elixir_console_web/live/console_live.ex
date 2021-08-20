@@ -7,14 +7,11 @@ defmodule ElixirConsoleWeb.ConsoleLive do
 
   alias ElixirConsole.Sandbox
   alias ElixirConsoleWeb.LiveMonitor
+  alias ElixirConsoleWeb.ConsoleLive.{CommandInputComponent, HistoryComponent, SidebarComponent}
 
   defmodule Output do
     @enforce_keys [:command, :id]
     defstruct [:command, :result, :error, :id]
-  end
-
-  def render(assigns) do
-    Phoenix.View.render(ElixirConsoleWeb.ConsoleView, "index.html", assigns)
   end
 
   def mount(_params, _session, socket) do
