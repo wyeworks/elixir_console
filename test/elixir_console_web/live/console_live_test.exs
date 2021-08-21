@@ -25,6 +25,20 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     end
   end
 
+  describe "sending a second valid command" do
+    setup(%{conn: conn}) do
+      {:ok, view, _html} = live(conn, "/")
+      render_submit([view, "command_input"], "execute", %{"command" => "a = 3"})
+      render_submit([view, "command_input"], "execute", %{"command" => "nil"})
+
+      [html: render(view)]
+    end
+
+    test "binding value is still displayed when it's normalized", %{html: html} do
+      assert html =~ ~r/<h2.*Current Bindings<\/h2><ul><li.*>a: <code.*3<\/code>/s
+    end
+  end
+
   describe "sending invalid commands" do
     test "runtime error is informed", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
