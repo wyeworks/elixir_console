@@ -19,7 +19,7 @@ import 'phoenix_html';
 import {Socket} from 'phoenix';
 import LiveSocket from 'phoenix_live_view';
 
-const TAB_KEYCODE = 9
+const TAB_KEYCODE = 9;
 
 let Hooks = {};
 Hooks.CommandInput = {
