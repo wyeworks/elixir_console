@@ -19,13 +19,17 @@ import 'phoenix_html';
 import {Socket} from 'phoenix';
 import LiveSocket from 'phoenix_live_view';
 
+const TAB_KEYCODE = 9;
+
 let Hooks = {};
 Hooks.CommandInput = {
   mounted() {
     const input = document.getElementById('commandInput');
     const sendCursorPosition = e => {
       if (input.selectionStart === input.selectionEnd) {
-        this.pushEventTo('#commandInput', 'caret-position', { position: input.selectionEnd });
+        if (e.keyCode !== TAB_KEYCODE) {
+          this.pushEventTo('#commandInput', 'caret-position', { position: input.selectionEnd });
+        }
       }
     };
 
@@ -52,7 +56,7 @@ liveSocket.connect();
 document.addEventListener('DOMContentLoaded', function(event) {
   let input = document.getElementById('commandInput');
   input.addEventListener('keydown', function(e) {
-    if (e.keyCode === 9) {
+    if (e.keyCode === TAB_KEYCODE) {
       e.preventDefault();
     }
   }, true);
