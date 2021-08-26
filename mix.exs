@@ -41,7 +41,6 @@ defmodule ElixirConsole.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:calendar, "~> 0.17.6"},
       {:earmark, "~> 1.4.0"},
       {:dialyxir, "~> 0.5.1", only: :dev},
       {:floki, "~> 0.26.0", only: :test},
