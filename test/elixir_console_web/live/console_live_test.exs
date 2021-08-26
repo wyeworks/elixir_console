@@ -79,7 +79,10 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
       _ = render_hook([view, "command_input"], :"caret-position", %{"position" => 7})
 
       _ =
-        render_keydown([view, "command_input"], "suggest", %{"code" => "Tab", "value" => "Enum.co"})
+        render_keydown([view, "command_input"], "suggest", %{
+          "code" => "Tab",
+          "value" => "Enum.co"
+        })
 
       html = render(view)
 
