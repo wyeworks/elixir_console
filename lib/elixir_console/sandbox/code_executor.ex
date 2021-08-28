@@ -31,7 +31,7 @@ defmodule ElixirConsole.Sandbox.CodeExecutor do
   # macros
   defp eval_context do
     [
-      requires: [Bitwise, Kernel],
+      requires: [Kernel],
       functions: [
         {Kernel, __ENV__.functions[Kernel]},
         {Bitwise,
