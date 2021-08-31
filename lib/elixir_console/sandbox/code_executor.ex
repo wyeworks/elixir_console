@@ -26,9 +26,7 @@ defmodule ElixirConsole.Sandbox.CodeExecutor do
     end
   end
 
-  # This is just to make available Bitwise macros when evaluating user code
-  # Bitwise is special because the module must be `used` to have access to their
-  # macros
+  # This is just to make available Bitwise functions when evaluating user code
   defp eval_context do
     [
       requires: [Kernel],
