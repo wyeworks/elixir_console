@@ -6,7 +6,4 @@ defmodule ElixirConsoleWeb.ConsoleLive.SidebarComponent do
   """
 
   use Phoenix.LiveComponent
-
-  def variable_name({name, _extra}), do: name
-  def variable_name(other), do: other
 end

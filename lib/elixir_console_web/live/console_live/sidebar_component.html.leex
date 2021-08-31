@@ -4,7 +4,7 @@
     <ul>
     <%= if length(@sandbox.bindings) > 0 do %>
       <%= for {key, value} <- @sandbox.bindings do %>
-        <li class="truncate"><%= variable_name(key) %>: <code class="text-teal-300"><%= inspect(value) %></code></li>
+        <li class="truncate"><%= key %>: <code class="text-teal-300"><%= inspect(value) %></code></li>
       <% end %>
     <% else %>
       <code class="text-teal-300 text-sm">No bindings yet!</code>
