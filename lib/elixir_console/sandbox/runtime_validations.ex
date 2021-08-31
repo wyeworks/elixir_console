@@ -86,7 +86,7 @@ defmodule ElixirConsole.Sandbox.RuntimeValidations do
   # equivalent to direct invocation
   defp add_safe_invocation(
          {:|>, outer_meta,
-          [first_param, {{:., meta, [callee, function]}, meta, remaining_params}]},
+          [first_param, {{:., meta, [callee, function]}, _more_meta, remaining_params}]},
          acc
        )
        when is_atom(callee) or is_tuple(callee) do

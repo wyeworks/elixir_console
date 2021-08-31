@@ -33,6 +33,13 @@ defmodule ElixirConsole.SandboxTest do
       assert Sandbox.execute("1 + 2", sandbox) == {:success, {3, expected_sandbox}}
     end
 
+    test "doesn't store expanded bindings with added context", %{sandbox: sandbox} do
+      sandbox = %Sandbox{sandbox | bindings: [a: "1"]}
+      expected_sandbox = %Sandbox{sandbox | bindings: [a: "1"]}
+
+      assert Sandbox.execute("nil", sandbox) == {:success, {nil, expected_sandbox}}
+    end
+
     test "reports excessive memory usage", %{sandbox: sandbox} do
       assert {:error, {"The command used more memory than allowed", _}} =
                Sandbox.execute("for i <- 1..70_000, do: i", sandbox)
