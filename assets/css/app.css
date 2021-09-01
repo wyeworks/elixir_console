@@ -1,8 +1,6 @@
 /* This file is for your main application css. */
 
 /* csslint ignore:start */
-@import "../../deps/phoenix_live_view/assets/css/live_view.css";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
