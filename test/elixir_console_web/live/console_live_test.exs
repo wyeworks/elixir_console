@@ -5,7 +5,10 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
   describe "sending valid commands" do
     def render_with_valid_command(%{conn: conn}) do
       {:ok, view, _html} = live(conn, "/")
-      render_submit([view, "#command_input"], "execute", %{"command" => "a = 1 + 2"})
+
+      view
+      |> element("#command_input")
+      |> render_submit(%{"command" => "a = 1 + 2"})
 
       [html: render(view)]
     end
@@ -28,8 +31,10 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
   describe "sending a second valid command" do
     setup(%{conn: conn}) do
       {:ok, view, _html} = live(conn, "/")
-      render_submit([view, "#command_input"], "execute", %{"command" => "a = 3"})
-      render_submit([view, "#command_input"], "execute", %{"command" => "nil"})
+
+      form = element(view, "#command_input")
+      render_submit(form, %{"command" => "a = 3"})
+      render_submit(form, %{"command" => "nil"})
 
       [html: render(view)]
     end
@@ -42,7 +47,11 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
   describe "sending invalid commands" do
     test "runtime error is informed", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
-      render_submit([view, "#command_input"], "execute", %{"command" => "3 / 0"})
+
+      view
+      |> element("#command_input")
+      |> render_submit(%{"command" => "3 / 0"})
+
       html = render(view)
 
       assert html =~
@@ -52,9 +61,9 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     test "memory abuse is informed", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
 
-      render_submit([view, "#command_input"], "execute", %{
-        "command" => "for i <- 1..70_000, do: i"
-      })
+      view
+      |> element("#command_input")
+      |> render_submit(%{"command" => "for i <- 1..70_000, do: i"})
 
       html = render(view)
 
@@ -63,7 +72,11 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
 
     test "unknown module and functions error is displayed", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
-      render_submit([view, "#command_input"], "execute", %{"command" => "Enum.foo(3)"})
+
+      view
+      |> element("#command_input")
+      |> render_submit(%{"command" => "Enum.foo(3)"})
+
       html = render(view)
 
       assert html =~
@@ -73,9 +86,9 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     test "send a command with invalid modules", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
 
-      render_submit([view, "#command_input"], "execute", %{
-        "command" => "File.exists?(Code.get_docs())"
-      })
+      view
+      |> element("#command_input")
+      |> render_submit(%{"command" => "File.exists?(Code.get_docs())"})
 
       html = render(view)
 
@@ -88,12 +101,10 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
   describe "autocomplete" do
     test "show suggestions if more than one", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
-      render_hook([view, "#command_input"], :"caret-position", %{"position" => 7})
 
-      render_keydown([view, "#command_input"], "suggest", %{
-        "code" => "Tab",
-        "value" => "Enum.co"
-      })
+      input = element(view, "#command_input input")
+      render_hook(input, :"caret-position", %{"position" => 7})
+      render_keydown(input, %{"code" => "Tab", "value" => "Enum.co"})
 
       html = render(view)
 
@@ -102,12 +113,10 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
 
     test "autocomplete and do not show suggestions if only one", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
-      render_hook([view, "#command_input"], :"caret-position", %{"position" => 9})
 
-      render_keydown([view, "#command_input"], "suggest", %{
-        "code" => "Tab",
-        "value" => "Enum.conc"
-      })
+      input = element(view, "#command_input input")
+      render_hook(input, :"caret-position", %{"position" => 9})
+      render_keydown(input, %{"code" => "Tab", "value" => "Enum.conc"})
 
       html = render(view)
 
@@ -120,12 +129,9 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     test "show suggestions considering caret position in the command input", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
 
-      render_hook([view, "#command_input"], :"caret-position", %{"position" => 7})
-
-      render_keydown([view, "#command_input"], "suggest", %{
-        "code" => "Tab",
-        "value" => "Enum.co([1,2]) - 2"
-      })
+      input = element(view, "#command_input input")
+      render_hook(input, :"caret-position", %{"position" => 7})
+      render_keydown(input, %{"code" => "Tab", "value" => "Enum.co([1,2]) - 2"})
 
       html = render(view)
 
@@ -135,13 +141,9 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     test "autocomplete considering caret position in the command input", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
 
-      render_hook([view, "#command_input"], :"caret-position", %{"position" => 9})
-
-      html =
-        render_keydown([view, "#command_input"], "suggest", %{
-          "code" => "Tab",
-          "value" => "Enum.conc([1,2], [3])"
-        })
+      input = element(view, "#command_input input")
+      render_hook(input, :"caret-position", %{"position" => 9})
+      html = render_keydown(input, %{"code" => "Tab", "value" => "Enum.conc([1,2], [3])"})
 
       assert html =~ ~r/\<input .* data-input_value\="Enum.concat\(\[1,2\], \[3\]\)"/
       assert html =~ ~r/\<input .* data-caret_position\="11"/
