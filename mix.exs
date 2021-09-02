@@ -34,7 +34,7 @@ defmodule ElixirConsole.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.5.12"},
-      {:phoenix_live_view, "~> 0.13.0"},
+      {:phoenix_live_view, "~> 0.14.0"},
       {:phoenix_html, "~> 2.14"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.11"},
