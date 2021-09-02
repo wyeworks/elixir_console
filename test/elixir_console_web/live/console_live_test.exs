@@ -5,7 +5,10 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
   describe "sending valid commands" do
     def render_with_valid_command(%{conn: conn}) do
       {:ok, view, _html} = live(conn, "/")
-      render_submit(element(view, "#command_input"), %{"command" => "a = 1 + 2"})
+
+      view
+      |> element("#command_input")
+      |> render_submit(%{"command" => "a = 1 + 2"})
 
       [html: render(view)]
     end
@@ -44,7 +47,11 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
   describe "sending invalid commands" do
     test "runtime error is informed", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
-      render_submit(element(view, "#command_input"), %{"command" => "3 / 0"})
+
+      view
+      |> element("#command_input")
+      |> render_submit(%{"command" => "3 / 0"})
+
       html = render(view)
 
       assert html =~
@@ -54,9 +61,9 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     test "memory abuse is informed", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
 
-      render_submit(element(view, "#command_input"), %{
-        "command" => "for i <- 1..70_000, do: i"
-      })
+      view
+      |> element("#command_input")
+      |> render_submit(%{"command" => "for i <- 1..70_000, do: i"})
 
       html = render(view)
 
@@ -65,7 +72,11 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
 
     test "unknown module and functions error is displayed", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
-      render_submit(element(view, "#command_input"), %{"command" => "Enum.foo(3)"})
+
+      view
+      |> element("#command_input")
+      |> render_submit(%{"command" => "Enum.foo(3)"})
+
       html = render(view)
 
       assert html =~
@@ -75,9 +86,9 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     test "send a command with invalid modules", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
 
-      render_submit(element(view, "#command_input"), %{
-        "command" => "File.exists?(Code.get_docs())"
-      })
+      view
+      |> element("#command_input")
+      |> render_submit(%{"command" => "File.exists?(Code.get_docs())"})
 
       html = render(view)
 
