@@ -19,7 +19,8 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
        socket,
        history_counter: 0,
        input_value: "",
-       caret_position: 0
+       caret_position: 0,
+       reset_input: false
      )}
   end
 
@@ -68,9 +69,13 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
     {:noreply, assign(socket, caret_position: position)}
   end
 
+  def handle_event("input-reset", _, socket) do
+    {:noreply, assign(socket, reset_input: false)}
+  end
+
   def handle_event("execute", %{"command" => command}, socket) do
     send(self(), {:execute_command, command})
-    {:noreply, socket}
+    {:noreply, assign(socket, reset_input: true)}
   end
 
   defp get_previous_history_entry([], _counter), do: {[], 0}
