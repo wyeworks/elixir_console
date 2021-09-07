@@ -94,6 +94,20 @@ Ben Hu](https://github.com/Ben-Hu) for testing the console and reporting several
 Please feel free to open issues or pull requests. Both things will help us to extend and improve the Elixir Web Console  🎉
 We know that security vulnerabilities probably exist due to the nature of the technical challenge. If you have found a security issue, please send us a note privately at [elixir-console-security@wyeworks.com](mailto:elixir-console-security@wyeworks.com).
 
+## Runing tests
+
+```
+$ mix test
+```
+
+To run feature tests Wallaby [requires](https://hexdocs.pm/wallaby/Wallaby.Chrome.html#module-notes) you to have Chrome or Chromedriver in your PATH.
+
+Headful mode:
+
+```
+$ HEADLESS=false mix test
+```
+
 # License
 
 Elixir Web Console is released under the [MIT License](https://github.com/wyeworks/elixir_console/blob/master/LICENSE.md).
