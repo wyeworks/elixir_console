@@ -41,4 +41,16 @@ defmodule ElixirConsoleWeb.ConsoleTest do
       |> assert
     end)
   end
+  feature "visitor can shortcut used expressions", %{session: session} do
+    session
+    |> visit("/")
+    |> fill_in(css("#commandInput"), with: "a = 1 + 2")
+    |> send_keys([:enter])
+    |> send_keys([:up_arrow])
+    |> find(css("#commandInput"), fn input ->
+      input
+      |> has_value?("a = 1 + 2")
+      |> assert
+    end)
+  end
 end
