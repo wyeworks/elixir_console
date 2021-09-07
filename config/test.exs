@@ -8,3 +8,5 @@ config :elixir_console, ElixirConsoleWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :wallaby, chromedriver: [headless: System.get_env("HEADLESS") != "false"]
