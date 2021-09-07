@@ -4,7 +4,11 @@ use Mix.Config
 # you can enable the server option below.
 config :elixir_console, ElixirConsoleWeb.Endpoint,
   http: [port: 4002],
-  server: false
+  server: true
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :wallaby,
+  chromedriver: [headless: System.get_env("HEADLESS") != "false"],
+  screenshot_on_failure: true
