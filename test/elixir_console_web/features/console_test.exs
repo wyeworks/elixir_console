@@ -4,7 +4,7 @@ defmodule ElixirConsoleWeb.ConsoleTest do
 
   import Wallaby.Query, only: [css: 1]
 
-  feature "visitor can try elixir in the console", %{session: session} do
+  feature "visitor can evaluate an expression", %{session: session} do
     session
     |> visit("/")
     |> fill_in(css("#commandInput"), with: "a = 1 + 2")
@@ -16,6 +16,24 @@ defmodule ElixirConsoleWeb.ConsoleTest do
     |> find(css("#commandInput"), fn input ->
       input
       |> has_value?("")
+      |> assert
+    end)
+  end
+
+  feature "visitor can get suggestions while typing", %{session: session} do
+    session
+    |> visit("/")
+    |> fill_in(css("#commandInput"), with: "Enu")
+    |> send_keys([:tab])
+    |> find(css(".test-suggestion-list"), fn suggestions_list ->
+      assert_text(suggestions_list, "Enum\n")
+      assert_text(suggestions_list, "Enumerable")
+    end)
+    |> fill_in(css("#commandInput"), with: "Enumer")
+    |> send_keys([:tab])
+    |> find(css("#commandInput"), fn input ->
+      input
+      |> has_value?("Enumerable")
       |> assert
     end)
   end
