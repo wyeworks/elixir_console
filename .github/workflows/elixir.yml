@@ -20,9 +20,15 @@ jobs:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
         restore-keys: ${{ runner.os }}-mix-
-    - name: Install dependencies
+    - name: Install mix dependencies
       run: mix deps.get
     - name: Check code format
       run: mix format --check-formatted
+    - name: Install yarn dependencies
+      run: yarn --cwd assets
+    - name: Compile assets
+      run: cd assets && ./node_modules/.bin/webpack --mode development
+    - name: Compile elixir
+      run: MIX_ENV=test mix compile
     - name: Run tests
       run: mix test
