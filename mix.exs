@@ -33,14 +33,13 @@ defmodule ElixirConsole.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.4.13"},
-      {:phoenix_pubsub, "~> 1.1"},
+      {:phoenix, "~> 1.5.12"},
       {:phoenix_live_view, "~> 0.13.0"},
       {:phoenix_html, "~> 2.14"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"},
+      {:plug_cowboy, "~> 2.1"},
       {:earmark, "~> 1.4.0"},
       {:dialyxir, "~> 0.5.1", only: :dev},
       {:floki, "~> 0.26.0", only: :test},

@@ -12,7 +12,7 @@ config :elixir_console, ElixirConsoleWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "xkn0Oy0t0ydkJkKxKwFVJ36lc5MX7kHtdo+4vtEVqGrBNN/Kv4a9GIGqbx6CHlVw",
   render_errors: [view: ElixirConsoleWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: ElixirConsole.PubSub, adapter: Phoenix.PubSub.PG2],
+  pubsub_server: ElixirConsole.PubSub,
   live_view: [signing_salt: "7vohZO+j"]
 
 # Configures Elixir's Logger
