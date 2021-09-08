@@ -6,6 +6,7 @@ defmodule ElixirConsoleWeb.ConsoleTest do
 
   @command_input css("#commandInput")
   @command_output css("#commandOutput")
+  @suggestions_list css("#suggestions-list")
 
   feature "visitor can evaluate an expression", %{session: session} do
     session
@@ -28,7 +29,7 @@ defmodule ElixirConsoleWeb.ConsoleTest do
     |> visit("/")
     |> fill_in(@command_input, with: "Enu")
     |> send_keys([:tab])
-    |> find(css(".test-suggestion-list"), fn suggestions_list ->
+    |> find(@suggestions_list, fn suggestions_list ->
       assert_text(suggestions_list, "Enum\n")
       assert_text(suggestions_list, "Enumerable")
     end)

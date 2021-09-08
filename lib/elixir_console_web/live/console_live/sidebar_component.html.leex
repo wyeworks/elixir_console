@@ -35,8 +35,7 @@
         </p>
       <% end %>
     <% end %>
-    <%# 'test-' prefixed class used only for test selectors %>
-    <ul class="test-suggestion-list">
+    <ul id="suggestions-list">
       <%= for suggestion <- @suggestions do %>
         <li><%= suggestion %></li>
       <% end %>
