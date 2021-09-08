@@ -4,16 +4,19 @@ defmodule ElixirConsoleWeb.ConsoleTest do
 
   import Wallaby.Query, only: [css: 1]
 
+  @command_input css("#commandInput")
+  @command_output css("#commandOutput")
+
   feature "visitor can evaluate an expression", %{session: session} do
     session
     |> visit("/")
-    |> fill_in(css("#commandInput"), with: "a = 1 + 2")
+    |> fill_in(@command_input, with: "a = 1 + 2")
     |> send_keys([:enter])
-    |> find(css("#commandOutput"), fn output ->
+    |> find(@command_output, fn output ->
       assert_text(output, "> a = 1 + 2")
       assert_text(output, "3")
     end)
-    |> find(css("#commandInput"), fn input ->
+    |> find(@command_input, fn input ->
       input
       |> has_value?("")
       |> assert
@@ -23,15 +26,15 @@ defmodule ElixirConsoleWeb.ConsoleTest do
   feature "visitor can get suggestions while typing", %{session: session} do
     session
     |> visit("/")
-    |> fill_in(css("#commandInput"), with: "Enu")
+    |> fill_in(@command_input, with: "Enu")
     |> send_keys([:tab])
     |> find(css(".test-suggestion-list"), fn suggestions_list ->
       assert_text(suggestions_list, "Enum\n")
       assert_text(suggestions_list, "Enumerable")
     end)
-    |> fill_in(css("#commandInput"), with: "Enumer")
+    |> fill_in(@command_input, with: "Enumer")
     |> send_keys([:tab])
-    |> find(css("#commandInput"), fn input ->
+    |> find(@command_input, fn input ->
       input
       |> has_value?("Enumerable")
       |> assert
