@@ -11,10 +11,6 @@ defmodule ElixirConsoleWeb.Endpoint do
     signing_salt: "pIQrFsE9x"
   ]
 
-  socket "/socket", ElixirConsoleWeb.UserSocket,
-    websocket: [timeout: 45_000],
-    longpoll: false
-
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
 
   # Serve at "/" the static files from "priv/static" directory.
