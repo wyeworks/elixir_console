@@ -7,6 +7,7 @@ defmodule ElixirConsoleWeb.ConsoleTest do
   @command_input css("#commandInput")
   @command_output css("#commandOutput")
   @suggestions_list css("#suggestions-list")
+  @documentation_output css("#documentation-output")
 
   feature "visitor can evaluate an expression", %{session: session} do
     session
@@ -39,6 +40,21 @@ defmodule ElixirConsoleWeb.ConsoleTest do
       input
       |> has_value?("Enumerable")
       |> assert
+    end)
+  end
+
+  feature "visitor can get official documentation of an elixir function", %{session: session} do
+    session
+    |> visit("/")
+    |> fill_in(@command_input, with: "String.length('elixir')")
+    |> send_keys([:enter])
+    |> find(@command_output, fn output ->
+      output
+      |> assert_text("> String.length('elixir')")
+      |> click(Query.css("#command0 > span"))
+    end)
+    |> find(@documentation_output, fn documentation_output ->
+      assert_text(documentation_output, "String.length/1")
     end)
   end
 end
