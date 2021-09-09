@@ -41,6 +41,7 @@ defmodule ElixirConsoleWeb.ConsoleTest do
       |> assert
     end)
   end
+
   feature "visitor can shortcut used expressions", %{session: session} do
     session
     |> visit("/")
