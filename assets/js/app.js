@@ -42,7 +42,7 @@ Hooks.CommandInput = {
 };
 
 let csrfToken = document.querySelector('meta[name=\'csrf-token\']').getAttribute('content');
-/* eslint-disable-next-line camelcase */
+/* eslint-disable camelcase */
 let liveSocket = new LiveSocket(
   '/live',
   Socket,
@@ -56,6 +56,7 @@ let liveSocket = new LiveSocket(
     }
   }
 );
+/* eslint-enable camelcase */
 liveSocket.connect();
 
 document.addEventListener('DOMContentLoaded', function(event) {
