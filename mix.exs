@@ -36,7 +36,7 @@ defmodule ElixirConsole.MixProject do
       {:phoenix, "~> 1.5.12"},
       {:phoenix_live_view, "~> 0.13.0"},
       {:phoenix_html, "~> 2.14"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_live_reload, "~> 1.3", only: :dev},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.1"},
