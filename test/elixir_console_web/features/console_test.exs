@@ -55,6 +55,7 @@ defmodule ElixirConsoleWeb.ConsoleTest do
     end)
     |> find(@documentation_output, fn documentation_output ->
       assert_text(documentation_output, "String.length/1")
+      assert_text(documentation_output, "Returns the number of Unicode graphemes in a UTF-8 string.")
     end)
   end
 end
