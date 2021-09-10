@@ -51,7 +51,7 @@ defmodule ElixirConsoleWeb.ConsoleTest do
     |> find(@command_output, fn output ->
       output
       |> assert_text("> String.length('elixir')")
-      |> click(Query.css("#command0 > span"))
+      |> click(css("#command0 > span"))
     end)
     |> find(@documentation_output, fn documentation_output ->
       assert_text(documentation_output, "String.length/1")
