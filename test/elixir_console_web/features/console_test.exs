@@ -51,6 +51,11 @@ defmodule ElixirConsoleWeb.ConsoleTest do
     |> send_keys([:enter])
     |> fill_in(@command_input, with: "c = String.length(b)")
     |> send_keys([:enter])
+    |> find(@command_input, fn input ->
+      input
+      |> has_value?("")
+      |> assert
+    end)
     |> send_keys([:up_arrow])
     |> find(@command_input, fn input ->
       input
