@@ -23,20 +23,6 @@ const TAB_KEYCODE = 9;
 
 let Hooks = {};
 Hooks.CommandInput = {
-  mounted() {
-    const input = document.getElementById('commandInput');
-    const sendCursorPosition = e => {
-      if (input.selectionStart === input.selectionEnd) {
-        if (e.keyCode !== TAB_KEYCODE) {
-          this.pushEventTo('#commandInput', 'caret-position', { position: input.selectionEnd });
-        }
-      }
-    };
-
-    ['keyup', 'click', 'focus'].forEach(event => {
-      input.addEventListener(event, sendCursorPosition, true);
-    });
-  },
   updated() {
     const newValue = this.el.getAttribute('data-input_value');
     const newCaretPosition = parseInt(this.el.getAttribute('data-caret_position'));

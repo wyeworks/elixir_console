@@ -69,10 +69,6 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
     {:noreply, assign(socket, history_counter: -1, input_value: "")}
   end
 
-  def handle_event("caret-position", %{"position" => position}, socket) do
-    {:noreply, assign(socket, caret_position: position)}
-  end
-
   def handle_event("input-reset", _, socket) do
     {:noreply, assign(socket, reset_input: false)}
   end
