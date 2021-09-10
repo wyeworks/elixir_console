@@ -54,15 +54,27 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   def handle_event("suggest", %{"key" => @up_keycode}, socket) do
     %{history_counter: counter, history: history} = socket.assigns
     {input_value, new_counter} = get_previous_history_entry(history, counter)
+    new_caret_position = String.length(input_value)
 
-    {:noreply, assign(socket, input_value: input_value, history_counter: new_counter)}
+    {:noreply,
+     assign(socket,
+       input_value: input_value,
+       history_counter: new_counter,
+       caret_position: new_caret_position
+     )}
   end
 
   def handle_event("suggest", %{"key" => @down_keycode}, socket) do
     %{history_counter: counter, history: history} = socket.assigns
     {input_value, new_counter} = get_next_history_entry(history, counter)
+    new_caret_position = String.length(input_value)
 
-    {:noreply, assign(socket, input_value: input_value, history_counter: new_counter)}
+    {:noreply,
+     assign(socket,
+       input_value: input_value,
+       history_counter: new_counter,
+       caret_position: new_caret_position
+     )}
   end
 
   def handle_event("suggest", _key, socket) do
@@ -78,23 +90,23 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
     {:noreply, assign(socket, reset_input: true)}
   end
 
-  defp get_previous_history_entry([], _counter), do: {[], 0}
+  defp get_previous_history_entry([], _counter), do: {"", 0}
 
   defp get_previous_history_entry(history, counter) when counter + 1 < length(history) do
-    {[Enum.at(history, counter + 1)], counter + 1}
+    {Enum.at(history, counter + 1), counter + 1}
   end
 
   defp get_previous_history_entry(history, counter) do
-    {[List.last(history)], counter}
+    {List.last(history), counter}
   end
 
-  defp get_next_history_entry([], _counter), do: {[], 0}
+  defp get_next_history_entry([], _counter), do: {"", 0}
 
   defp get_next_history_entry(history, counter) when counter > 0 do
-    {[Enum.at(history, counter - 1)], counter - 1}
+    {Enum.at(history, counter - 1), counter - 1}
   end
 
   defp get_next_history_entry(history, _counter) do
-    {[List.first(history)], 0}
+    {List.first(history), 0}
   end
 end
