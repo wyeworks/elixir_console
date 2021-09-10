@@ -42,13 +42,13 @@ defmodule ElixirConsoleWeb.ConsoleTest do
     end)
   end
 
-  feature "visitor can shortcut used expressions", %{session: session} do
+  feature "visitor can cycle through previously used commands", %{session: session} do
     session
     |> visit("/")
-    |> fill_in(css("#commandInput"), with: "a = 1 + 2")
+    |> fill_in(@command_input, with: "a = 1 + 2")
     |> send_keys([:enter])
     |> send_keys([:up_arrow])
-    |> find(css("#commandInput"), fn input ->
+    |> find(@command_input, fn input ->
       input
       |> has_value?("a = 1 + 2")
       |> assert
