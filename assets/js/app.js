@@ -1,7 +1,7 @@
 // We need to import the CSS so that webpack will load it.
 // The MiniCssExtractPlugin is used to separate it out into
 // its own CSS file.
-import css from '../css/app.css';
+import '../css/app.css';
 
 // webpack automatically bundles all modules in your
 // entry points. Those entry points can be configured
@@ -19,8 +19,6 @@ import 'phoenix_html';
 import {Socket} from 'phoenix';
 import LiveSocket from 'phoenix_live_view';
 
-const TAB_KEYCODE = 9;
-
 let Hooks = {};
 Hooks.CommandInput = {
   mounted() {
@@ -30,8 +28,8 @@ Hooks.CommandInput = {
     });
   },
   updated() {
-    const newValue = this.el.getAttribute('data-input_value');
-    const newCaretPosition = parseInt(this.el.getAttribute('data-caret_position'));
+    const newValue = this.el.dataset.input_value;
+    const newCaretPosition = parseInt(this.el.dataset.caret_position);
 
     if (newValue !== '') {
       this.el.value = newValue;
@@ -49,7 +47,7 @@ let liveSocket = new LiveSocket(
     hooks: Hooks,
     params: {_csrf_token: csrfToken},
     metadata: {
-      keydown: (e, el) => {
+      keydown: (_e, el) => {
         return {caret_position: el.selectionEnd};
       }
     }
@@ -58,10 +56,10 @@ let liveSocket = new LiveSocket(
 /* eslint-enable camelcase */
 liveSocket.connect();
 
-document.addEventListener('DOMContentLoaded', function(event) {
-  let input = document.getElementById('commandInput');
-  input.addEventListener('keydown', function(e) {
-    if (e.keyCode === TAB_KEYCODE) {
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('commandInput');
+  input.addEventListener('keydown', (e) => {
+    if (e.code === 'Tab') {
       e.preventDefault();
     }
   }, true);
