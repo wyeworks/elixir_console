@@ -24,12 +24,22 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
      )}
   end
 
+  defp ensure_number(value) when is_number(value),
+    do: value
+
+  defp ensure_number(value), do: String.to_integer(value)
+
   def handle_event(
         "suggest",
         %{"key" => @tab_keycode, "value" => value, "caret_position" => caret_position},
         socket
       ) do
     %{bindings: bindings} = socket.assigns
+
+    # When testing this event using render_keydown/up, even if the metadata is defined as a number,
+    # we're receiving the value here as a string.
+    # This happens only in tests though, when running the server we correctly receive it as a number.
+    caret_position = ensure_number(caret_position)
 
     case Autocomplete.get_suggestions(value, caret_position, bindings) do
       [suggestion] ->
