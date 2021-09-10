@@ -57,7 +57,19 @@ Hooks.CommandInput = {
 
 let csrfToken = document.querySelector('meta[name=\'csrf-token\']').getAttribute('content');
 /* eslint-disable-next-line camelcase */
-let liveSocket = new LiveSocket('/live', Socket, {hooks: Hooks, params: {_csrf_token: csrfToken}});
+let liveSocket = new LiveSocket(
+  '/live',
+  Socket,
+  {
+    hooks: Hooks,
+    params: {_csrf_token: csrfToken},
+    metadata: {
+      keydown: (e, el) => {
+        return {caret_position: el.selectionEnd};
+      }
+    }
+  }
+);
 liveSocket.connect();
 
 document.addEventListener('DOMContentLoaded', function(event) {

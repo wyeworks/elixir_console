@@ -24,8 +24,12 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
      )}
   end
 
-  def handle_event("suggest", %{"key" => @tab_keycode, "value" => value}, socket) do
-    %{caret_position: caret_position, bindings: bindings} = socket.assigns
+  def handle_event(
+        "suggest",
+        %{"key" => @tab_keycode, "value" => value, "caret_position" => caret_position},
+        socket
+      ) do
+    %{bindings: bindings} = socket.assigns
 
     case Autocomplete.get_suggestions(value, caret_position, bindings) do
       [suggestion] ->
