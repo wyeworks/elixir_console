@@ -24,8 +24,22 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
      )}
   end
 
-  def handle_event("suggest", %{"code" => @tab_keycode, "value" => value}, socket) do
-    %{caret_position: caret_position, bindings: bindings} = socket.assigns
+  defp ensure_number(value) when is_number(value),
+    do: value
+
+  defp ensure_number(value), do: String.to_integer(value)
+
+  def handle_event(
+        "keydown",
+        %{"key" => @tab_keycode, "value" => value, "caret_position" => caret_position},
+        socket
+      ) do
+    %{bindings: bindings} = socket.assigns
+
+    # When testing this event using render_keydown/up, even if the metadata is defined as a number,
+    # we're receiving the value here as a string.
+    # This happens only in tests though, when running the server we correctly receive it as a number.
+    caret_position = ensure_number(caret_position)
 
     case Autocomplete.get_suggestions(value, caret_position, bindings) do
       [suggestion] ->
@@ -47,26 +61,34 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
     end
   end
 
-  def handle_event("suggest", %{"code" => @up_keycode}, socket) do
+  def handle_event("keydown", %{"key" => @up_keycode}, socket) do
     %{history_counter: counter, history: history} = socket.assigns
     {input_value, new_counter} = get_previous_history_entry(history, counter)
+    new_caret_position = String.length(input_value)
 
-    {:noreply, assign(socket, input_value: input_value, history_counter: new_counter)}
+    {:noreply,
+     assign(socket,
+       input_value: input_value,
+       history_counter: new_counter,
+       caret_position: new_caret_position
+     )}
   end
 
-  def handle_event("suggest", %{"code" => @down_keycode}, socket) do
+  def handle_event("keydown", %{"key" => @down_keycode}, socket) do
     %{history_counter: counter, history: history} = socket.assigns
     {input_value, new_counter} = get_next_history_entry(history, counter)
+    new_caret_position = String.length(input_value)
 
-    {:noreply, assign(socket, input_value: input_value, history_counter: new_counter)}
+    {:noreply,
+     assign(socket,
+       input_value: input_value,
+       history_counter: new_counter,
+       caret_position: new_caret_position
+     )}
   end
 
-  def handle_event("suggest", _key, socket) do
+  def handle_event("keydown", _key, socket) do
     {:noreply, assign(socket, history_counter: -1, input_value: "")}
-  end
-
-  def handle_event("caret-position", %{"position" => position}, socket) do
-    {:noreply, assign(socket, caret_position: position)}
   end
 
   def handle_event("input-reset", _, socket) do
@@ -78,23 +100,23 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
     {:noreply, assign(socket, reset_input: true)}
   end
 
-  defp get_previous_history_entry([], _counter), do: {[], 0}
+  defp get_previous_history_entry([], _counter), do: {"", 0}
 
   defp get_previous_history_entry(history, counter) when counter + 1 < length(history) do
-    {[Enum.at(history, counter + 1)], counter + 1}
+    {Enum.at(history, counter + 1), counter + 1}
   end
 
   defp get_previous_history_entry(history, counter) do
-    {[List.last(history)], counter}
+    {List.last(history), counter}
   end
 
-  defp get_next_history_entry([], _counter), do: {[], 0}
+  defp get_next_history_entry([], _counter), do: {"", 0}
 
   defp get_next_history_entry(history, counter) when counter > 0 do
-    {[Enum.at(history, counter - 1)], counter - 1}
+    {Enum.at(history, counter - 1), counter - 1}
   end
 
   defp get_next_history_entry(history, _counter) do
-    {[List.first(history)], 0}
+    {List.first(history), 0}
   end
 end

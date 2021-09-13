@@ -23,20 +23,6 @@ const TAB_KEYCODE = 9;
 
 let Hooks = {};
 Hooks.CommandInput = {
-  mounted() {
-    const input = document.getElementById('commandInput');
-    const sendCursorPosition = e => {
-      if (input.selectionStart === input.selectionEnd) {
-        if (e.keyCode !== TAB_KEYCODE) {
-          this.pushEventTo('#commandInput', 'caret-position', { position: input.selectionEnd });
-        }
-      }
-    };
-
-    ['keyup', 'click', 'focus'].forEach(event => {
-      input.addEventListener(event, sendCursorPosition, true);
-    });
-  },
   updated() {
     const newValue = this.el.getAttribute('data-input_value');
     const newCaretPosition = parseInt(this.el.getAttribute('data-caret_position'));
@@ -56,8 +42,21 @@ Hooks.CommandInput = {
 };
 
 let csrfToken = document.querySelector('meta[name=\'csrf-token\']').getAttribute('content');
-/* eslint-disable-next-line camelcase */
-let liveSocket = new LiveSocket('/live', Socket, {hooks: Hooks, params: {_csrf_token: csrfToken}});
+/* eslint-disable camelcase */
+let liveSocket = new LiveSocket(
+  '/live',
+  Socket,
+  {
+    hooks: Hooks,
+    params: {_csrf_token: csrfToken},
+    metadata: {
+      keydown: (e, el) => {
+        return {caret_position: el.selectionEnd};
+      }
+    }
+  }
+);
+/* eslint-enable camelcase */
 liveSocket.connect();
 
 document.addEventListener('DOMContentLoaded', function(event) {

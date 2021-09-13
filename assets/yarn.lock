@@ -3483,13 +3483,13 @@ pbkdf2@^3.0.3:
     sha.js "^2.4.8"
 
 "phoenix@file:../deps/phoenix":
-  version "1.4.10"
+  version "1.5.12"
 
 "phoenix_html@file:../deps/phoenix_html":
   version "2.13.3"
 
 "phoenix_live_view@file:../deps/phoenix_live_view":
-  version "0.4.1"
+  version "0.13.3"
 
 pify@^3.0.0:
   version "3.0.0"
