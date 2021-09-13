@@ -28,7 +28,9 @@ jobs:
       run: yarn --cwd assets
     - name: Compile assets
       run: cd assets && ./node_modules/.bin/webpack --mode development
-    - name: Compile elixir
+    - name: Compile elixir deps
+      run: MIX_ENV=test mix deps.compile
+    - name: Compile elixir project
       run: MIX_ENV=test mix compile --force --warnings-as-errors
     - name: Run tests
       run: mix test
