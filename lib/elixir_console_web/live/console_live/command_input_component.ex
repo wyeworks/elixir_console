@@ -24,7 +24,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
      )}
   end
 
-  def handle_event("suggest", %{"key" => @tab_keycode, "value" => value}, socket) do
+  def handle_event("keydown", %{"key" => @tab_keycode, "value" => value}, socket) do
     %{caret_position: caret_position, bindings: bindings} = socket.assigns
 
     case Autocomplete.get_suggestions(value, caret_position, bindings) do
@@ -47,21 +47,21 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
     end
   end
 
-  def handle_event("suggest", %{"key" => @up_keycode}, socket) do
+  def handle_event("keydown", %{"key" => @up_keycode}, socket) do
     %{history_counter: counter, history: history} = socket.assigns
     {input_value, new_counter} = get_previous_history_entry(history, counter)
 
     {:noreply, assign(socket, input_value: input_value, history_counter: new_counter)}
   end
 
-  def handle_event("suggest", %{"key" => @down_keycode}, socket) do
+  def handle_event("keydown", %{"key" => @down_keycode}, socket) do
     %{history_counter: counter, history: history} = socket.assigns
     {input_value, new_counter} = get_next_history_entry(history, counter)
 
     {:noreply, assign(socket, input_value: input_value, history_counter: new_counter)}
   end
 
-  def handle_event("suggest", _key, socket) do
+  def handle_event("keydown", _key, socket) do
     {:noreply, assign(socket, history_counter: -1, input_value: "")}
   end
 
