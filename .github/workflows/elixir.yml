@@ -29,6 +29,6 @@ jobs:
     - name: Compile assets
       run: cd assets && ./node_modules/.bin/webpack --mode development
     - name: Compile elixir
-      run: MIX_ENV=test mix compile
+      run: MIX_ENV=test mix compile --force --warnings-as-errors
     - name: Run tests
       run: mix test
