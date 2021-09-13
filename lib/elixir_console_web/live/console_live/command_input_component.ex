@@ -30,7 +30,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   defp ensure_number(value), do: String.to_integer(value)
 
   def handle_event(
-        "suggest",
+        "keydown",
         %{"key" => @tab_keycode, "value" => value, "caret_position" => caret_position},
         socket
       ) do
@@ -61,7 +61,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
     end
   end
 
-  def handle_event("suggest", %{"key" => @up_keycode}, socket) do
+  def handle_event("keydown", %{"key" => @up_keycode}, socket) do
     %{history_counter: counter, history: history} = socket.assigns
     {input_value, new_counter} = get_previous_history_entry(history, counter)
     new_caret_position = String.length(input_value)
@@ -74,7 +74,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
      )}
   end
 
-  def handle_event("suggest", %{"key" => @down_keycode}, socket) do
+  def handle_event("keydown", %{"key" => @down_keycode}, socket) do
     %{history_counter: counter, history: history} = socket.assigns
     {input_value, new_counter} = get_next_history_entry(history, counter)
     new_caret_position = String.length(input_value)
@@ -87,7 +87,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
      )}
   end
 
-  def handle_event("suggest", _key, socket) do
+  def handle_event("keydown", _key, socket) do
     {:noreply, assign(socket, history_counter: -1, input_value: "")}
   end
 
