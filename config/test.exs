@@ -12,3 +12,5 @@ config :logger, level: :warn
 config :wallaby,
   chromedriver: [headless: System.get_env("HEADLESS") != "false"],
   screenshot_on_failure: true
+
+config :phoenix, :plug_init_mode, :runtime

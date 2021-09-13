@@ -8,6 +8,7 @@ defmodule ElixirConsole.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
+      {Phoenix.PubSub, name: ElixirConsole.PubSub},
       ElixirConsoleWeb.Endpoint,
       ElixirConsoleWeb.LiveMonitor,
       ElixirConsole.Documentation
