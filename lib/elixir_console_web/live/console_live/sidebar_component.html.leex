@@ -16,11 +16,13 @@
       <h2 class="font-medium">Suggestions:</h2>
     <% else %>
       <%= if @contextual_help do %>
-        <span class="mb-8 font-bold text-green-400">
-        <a href="<%= @contextual_help[:link] %>" target="_blank" class="underline"><%= @contextual_help[:func_name] %></a>
-        </span>
-        <span class="text-xs mb-4 font-bold text-gray-400"><%= @contextual_help[:header] %></span>
-        <span class="contextual-help-doc text-xs text-gray-400"><%= Phoenix.HTML.raw @contextual_help[:doc] %></span>
+        <div id="documentation-output">
+          <span class="mb-8 font-bold text-green-400">
+          <a href="<%= @contextual_help[:link] %>" target="_blank" class="underline"><%= @contextual_help[:func_name] %></a>
+          </span>
+          <span class="text-xs mb-4 font-bold text-gray-400"><%= @contextual_help[:header] %></span>
+          <span class="contextual-help-doc text-xs text-gray-400"><%= Phoenix.HTML.raw @contextual_help[:doc] %></span>
+        </div>
       <% else %>
         <h2 class="underline mb-3">INSTRUCTIONS</h2>
         <p>[UP] [DOWN]: Navigate through commands history</p>
