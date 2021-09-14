@@ -62,7 +62,7 @@ defmodule ElixirConsole.Documentation do
 
   @impl true
   def handle_call({:get, key}, _from, docs) do
-    doc = docs[key] || find_with_greater_arity(key, docs)
+    doc = docs[key] || find_with_different_arity(key, docs)
     {:reply, DocEntry.build_docs_metadata(doc), docs}
   end
 
@@ -157,9 +157,9 @@ defmodule ElixirConsole.Documentation do
     end)
   end
 
-  defp find_with_greater_arity(%Key{func_name: func_name, arity: func_ary}, docs) do
+  defp find_with_different_arity(%Key{func_name: func_name, arity: func_ary}, docs) do
     with {_, doc} <-
-           Enum.filter(docs, fn {key, _} -> key.func_name == func_name && key.arity > func_ary end)
+           Enum.filter(docs, fn {key, _} -> key.func_name == func_name && key.arity != func_ary end)
            |> Enum.sort(fn {k1, _}, {k2, _} -> k1.arity < k2.arity end)
            |> List.first() do
       doc
