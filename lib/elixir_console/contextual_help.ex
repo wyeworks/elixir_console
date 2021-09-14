@@ -51,9 +51,11 @@ defmodule ElixirConsole.ContextualHelp do
     is_integer
     is_list
     is_map
+    is_map_key
     is_nil
     is_number
     is_reference
+    is_struct
     is_tuple
     length
     map_size
