@@ -25,7 +25,7 @@ let Hooks = {};
 Hooks.CommandInput = {
   mounted() {
     const el = this.el;
-    this.handleEvent('reset-input', () => {
+    this.handleEvent('reset', () => {
       el.value = '';
     });
   },
