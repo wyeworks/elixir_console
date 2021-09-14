@@ -23,16 +23,15 @@ const TAB_KEYCODE = 9;
 
 let Hooks = {};
 Hooks.CommandInput = {
+  mounted() {
+    const el = this.el;
+    this.handleEvent('reset', () => {
+      el.value = '';
+    });
+  },
   updated() {
     const newValue = this.el.getAttribute('data-input_value');
     const newCaretPosition = parseInt(this.el.getAttribute('data-caret_position'));
-
-    const resetInput = this.el.dataset.reset_input;
-    if (resetInput === 'true') {
-      this.el.value = '';
-      this.el.setSelectionRange(0, 0);
-      this.pushEventTo('#commandInput', 'input-reset');
-    }
 
     if (newValue !== '') {
       this.el.value = newValue;
