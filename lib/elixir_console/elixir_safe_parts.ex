@@ -109,6 +109,7 @@ defmodule ElixirConsole.ElixirSafeParts do
     is_binary
     is_bitstring
     is_boolean
+    is_exception
     is_float
     is_function
     is_integer
