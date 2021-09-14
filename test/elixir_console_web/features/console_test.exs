@@ -62,7 +62,7 @@ defmodule ElixirConsoleWeb.ConsoleTest do
       )
     end)
   end
-  
+
   feature "visitor can cycle through previously used commands", %{session: session} do
     session
     |> visit("/")
