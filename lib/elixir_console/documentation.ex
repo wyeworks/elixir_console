@@ -159,7 +159,9 @@ defmodule ElixirConsole.Documentation do
 
   defp find_with_different_arity(%Key{func_name: func_name, arity: func_ary}, docs) do
     with {_, doc} <-
-           Enum.filter(docs, fn {key, _} -> key.func_name == func_name && key.arity != func_ary end)
+           Enum.filter(docs, fn {key, _} ->
+             key.func_name == func_name && key.arity != func_ary
+           end)
            |> Enum.sort(fn {k1, _}, {k2, _} -> k1.arity < k2.arity end)
            |> List.first() do
       doc
