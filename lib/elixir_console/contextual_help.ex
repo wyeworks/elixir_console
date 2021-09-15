@@ -91,6 +91,8 @@ defmodule ElixirConsole.ContextualHelp do
     to_string
     unless
     update_in
+    tap
+    then
   )a
 
   @doc """
