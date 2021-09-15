@@ -12,7 +12,7 @@ defmodule ElixirConsole.AutocompleteTest do
     end
 
     test "returns suggestions" do
-      assert Autocomplete.get_suggestions("Enum.co", 7, []) == ["Enum.concat", "Enum.count"]
+      assert Autocomplete.get_suggestions("Enum.cou", 8, []) == ["Enum.count", "Enum.count_until"]
     end
 
     test "returns suggestions when the caret is in the middle" do
