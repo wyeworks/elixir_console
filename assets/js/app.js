@@ -31,7 +31,7 @@ Hooks.CommandInput = {
         this.pushEventTo(
           '#commandInput',
           'suggest',
-          {'key': e.code, 'value': el.value, 'caret_position': el.selectionEnd}
+          {'value': el.value, 'caret_position': el.selectionEnd}
         );
       } else if (e.code === 'ArrowUp' || e.code === 'ArrowDown') {
         this.pushEventTo('#commandInput', 'cycle_history', { key: e.code });

@@ -9,7 +9,6 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   import ElixirConsoleWeb.ConsoleLive.Helpers
   alias ElixirConsole.Autocomplete
 
-  @tab_keycode "Tab"
   @up_keycode "ArrowUp"
   @down_keycode "ArrowDown"
 
@@ -28,11 +27,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
 
   defp ensure_number(value), do: String.to_integer(value)
 
-  def handle_event(
-        "suggest",
-        %{"key" => @tab_keycode, "value" => value, "caret_position" => caret_position},
-        socket
-      ) do
+  def handle_event("suggest", %{"value" => value, "caret_position" => caret_position}, socket) do
     %{bindings: bindings} = socket.assigns
 
     # When testing this event using render_keydown/up, even if the metadata is defined as a number,
