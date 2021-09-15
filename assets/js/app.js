@@ -26,6 +26,19 @@ Hooks.CommandInput = {
     this.handleEvent('reset', () => {
       el.value = '';
     });
+    el.addEventListener('keydown', (e) => {
+      if (e.code === 'Tab') {
+        this.pushEventTo(
+          '#commandInput',
+          'keydown',
+          {'key': e.code, 'value': el.value, 'caret_position': el.selectionEnd}
+        );
+      } else if (e.code === 'ArrowUp' || e.code === 'ArrowDown') {
+        this.pushEventTo('#commandInput', 'keydown', { key: e.code });
+      } else {
+        this.pushEventTo('#commandInput', 'keydown', {});
+      }
+    });
   },
   updated() {
     const newValue = this.el.dataset.input_value;
