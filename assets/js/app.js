@@ -30,13 +30,13 @@ Hooks.CommandInput = {
       if (e.code === 'Tab') {
         this.pushEventTo(
           '#commandInput',
-          'keydown',
+          'suggest',
           {'key': e.code, 'value': el.value, 'caret_position': el.selectionEnd}
         );
       } else if (e.code === 'ArrowUp' || e.code === 'ArrowDown') {
-        this.pushEventTo('#commandInput', 'keydown', { key: e.code });
+        this.pushEventTo('#commandInput', 'cycle_history', { key: e.code });
       } else {
-        this.pushEventTo('#commandInput', 'keydown', {});
+        this.pushEventTo('#commandInput', 'reset_history', {});
       }
     });
   },
