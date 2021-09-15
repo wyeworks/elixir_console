@@ -103,7 +103,7 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
       {:ok, view, _html} = live(conn, "/")
 
       input = element(view, "#command_input input")
-      render_keydown(input, %{"key" => "Tab", "value" => "Enum.co", "caret_position" => 7})
+      render_hook(input, :keydown, %{"key" => "Tab", "value" => "Enum.co", "caret_position" => 7})
 
       html = render(view)
 
@@ -114,7 +114,12 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
       {:ok, view, _html} = live(conn, "/")
 
       input = element(view, "#command_input input")
-      render_keydown(input, %{"key" => "Tab", "value" => "Enum.conc", "caret_position" => 9})
+
+      render_hook(input, :keydown, %{
+        "key" => "Tab",
+        "value" => "Enum.conc",
+        "caret_position" => 9
+      })
 
       html = render(view)
 
@@ -129,7 +134,7 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
 
       input = element(view, "#command_input input")
 
-      render_keydown(input, %{
+      render_hook(input, :keydown, %{
         "key" => "Tab",
         "value" => "Enum.co([1,2]) - 2",
         "caret_position" => 7
@@ -146,7 +151,7 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
       input = element(view, "#command_input input")
 
       html =
-        render_keydown(input, %{
+        render_hook(input, :keydown, %{
           "key" => "Tab",
           "value" => "Enum.conc([1,2], [3])",
           "caret_position" => 9
