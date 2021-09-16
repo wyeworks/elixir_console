@@ -152,6 +152,7 @@ defmodule ElixirConsole.ElixirSafeParts do
     {}
     tap
     then
+    ..//
   )a
 
   def safe_modules, do: @safe_modules
