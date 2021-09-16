@@ -94,8 +94,7 @@ defmodule ElixirConsole.Sandbox do
 
     case check_execution_status(sandbox.pid, normalize_options(opts)) do
       {:ok, {:success, {result, bindings}}} ->
-        bindings = normalize_bindings(bindings)
-        {:success, {result, %{sandbox | bindings: bindings}}}
+        {:success, {result, %{sandbox | bindings: Enum.sort(bindings)}}}
 
       {:ok, {:error, result}} ->
         {:error, {result, sandbox}}
@@ -107,13 +106,6 @@ defmodule ElixirConsole.Sandbox do
         {:error, {"The command used more memory than allowed", restore(sandbox)}}
     end
   end
-
-  defp normalize_bindings(bindings) do
-    for binding <- bindings, do: normalize_single_binding(binding)
-  end
-
-  defp normalize_single_binding({{name, _context}, value}), do: {name, value}
-  defp normalize_single_binding(binding), do: binding
 
   @doc """
   The sandbox process is exited. This function should be used when the sandbox
