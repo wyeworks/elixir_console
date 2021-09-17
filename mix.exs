@@ -7,7 +7,7 @@ defmodule ElixirConsole.MixProject do
       version: "0.1.0",
       elixir: "~> 1.12.3",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      compilers: [:phoenix] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -37,7 +37,6 @@ defmodule ElixirConsole.MixProject do
       {:phoenix_live_view, "~> 0.14.0"},
       {:phoenix_html, "~> 2.14"},
       {:phoenix_live_reload, "~> 1.3", only: :dev},
-      {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.1"},
       {:earmark, "~> 1.4.0"},
