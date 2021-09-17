@@ -102,8 +102,8 @@ defmodule ElixirConsoleWeb.ConsoleTest do
     session
     |> visit("/")
     |> find(@version_info, fn output ->
-      assert_text(output, "Elixir version:")
-      assert_text(output, "Erlang version:")
+      assert_text(output, "Elixir")
+      assert_text(output, "OTP")
     end)
   end
 end
