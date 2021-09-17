@@ -8,6 +8,7 @@ defmodule ElixirConsoleWeb.ConsoleTest do
   @command_output css("#commandOutput")
   @suggestions_list css("#suggestions-list")
   @documentation_output css("#documentation-output")
+  @version_info css("#version-info")
 
   feature "visitor can evaluate an expression", %{session: session} do
     session
@@ -94,6 +95,15 @@ defmodule ElixirConsoleWeb.ConsoleTest do
       input
       |> has_value?("c = String.length(b)")
       |> assert
+    end)
+  end
+
+  feature "visitor gets Elixir and Erlang version", %{session: session} do
+    session
+    |> visit("/")
+    |> find(@version_info, fn output ->
+      assert_text(output, "Elixir version:")
+      assert_text(output, "Erlang version:")
     end)
   end
 end
