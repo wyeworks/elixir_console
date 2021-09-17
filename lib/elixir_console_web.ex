@@ -22,7 +22,6 @@ defmodule ElixirConsoleWeb do
       use Phoenix.Controller, namespace: ElixirConsoleWeb
 
       import Plug.Conn
-      import ElixirConsoleWeb.Gettext
       alias ElixirConsoleWeb.Router.Helpers, as: Routes
       import Phoenix.LiveView.Controller
     end
@@ -41,8 +40,6 @@ defmodule ElixirConsoleWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import ElixirConsoleWeb.ErrorHelpers
-      import ElixirConsoleWeb.Gettext
       alias ElixirConsoleWeb.Router.Helpers, as: Routes
     end
   end
