@@ -26,6 +26,21 @@ Hooks.CommandInput = {
     this.handleEvent('reset', () => {
       el.value = '';
     });
+    el.addEventListener('keydown', (e) => {
+      if (e.code === 'Tab') {
+        this.pushEventTo(
+          '#commandInput',
+          'suggest',
+          {'value': el.value, 'caret_position': el.selectionEnd}
+        );
+      } else if (e.code === 'ArrowUp') {
+        this.pushEventTo('#commandInput', 'cycle_history_up');
+      } else if (e.code === 'ArrowDown') {
+        this.pushEventTo('#commandInput', 'cycle_history_down');
+      } else {
+        this.pushEventTo('#commandInput', 'reset_history', {});
+      }
+    });
   },
   updated() {
     const newValue = this.el.dataset.input_value;

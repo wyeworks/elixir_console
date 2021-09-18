@@ -9,10 +9,6 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   import ElixirConsoleWeb.ConsoleLive.Helpers
   alias ElixirConsole.Autocomplete
 
-  @tab_keycode "Tab"
-  @up_keycode "ArrowUp"
-  @down_keycode "ArrowDown"
-
   def mount(socket) do
     {:ok,
      assign(
@@ -28,11 +24,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
 
   defp ensure_number(value), do: String.to_integer(value)
 
-  def handle_event(
-        "keydown",
-        %{"key" => @tab_keycode, "value" => value, "caret_position" => caret_position},
-        socket
-      ) do
+  def handle_event("suggest", %{"value" => value, "caret_position" => caret_position}, socket) do
     %{bindings: bindings} = socket.assigns
 
     # When testing this event using render_keydown/up, even if the metadata is defined as a number,
@@ -60,7 +52,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
     end
   end
 
-  def handle_event("keydown", %{"key" => @up_keycode}, socket) do
+  def handle_event("cycle_history_up", _params, socket) do
     %{history_counter: counter, history: history} = socket.assigns
     {input_value, new_counter} = get_previous_history_entry(history, counter)
     new_caret_position = String.length(input_value)
@@ -73,7 +65,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
      )}
   end
 
-  def handle_event("keydown", %{"key" => @down_keycode}, socket) do
+  def handle_event("cycle_history_down", _params, socket) do
     %{history_counter: counter, history: history} = socket.assigns
     {input_value, new_counter} = get_next_history_entry(history, counter)
     new_caret_position = String.length(input_value)
@@ -86,7 +78,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
      )}
   end
 
-  def handle_event("keydown", _key, socket) do
+  def handle_event("reset_history", _key, socket) do
     {:noreply, assign(socket, history_counter: -1, input_value: "")}
   end
 
