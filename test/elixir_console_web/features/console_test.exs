@@ -97,13 +97,4 @@ defmodule ElixirConsoleWeb.ConsoleTest do
       |> assert
     end)
   end
-
-  feature "visitor gets Elixir and Erlang version", %{session: session} do
-    session
-    |> visit("/")
-    |> find(@version_info, fn output ->
-      assert_text(output, "Elixir")
-      assert_text(output, "OTP")
-    end)
-  end
 end
