@@ -8,7 +8,6 @@ defmodule ElixirConsoleWeb.ConsoleTest do
   @command_output css("#commandOutput")
   @suggestions_list css("#suggestions-list")
   @documentation_output css("#documentation-output")
-  @version_info css("#version-info")
 
   feature "visitor can evaluate an expression", %{session: session} do
     session
