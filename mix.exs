@@ -41,7 +41,7 @@ defmodule ElixirConsole.MixProject do
       {:plug_cowboy, "~> 2.1"},
       {:earmark, "~> 1.4.0"},
       {:dialyxir, "~> 0.5.1", only: :dev},
-      {:floki, "~> 0.26.0", only: :test},
+      {:floki, "~> 0.31.0", only: :test},
       {:sentry, "~> 7.0"},
       {:wallaby, "~> 0.28", only: :test, runtime: false}
     ]
