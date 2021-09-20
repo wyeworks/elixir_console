@@ -1,12 +1,11 @@
 <div class="flex h-full flex-col sm:flex-row">
   <div class="flex-1 sm:h-full overflow-scroll">
     <div class="h-full flex flex-col">
-      <%= live_component(@socket, HistoryComponent, output: @output, id: :history) %>
-      <%= live_component(@socket, CommandInputComponent,
-        history: @history, bindings: @sandbox.bindings, id: :command_input) %>
+      <%= live_component(HistoryComponent, output: @output, id: :history) %>
+      <%= live_component(CommandInputComponent, history: @history, bindings: @sandbox.bindings, id: :command_input) %>
     </div>
   </div>
-  <%= live_component(@socket, SidebarComponent,
+  <%= live_component(SidebarComponent,
     sandbox: @sandbox, contextual_help: @contextual_help, suggestions: @suggestions)
   %>
 </div>
