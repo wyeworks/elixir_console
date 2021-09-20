@@ -37,8 +37,6 @@ Hooks.CommandInput = {
         this.pushEventTo('#commandInput', 'cycle_history_up');
       } else if (e.code === 'ArrowDown') {
         this.pushEventTo('#commandInput', 'cycle_history_down');
-      } else {
-        this.pushEventTo('#commandInput', 'reset_history', {});
       }
     });
   },
