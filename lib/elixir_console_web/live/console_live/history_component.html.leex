@@ -1,5 +1,8 @@
 <div class="flex-1"></div>
 <div class="p-2" id="commandOutput" phx-update="append">
+  <div id="version-info" class="text-gray-500 font-medium">
+    <p>Elixir <%= System.version() %>/OTP <%= System.otp_release() %></p>
+  </div>
   <%= for output <- @output do %>
     <div id="command<%= output.id %>" class="text-gray-300 font-medium"><%= print_prompt() %><%= format_command(output.command) %></div>
     <div id="output<%= output.id %>" class="text-teal-300">
