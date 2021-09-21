@@ -50,12 +50,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
 
   # This event comes from CommandInputComponent
   def handle_info({:execute_command, command}, socket) do
-    history =
-      if socket.assigns.history == [] do
-        [command]
-      else
-        [command | socket.assigns.history]
-      end
+    history = add_command_to_history(command, socket.assigns.history)
 
     case execute_command(command, socket.assigns.sandbox) do
       {:ok, result, sandbox} ->
@@ -81,6 +76,9 @@ defmodule ElixirConsoleWeb.ConsoleLive do
          |> assign(contextual_help: nil)}
     end
   end
+
+  defp add_command_to_history("", history), do: history
+  defp add_command_to_history(command, history), do: [command | history]
 
   defp execute_command(command, sandbox) do
     case Sandbox.execute(command, sandbox) do
