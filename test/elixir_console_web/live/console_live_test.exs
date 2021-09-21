@@ -102,8 +102,9 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     test "show suggestions if more than one", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
 
-      input = element(view, "#command_input input")
-      render_hook(input, :suggest, %{"value" => "Enum.co", "caret_position" => 7})
+      view
+      |> with_target("#command_input")
+      |> render_hook(:suggest, %{"value" => "Enum.co", "caret_position" => 7})
 
       html = render(view)
 
@@ -113,8 +114,9 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     test "autocomplete and do not show suggestions if only one", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
 
-      input = element(view, "#command_input input")
-      render_hook(input, :suggest, %{"value" => "Enum.conc", "caret_position" => 9})
+      view
+      |> with_target("#command_input")
+      |> render_hook(:suggest, %{"value" => "Enum.conc", "caret_position" => 9})
 
       html = render(view)
 
@@ -127,8 +129,9 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     test "show suggestions considering caret position in the command input", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
 
-      input = element(view, "#command_input input")
-      render_hook(input, :suggest, %{"value" => "Enum.co([1,2]) - 2", "caret_position" => 7})
+      view
+      |> with_target("#command_input")
+      |> render_hook(:suggest, %{"value" => "Enum.co([1,2]) - 2", "caret_position" => 7})
 
       html = render(view)
 
@@ -138,10 +141,10 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     test "autocomplete considering caret position in the command input", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
 
-      input = element(view, "#command_input input")
-
       html =
-        render_hook(input, :suggest, %{"value" => "Enum.conc([1,2], [3])", "caret_position" => 9})
+        view
+        |> with_target("#command_input")
+        |> render_hook(:suggest, %{"value" => "Enum.conc([1,2], [3])", "caret_position" => 9})
 
       assert html =~ ~r/\<input .* data-input_value\="Enum.concat\(\[1,2\], \[3\]\)"/
       assert html =~ ~r/\<input .* data-caret_position\="11"/
