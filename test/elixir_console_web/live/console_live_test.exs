@@ -20,7 +20,7 @@ defmodule ElixirConsoleWeb.ConsoleLiveTest do
     end
 
     test "command result is displayed", %{html: html} do
-      assert html =~ ~r/<div id="output.".*3.*<\/div>/s
+      assert html =~ ~r/<div.*id="output.".*3.*<\/div>/s
     end
 
     test "binding value is displayed in the Current Variables section", %{html: html} do

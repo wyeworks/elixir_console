@@ -18,7 +18,7 @@
       <%= if @contextual_help do %>
         <div id="documentation-output">
           <span class="mb-8 font-bold text-green-400">
-          <a href="<%= @contextual_help[:link] %>" target="_blank" class="underline"><%= @contextual_help[:func_name] %></a>
+            <a href={@contextual_help[:link]} target="_blank" class="underline"><%= @contextual_help[:func_name] %></a>
           </span>
           <span class="text-xs mb-4 font-bold text-gray-400"><%= @contextual_help[:header] %></span>
           <span class="contextual-help-doc text-xs text-gray-400"><%= Phoenix.HTML.raw @contextual_help[:doc] %></span>
@@ -33,7 +33,7 @@
         <p class="text-sm">Please note some features of the language are not safe to run in a shared environment like this console.
         If you are interested in knowing more about the limitations, you must <a class="underline" href="https://github.com/wyeworks/elixir_console#how-much-elixir-can-i-run-in-the-web-console">read here</a>.</p>
         <p class="text-sm">Please report any security vulnerabilities to
-          <a class="underline" href="mailto:elixir-console-security@wyeworks.com">elixir-console-security@wyeworks.com<a>.
+          <a class="underline" href="mailto:elixir-console-security@wyeworks.com">elixir-console-security@wyeworks.com</a>.
         </p>
       <% end %>
     <% end %>
