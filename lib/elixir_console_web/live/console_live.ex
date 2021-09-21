@@ -78,7 +78,6 @@ defmodule ElixirConsoleWeb.ConsoleLive do
   end
 
   defp add_command_to_history("", history), do: history
-  defp add_command_to_history(command, []), do: [command]
   defp add_command_to_history(command, history), do: [command | history]
 
   defp execute_command(command, sandbox) do
