@@ -14,7 +14,6 @@ import "../css/app.css"
 //
 import "phoenix_html"
 import {Socket} from "phoenix"
-import topbar from "topbar" // Remove?
 import {LiveSocket} from "phoenix_live_view"
 
 let Hooks = {};
@@ -65,11 +64,6 @@ let liveSocket = new LiveSocket(
   }
 );
 /* eslint-enable camelcase */
-
-// Show progress bar on live navigation and form submits
-topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
-window.addEventListener("phx:page-loading-start", info => topbar.show())
-window.addEventListener("phx:page-loading-stop", info => topbar.hide())
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()

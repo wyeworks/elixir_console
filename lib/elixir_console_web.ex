@@ -43,8 +43,7 @@ defmodule ElixirConsoleWeb do
 
   def live_view do
     quote do
-      use Phoenix.LiveView,
-        layout: {ElixirConsoleWeb.LayoutView, "live.html"}
+      use Phoenix.LiveView
 
       unquote(view_helpers())
     end
@@ -82,7 +81,6 @@ defmodule ElixirConsoleWeb do
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
 
-      import ElixirConsoleWeb.ErrorHelpers
       alias ElixirConsoleWeb.Router.Helpers, as: Routes
     end
   end
