@@ -2,7 +2,7 @@
   <div class="flex-1 sm:h-full">
     <div class="h-full flex flex-col">
       <div class="flex-1"></div>
-      <div class="flex flex-col-reverse overflow-scroll">
+      <div class="flex flex-col-reverse overflow-auto">
         <div>
           <%= live_component(HistoryComponent, output: @output, id: :history) %>
           <%= live_component(CommandInputComponent, history: @history, bindings: @sandbox.bindings, id: :command_input) %>
