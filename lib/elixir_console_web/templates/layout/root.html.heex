@@ -17,7 +17,7 @@
     <%= csrf_meta_tag() %>
     <title>Elixir Web Console - WyeWorks</title>
     <meta name="description" content="The Elixir Web Console is where you can try the Elixir language without the need to leave the browser." />
-    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+    <link rel="stylesheet" href={Routes.static_path(@conn, "/css/app.css")} />
     <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,500&display=swap" rel="stylesheet">
   </head>
   <body class="h-screen bg-white flex flex-col px-10 pb-5">
@@ -45,6 +45,6 @@
         <%= @inner_content %>
       </div>
     </main>
-    <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+    <script type="text/javascript" src={Routes.static_path(@conn, "/js/app.js")}></script>
   </body>
 </html>
