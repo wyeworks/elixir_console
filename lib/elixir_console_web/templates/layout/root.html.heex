@@ -17,8 +17,9 @@
     <%= csrf_meta_tag() %>
     <title>Elixir Web Console - WyeWorks</title>
     <meta name="description" content="The Elixir Web Console is where you can try the Elixir language without the need to leave the browser." />
-    <link rel="stylesheet" href={Routes.static_path(@conn, "/css/app.css")} />
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/css/app.css")}/>
     <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,500&display=swap" rel="stylesheet">
+    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/js/app.js")}></script>
   </head>
   <body class="h-screen bg-white flex flex-col px-10 pb-5">
     <header class="w-full h-10 flex items-center justify-between bg-white">
@@ -38,13 +39,18 @@
         </svg>
       </a>
     </header>
-    <main role="main" class="w-full flex-1 overflow-hidden">
-      <p class="alert alert-info" role="alert"><%= live_flash(@flash, :info) %></p>
-      <p class="alert alert-danger" role="alert"><%= live_flash(@flash, :error) %></p>
+    <main role="main" class="w-full h-full flex-1 overflow-hidden">
+      <p class="alert alert-info" role="alert"
+        phx-click="lv:clear-flash"
+        phx-value-key="info"><%= live_flash(@flash, :info) %></p>
+
+      <p class="alert alert-danger" role="alert"
+        phx-click="lv:clear-flash"
+        phx-value-key="error"><%= live_flash(@flash, :error) %></p>
+
       <div class="bg-teal-900 w-full h-full rounded overflow-hidden shadow-lg live-view-parent">
         <%= @inner_content %>
       </div>
     </main>
-    <script type="text/javascript" src={Routes.static_path(@conn, "/js/app.js")}></script>
   </body>
 </html>

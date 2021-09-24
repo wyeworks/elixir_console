@@ -47,7 +47,7 @@ defmodule ElixirConsole.MixProject do
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
-  # For example, to create, migrate and run the seeds file at once:
+  # For example, to install project dependencies and perform other setup tasks, run:
   #
   #     $ mix ecto.setup
   #

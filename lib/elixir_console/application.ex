@@ -6,12 +6,15 @@ defmodule ElixirConsole.Application do
   use Application
 
   def start(_type, _args) do
-    # List all child processes to be supervised
     children = [
+      # Start the PubSub system
       {Phoenix.PubSub, name: ElixirConsole.PubSub},
+      # Start the Endpoint (http/https)
       ElixirConsoleWeb.Endpoint,
       ElixirConsoleWeb.LiveMonitor,
       ElixirConsole.Documentation
+      # Start a worker by calling: ElixirConsole.Worker.start_link(arg)
+      # {ElixirConsole.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

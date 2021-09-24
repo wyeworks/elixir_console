@@ -3,7 +3,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
   This is the live view component that implements the console UI.
   """
 
-  use Phoenix.LiveView
+  use ElixirConsoleWeb, :live_view
 
   alias ElixirConsole.Sandbox
   alias ElixirConsoleWeb.LiveMonitor
@@ -14,6 +14,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
     defstruct [:command, :result, :error, :id]
   end
 
+  @impl true
   def mount(_params, _session, socket) do
     sandbox = Sandbox.init()
     LiveMonitor.monitor(self(), __MODULE__, %{id: socket.id, sandbox: sandbox})
@@ -36,6 +37,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
   end
 
   # This event comes from HistoryComponent
+  @impl true
   def handle_info({:show_function_docs, contextual_help}, socket) do
     {:noreply,
      socket
@@ -44,11 +46,13 @@ defmodule ElixirConsoleWeb.ConsoleLive do
   end
 
   # This event comes from CommandInputComponent
+  @impl true
   def handle_info({:update_suggestions, suggestions}, socket) do
     {:noreply, assign(socket, suggestions: suggestions)}
   end
 
   # This event comes from CommandInputComponent
+  @impl true
   def handle_info({:execute_command, command}, socket) do
     history = add_command_to_history(command, socket.assigns.history)
 
