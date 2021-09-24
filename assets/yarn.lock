@@ -3512,10 +3512,10 @@ pbkdf2@^3.0.3:
     sha.js "^2.4.8"
 
 "phoenix@file:../deps/phoenix":
-  version "1.5.12"
+  version "1.6.0"
 
 "phoenix_html@file:../deps/phoenix_html":
-  version "3.0.3"
+  version "3.0.4"
 
 "phoenix_live_view@file:../deps/phoenix_live_view":
   version "0.16.3"
