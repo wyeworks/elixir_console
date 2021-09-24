@@ -7,8 +7,6 @@ defmodule ElixirConsole.Application do
 
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
-      ElixirConsoleWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: ElixirConsole.PubSub},
       # Start the Endpoint (http/https)
