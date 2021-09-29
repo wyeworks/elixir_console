@@ -26,13 +26,13 @@ jobs:
       run: mix deps.unlock --check-unused
     - name: Check code format
       run: mix format --check-formatted
-    - name: Install yarn dependencies
-      run: yarn --cwd assets
-    - name: Compile assets
-      run: cd assets && ./node_modules/.bin/webpack --mode development
     - name: Compile elixir deps
       run: MIX_ENV=test mix deps.compile
     - name: Compile elixir project
       run: MIX_ENV=test mix compile --force --warnings-as-errors
+    - name: Install assets dependencies
+      run: mix assets.setup
+    - name: Compile assets
+      run: mix assets.build
     - name: Run tests
       run: mix test

@@ -35,6 +35,7 @@ defmodule ElixirConsole.MixProject do
       {:phoenix, "~> 1.6.0"},
       {:phoenix_live_view, "~> 0.16.0"},
       {:phoenix_html, "~> 3.0"},
+      {:esbuild, "~> 0.3.0", runtime: Mix.env() == :dev},
       {:phoenix_live_reload, "~> 1.3", only: :dev},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.1"},
@@ -53,7 +54,15 @@ defmodule ElixirConsole.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      test: ["test"]
+      "assets.setup": "cmd --cd assets yarn install",
+      "assets.deploy": [
+        "cmd --cd assets yarn deploy",
+        "esbuild default --minify",
+        "phx.digest"
+      ],
+      "assets.build": ["cmd --cd assets yarn build", "esbuild default"],
+      "assets.watch": ["cmd --cd assets yarn watch", "esbuild default --watch"],
+      test: ["assets.setup", "assets.build", "test"]
     ]
   end
 end
