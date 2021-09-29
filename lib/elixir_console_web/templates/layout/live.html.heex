@@ -1,0 +1,13 @@
+<main role="main" class="w-full h-full">
+  <p class="alert alert-info" role="alert"
+    phx-click="lv:clear-flash"
+    phx-value-key="info"><%= live_flash(@flash, :info) %></p>
+
+  <p class="alert alert-danger" role="alert"
+    phx-click="lv:clear-flash"
+    phx-value-key="error"><%= live_flash(@flash, :error) %></p>
+
+  <div class="bg-teal-900 w-full h-full rounded overflow-hidden shadow-lg live-view-parent">
+    <%= @inner_content %>
+  </div>
+</main>
