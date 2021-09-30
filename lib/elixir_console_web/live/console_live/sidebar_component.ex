@@ -7,6 +7,25 @@ defmodule ElixirConsoleWeb.ConsoleLive.SidebarComponent do
 
   use Phoenix.LiveComponent
 
+  def render(assigns) do
+    ~H"""
+    <div class="w-full sm:w-32 md:w-1/3 h-32 sm:h-full bg-teal-800 text-gray-200 overflow-scroll flex flex-col">
+      <.bindings bindings={@sandbox.bindings} />
+      <div class="flex-1 flex flex-col justify-end p-2">
+        <%= if @suggestions != [] do %>
+          <.suggestions suggestions={@suggestions}/>
+        <% else %>
+          <%= if @contextual_help do %>
+            <.contextual_help {@contextual_help} />
+          <% else %>
+            <.instructions />
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+    """
+  end
+
   def bindings(assigns) do
     ~H"""
     <div class="bg-teal-700 p-2 overflow-y-scroll max-h-1/3">
