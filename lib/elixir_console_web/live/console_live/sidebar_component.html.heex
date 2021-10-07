@@ -1,4 +1,4 @@
-<div class="w-full sm:w-32 md:w-1/3 h-32 sm:h-full bg-teal-800 text-gray-300 overflow-scroll flex flex-col">
+<div class="w-full sm:w-32 md:w-1/3 h-32 sm:h-full bg-teal-800 text-gray-200 overflow-scroll flex flex-col">
   <div class="bg-teal-700 p-2 overflow-y-scroll max-h-1/3">
     <h2 class="font-medium">Current Bindings</h2>
     <ul>
@@ -20,8 +20,8 @@
           <span class="mb-8 font-bold text-green-400">
             <a href={@contextual_help[:link]} target="_blank" class="underline"><%= @contextual_help[:func_name] %></a>
           </span>
-          <span class="text-xs mb-4 font-bold text-gray-400"><%= @contextual_help[:header] %></span>
-          <span class="contextual-help-doc text-xs text-gray-400"><%= Phoenix.HTML.raw @contextual_help[:doc] %></span>
+          <span class="text-xs mb-4 font-bold text-gray-200"><%= @contextual_help[:header] %></span>
+          <span class="contextual-help-doc text-xs text-gray-200"><%= Phoenix.HTML.raw @contextual_help[:doc] %></span>
         </div>
       <% else %>
         <h2 class="underline mb-3">INSTRUCTIONS</h2>
