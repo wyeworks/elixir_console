@@ -26,17 +26,17 @@ body {
 }
 
 .contextual-help-doc pre {
-  background-color: #234e52; /* teal-900 */
+  @apply bg-teal-900;
+  @apply text-teal-300;
   border-radius: 4px;
-  color: #81e6d9; /* teal-300 */
   margin-bottom: 0.5rem;
   padding: 0.25rem 0.5rem;
   white-space: pre-wrap;
 }
 
 .contextual-help-doc p > code {
-  background-color: #234e52; /* teal-900 */
+  @apply bg-teal-900;
+  @apply text-teal-300;
   border-radius: 2px;
-  color: #81e6d9; /* teal-300 */
   padding: 0.25rem;
 }
