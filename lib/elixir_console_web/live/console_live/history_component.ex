@@ -9,6 +9,29 @@ defmodule ElixirConsoleWeb.ConsoleLive.HistoryComponent do
   import ElixirConsoleWeb.ConsoleLive.Helpers
   alias ElixirConsole.ContextualHelp
 
+  def render(assigns) do
+    ~H"""
+    <div class="p-2" id="commandOutput" phx-update="append">
+      <div id="version-info" class="text-gray-400 font-medium">
+        <p>Elixir <%= System.version() %>/OTP <%= System.otp_release() %></p>
+      </div>
+      <%= for output <- @output do %>
+        <div id={"command#{output.id}"} class="text-gray-200 font-medium">
+          <%= print_prompt() %><%= format_command(output.command) %>
+        </div>
+        <div id={"output#{output.id}"} class="text-teal-300">
+          <%= output.result %>
+          <%= if output.error do %>
+            <span class="text-pink-400">
+              <%= output.error %>
+            </span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    """
+  end
+
   def handle_event(
         "function_link_clicked",
         %{"func_name" => func_name, "header" => header, "doc" => doc, "link" => link},
