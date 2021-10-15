@@ -36,6 +36,27 @@ defmodule ElixirConsoleWeb.ConsoleLive do
     Sandbox.terminate(sandbox)
   end
 
+  def render(assigns) do
+    ~H"""
+    <div class="flex h-full flex-col sm:flex-row">
+      <div class="flex-1 sm:h-full">
+        <div class="h-full flex flex-col">
+          <div class="flex-1"></div>
+          <div class="flex flex-col-reverse overflow-auto">
+            <div>
+              <%= live_component(HistoryComponent, output: @output, id: :history) %>
+              <%= live_component(CommandInputComponent, history: @history, bindings: @sandbox.bindings, id: :command_input) %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <%= live_component(SidebarComponent,
+        sandbox: @sandbox, contextual_help: @contextual_help, suggestions: @suggestions)
+      %>
+    </div>
+    """
+  end
+
   # This event comes from HistoryComponent
   @impl true
   def handle_info({:show_function_docs, contextual_help}, socket) do
