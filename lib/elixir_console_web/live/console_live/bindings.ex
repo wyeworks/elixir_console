@@ -9,13 +9,11 @@ defmodule ElixirConsoleWeb.ConsoleLive.Bindings do
     <div class="bg-teal-700 p-2 overflow-y-scroll max-h-1/3">
       <h2 class="font-medium">Current Bindings</h2>
       <ul>
-      {#if length(@bindings) > 0}
-        {#for {key, value} <- @bindings}
-          <li class="truncate">{key}: <code class="text-teal-300">{inspect(value)}</code></li>
-        {/for}
+      {#for {key, value} <- @bindings}
+        <li class="truncate">{key}: <code class="text-teal-300">{inspect(value)}</code></li>
       {#else}
         <code class="text-teal-300 text-sm">No bindings yet!</code>
-      {/if}
+      {/for}
       </ul>
     </div>
     """
