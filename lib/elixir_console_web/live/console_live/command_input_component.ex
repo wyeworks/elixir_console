@@ -19,6 +19,27 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
      )}
   end
 
+  def render(assigns) do
+    ~H"""
+    <form phx-submit="execute" id="command_input" phx-target="#command_input">
+      <div class="text-gray-200 font-medium flex bg-teal-700 p-2">
+        <%= print_prompt() %>
+        <input
+          type="text"
+          id="commandInput"
+          class="ml-2 bg-transparent flex-1 outline-none"
+          autocomplete="off"
+          autofocus
+          name="command"
+          phx-hook="CommandInput"
+          data-input_value={@input_value}
+          data-caret_position={@caret_position}
+        />
+      </div>
+    </form>
+    """
+  end
+
   defp ensure_number(value) when is_number(value),
     do: value
 
