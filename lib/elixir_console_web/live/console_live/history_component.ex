@@ -4,34 +4,38 @@ defmodule ElixirConsoleWeb.ConsoleLive.HistoryComponent do
   commands and results are displayed.
   """
 
-  use Phoenix.LiveComponent
+  use Surface.LiveComponent
   import Phoenix.HTML, only: [sigil_e: 2]
   import ElixirConsoleWeb.ConsoleLive.Helpers
   alias ElixirConsole.ContextualHelp
 
+  prop output, :keyword
+
+  @impl true
   def render(assigns) do
-    ~H"""
+    ~F"""
     <div class="p-2" id="commandOutput" phx-update="append">
       <div id="version-info" class="text-gray-400 font-medium">
-        <p>Elixir <%= System.version() %>/OTP <%= System.otp_release() %></p>
+        <p>Elixir {System.version()}/OTP {System.otp_release()}</p>
       </div>
-      <%= for output <- @output do %>
+      {#for output <- @output}
         <div id={"command#{output.id}"} class="text-gray-200 font-medium">
-          <%= print_prompt() %><%= format_command(output.command) %>
+          {print_prompt()}{format_command(output.command)}
         </div>
         <div id={"output#{output.id}"} class="text-teal-300">
-          <%= output.result %>
-          <%= if output.error do %>
+          {output.result}
+          {#if output.error}
             <span class="text-pink-400">
-              <%= output.error %>
+              {output.error}
             </span>
-          <% end %>
+          {/if}
         </div>
-      <% end %>
+      {/for}
     </div>
     """
   end
 
+  @impl true
   def handle_event(
         "function_link_clicked",
         %{"func_name" => func_name, "header" => header, "doc" => doc, "link" => link},
