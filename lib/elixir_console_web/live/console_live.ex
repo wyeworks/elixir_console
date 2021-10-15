@@ -36,6 +36,7 @@ defmodule ElixirConsoleWeb.ConsoleLive do
     Sandbox.terminate(sandbox)
   end
 
+  @impl true
   def render(assigns) do
     ~H"""
     <div class="flex h-full flex-col sm:flex-row">
