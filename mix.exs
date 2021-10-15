@@ -41,6 +41,7 @@ defmodule ElixirConsole.MixProject do
       {:earmark, "~> 1.4.0"},
       {:floki, "~> 0.31.0", only: :test},
       {:sentry, "~> 7.0"},
+      {:surface, "~> 0.5.2"},
       {:wallaby, "~> 0.28", only: :test, runtime: false}
     ]
   end
