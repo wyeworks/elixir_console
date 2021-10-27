@@ -5,9 +5,12 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   user experience.
   """
 
-  use Phoenix.LiveComponent
+  use Surface.Component
   import ElixirConsoleWeb.ConsoleLive.Helpers
   alias ElixirConsole.Autocomplete
+
+  prop input_value, :string
+  prop caret_position, :integer
 
   def mount(socket) do
     {:ok,
@@ -17,6 +20,27 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
        input_value: "",
        caret_position: 0
      )}
+  end
+
+  def render(assigns) do
+    ~F"""
+    <form phx-submit="execute" id="command_input" phx-target="#command_input">
+      <div class="text-gray-200 font-medium flex bg-teal-700 p-2">
+        {print_prompt()}
+        <input
+          type="text"
+          id="commandInput"
+          class="ml-2 bg-transparent flex-1 outline-none"
+          autocomplete="off"
+          autofocus
+          name="command"
+          phx-hook="CommandInput"
+          data-input_value={@input_value}
+          data-caret_position={@caret_position}
+        />
+      </div>
+    </form>
+    """
   end
 
   defp ensure_number(value) when is_number(value),

@@ -51,7 +51,8 @@ config :elixir_console, ElixirConsoleWeb.Endpoint,
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"lib/elixir_console_web/(live|views)/.*(ex)$",
-      ~r"lib/elixir_console_web/templates/.*(eex)$"
+      ~r"lib/elixir_console_web/templates/.*(eex)$",
+      ~r"lib/elixir_console_web/live/.*(sface)$"
     ]
   ]
 
