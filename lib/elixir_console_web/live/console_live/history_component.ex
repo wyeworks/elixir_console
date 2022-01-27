@@ -17,7 +17,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.HistoryComponent do
       </div>
       <%= for output <- @output do %>
         <div id={"command#{output.id}"} class="text-gray-200 font-medium">
-          <%= print_prompt() %><%= format_command(output.command) %>
+          <%= prompt() %><%= format_command(output.command) %>
         </div>
         <div id={"output#{output.id}"} class="text-teal-300">
           <%= output.result %>

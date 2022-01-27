@@ -3,5 +3,5 @@ defmodule ElixirConsoleWeb.ConsoleLive.Helpers do
   This module provides very simple helpers to use in templates and avoid repetition
   """
 
-  def print_prompt, do: "> "
+  def prompt, do: "> "
 end
