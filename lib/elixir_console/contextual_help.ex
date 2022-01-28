@@ -23,6 +23,7 @@ defmodule ElixirConsole.ContextualHelp do
     ++
     --
     ..
+    **
     <>
     =~
     |>

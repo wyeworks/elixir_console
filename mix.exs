@@ -5,7 +5,7 @@ defmodule ElixirConsole.MixProject do
     [
       app: :elixir_console,
       version: "0.1.0",
-      elixir: "~> 1.12.3",
+      elixir: "~> 1.13.2",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
