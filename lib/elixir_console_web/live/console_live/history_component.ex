@@ -9,6 +9,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.HistoryComponent do
   import ElixirConsoleWeb.ConsoleLive.Helpers
   alias ElixirConsole.ContextualHelp
 
+  @impl true
   def render(assigns) do
     ~H"""
     <div class="p-2" id="commandOutput" phx-update="append">
@@ -32,6 +33,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.HistoryComponent do
     """
   end
 
+  @impl true
   def handle_event(
         "function_link_clicked",
         %{"func_name" => func_name, "header" => header, "doc" => doc, "link" => link},

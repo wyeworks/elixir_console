@@ -7,6 +7,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.SidebarComponent do
 
   use Phoenix.LiveComponent
 
+  @impl true
   def render(assigns) do
     ~H"""
     <div class="w-full sm:w-32 md:w-1/3 h-32 sm:h-full bg-teal-800 text-gray-200 overflow-scroll flex flex-col">
