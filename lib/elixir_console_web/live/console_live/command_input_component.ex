@@ -9,6 +9,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   import ElixirConsoleWeb.ConsoleLive.Helpers
   alias ElixirConsole.Autocomplete
 
+  @impl true
   def mount(socket) do
     {:ok,
      assign(
@@ -19,11 +20,34 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
      )}
   end
 
+  @impl true
+  def render(assigns) do
+    ~H"""
+    <form phx-submit="execute" id="command_input" phx-target="#command_input">
+      <div class="text-gray-200 font-medium flex bg-teal-700 p-2">
+        <.prompt />
+        <input
+          type="text"
+          id="commandInput"
+          class="ml-2 bg-transparent flex-1 outline-none"
+          autocomplete="off"
+          autofocus
+          name="command"
+          phx-hook="CommandInput"
+          data-input_value={@input_value}
+          data-caret_position={@caret_position}
+        />
+      </div>
+    </form>
+    """
+  end
+
   defp ensure_number(value) when is_number(value),
     do: value
 
   defp ensure_number(value), do: String.to_integer(value)
 
+  @impl true
   def handle_event("suggest", %{"value" => value, "caret_position" => caret_position}, socket) do
     %{bindings: bindings} = socket.assigns
 
@@ -52,6 +76,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
     end
   end
 
+  @impl true
   def handle_event("cycle_history_up", _params, socket) do
     %{history_counter: counter, history: history} = socket.assigns
     {input_value, new_counter} = get_previous_history_entry(history, counter)
@@ -78,6 +103,7 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
      )}
   end
 
+  @impl true
   def handle_event("execute", %{"command" => command}, socket) do
     send(self(), {:execute_command, command})
 
