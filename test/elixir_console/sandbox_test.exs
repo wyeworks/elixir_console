@@ -128,13 +128,13 @@ defmodule ElixirConsole.SandboxTest do
 
     test "returns a compile error when about to invoke an Erlang function", %{sandbox: sandbox} do
       assert {:error,
-              {"%CompileError{description: \"undefined function date/0\", file: \"nofile\", line: 1}",
+              {"%CompileError{description: \"undefined function date/0 (there is no such import)\", file: \"nofile\", line: 1}",
                _}} = Sandbox.execute("date()", sandbox)
     end
 
     test "returns a compile error when invoking unknown function", %{sandbox: sandbox} do
       assert {:error,
-              {"%CompileError{description: \"undefined function foo/1\", file: \"nofile\", line: 1}",
+              {"%CompileError{description: \"undefined function foo/1 (there is no such import)\", file: \"nofile\", line: 1}",
                _}} = Sandbox.execute("foo(:bar)", sandbox)
     end
   end
