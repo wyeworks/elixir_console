@@ -45,6 +45,7 @@ defmodule ElixirConsole.ElixirSafeParts do
     ++
     --
     ..
+    **
     <>
     =~
     binding
