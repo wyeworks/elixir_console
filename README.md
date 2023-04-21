@@ -58,7 +58,7 @@ We are confident that the number of created atoms will grow relatively slow, giv
 
 # Other limitations
 
-The execution of code in this console is limited by the backend logic in additional ways in an attempt to preserve the server health and able to attend able to attend a more significant number of users.
+The execution of code in this console is limited by the backend logic in additional ways in an attempt to preserve the server health and being able to attend a more significant number of users.
 
 Each submitted command should run in a limited number of seconds; otherwise, a timeout error is returned. Moreover, the execution of the piece of code must respect a memory usage limit.
 
