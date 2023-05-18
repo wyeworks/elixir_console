@@ -9,7 +9,12 @@ defmodule ElixirConsole.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      releases: [
+        elixir_console: [
+          strip_beams: [keep: ["Docs"]]
+        ]
+      ]
     ]
   end
 
@@ -36,6 +41,8 @@ defmodule ElixirConsole.MixProject do
       {:phoenix_live_view, "~> 0.16.0"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_reload, "~> 1.3", only: :dev},
+      {:esbuild, "~> 0.4"},
+      {:tailwind, "~> 0.1"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.1"},
       {:earmark, "~> 1.4.0"},
@@ -53,7 +60,8 @@ defmodule ElixirConsole.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      test: ["test"]
+      test: ["test"],
+      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
     ]
   end
 end

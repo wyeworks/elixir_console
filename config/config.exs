@@ -5,7 +5,7 @@
 # is restricted to this project.
 
 # General application configuration
-use Mix.Config
+import Config
 
 # Configures the endpoint
 config :elixir_console, ElixirConsoleWeb.Endpoint,
@@ -14,6 +14,25 @@ config :elixir_console, ElixirConsoleWeb.Endpoint,
   render_errors: [view: ElixirConsoleWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: ElixirConsole.PubSub,
   live_view: [signing_salt: "7vohZO+j"]
+
+# Configure esbuild (the version is required)
+config :esbuild,
+  version: "0.14.29",
+  default: [
+    args:
+      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ]
+
+config :tailwind, version: "3.3.2", default: [
+  args: ~w(
+    --config=tailwind.config.js
+    --input=css/app.css
+    --output=../priv/static/assets/app.css
+  ),
+  cd: Path.expand("../assets", __DIR__)
+]
 
 # Configures Elixir's Logger
 config :logger, :console,
