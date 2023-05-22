@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/wyeworks/elixir_console.svg?branch=master)](https://travis-ci.org/wyeworks/elixir_console)
-[![SourceLevel](https://app.sourcelevel.io/github/wyeworks/elixir_console.svg)](https://app.sourcelevel.io/github/wyeworks/elixir_console)
 
 ---
 
