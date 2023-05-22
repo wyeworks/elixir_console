@@ -24,12 +24,12 @@ defmodule ElixirConsoleWeb.ConsoleLive.CommandInputComponent do
   def render(assigns) do
     ~H"""
     <form phx-submit="execute" id="command_input" phx-target="#command_input">
-      <div class="text-gray-200 font-medium flex bg-teal-700 p-2">
+      <div class="flex items-center p-2 font-medium text-gray-200 bg-teal-700">
         <.prompt />
         <input
           type="text"
           id="commandInput"
-          class="ml-2 bg-transparent flex-1 outline-none"
+          class="flex-1 ml-2 bg-transparent outline-none"
           autocomplete="off"
           autofocus
           name="command"
